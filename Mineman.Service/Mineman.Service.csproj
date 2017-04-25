@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Docker.DotNet" Version="2.124.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
   </ItemGroup>
 
