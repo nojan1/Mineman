@@ -1,1 +1,9 @@
-<h1>Servers</h1>
+<div *ngIf="!servers" class="loading">
+    <img src="/images/spinner.gif" />
+</div>
+
+<ul *ngIf="servers" id="serverlist">
+    <li *ngFor="let server of servers">
+        <server [server]="server"></server>
+    </li>
+</ul>

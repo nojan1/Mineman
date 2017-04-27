@@ -1,0 +1,31 @@
+﻿.serverrow
+{
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.serveronline {
+    border-color: green;
+}
+
+.serveroffline {
+    border-color: red;
+    //color:white;
+    // background-image:url(../assets/images/offline.png);
+    background-size: 100% 100%;
+}
+
+.modlink {
+    color: black;
+    text-decoration: underline;
+}
+
+.thumbnail {
+    height: 200px;
+}    
+
+.thumbnail img .pull-right
+{
+    width: 50px;
+}
+
