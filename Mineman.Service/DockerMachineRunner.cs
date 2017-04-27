@@ -9,7 +9,7 @@ namespace Mineman.Service
     {
         public DockerMachineRunner(IDockerClient client)
         {
-
+          
         }
 
 
