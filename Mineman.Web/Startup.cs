@@ -8,6 +8,10 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using Mineman.Common.Database;
+using Docker.DotNet;
+using Mineman.Service;
 
 namespace WebApplicationBasic
 {
@@ -28,12 +32,23 @@ namespace WebApplicationBasic
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
+
+            services.AddTransient<IDockerClient>(service =>
+            {
+                return new DockerClientConfiguration(new Uri(
+                        Configuration.GetValue<string>("DockerHost")
+                    )).CreateClient();
+            });
+            services.AddTransient<ServerRepository>();
+
             // Add framework services.
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, DatabaseContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -62,6 +77,8 @@ namespace WebApplicationBasic
                     name: "spa-fallback",
                     defaults: new { controller = "Home", action = "Index" });
             });
+
+            context.Database.EnsureCreated();
         }
     }
 }
