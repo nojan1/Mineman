@@ -30,7 +30,8 @@ namespace Mineman.Service
 
         public async Task Start(Server server)
         {
-            if(string.IsNullOrEmpty(server.ContainerID) || ! await ContainerExists(server.ContainerID))
+            if(string.IsNullOrEmpty(server.ContainerID) || 
+               await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) != null)
             {
                 await CreateContainer(server);
             }
@@ -44,20 +45,6 @@ namespace Mineman.Service
             {
                 throw new Exception("Server failed to start");
             }
-        }
-
-        private async Task<bool> ContainerExists(string containerID)
-        {
-            var response = await _dockerClient.Containers.ListContainersAsync(new Docker.DotNet.Models.ContainersListParameters
-            {
-                All = true,
-                Filters = new Dictionary<string, IDictionary<string, bool>>
-                {
-                    { "label", new Dictionary<string, bool> { { "creator=mineman", true } }  }
-                }
-            });
-
-            return response.Any(c => c.ID == containerID);
         }
 
         public async Task Stop(Server server)

@@ -7,6 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Docker.DotNet.Models;
+using Mineman.Common.Database.Models;
+using Mineman.Common.Models.Client;
+using Mineman.Service.Helpers;
 
 namespace Mineman.Service
 {
@@ -22,18 +25,24 @@ namespace Mineman.Service
             _dockerClient = dockerClient;
         }
 
+        public async Task Add(ServerAddModel serverAddModel)
+        {
+            var server = new Server
+            {
+                Description = serverAddModel.Description,
+                Image = _context.Images.FirstOrDefault(i => i.ID == serverAddModel.ImageID),
+                World = _context.Worlds.FirstOrDefault(w => w.ID == serverAddModel.WorldID),
+                Mods = serverAddModel.ModIDs.Select(id => _context.Mods.FirstOrDefault(m => m.ID == id)).ToArray()
+            };
+
+            await _context.Servers.AddAsync(server);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<ICollection<ServerWithDockerInfo>> GetServers()
         {
             var serversDb = _context.Servers.ToList();
-            var containerInfo = await _dockerClient.Containers.ListContainersAsync(new ContainersListParameters
-            {
-                All = true,
-                Filters = new Dictionary<string, IDictionary<string, bool>>
-                {
-                    //{ "status", new Dictionary<string, bool> { { "running", true } }  },
-                    { "label", new Dictionary<string, bool> { { "creator=mineman", true } }  }
-                }
-            });
+            var containerInfo = await DockerQueryHelper.GetContainers(_dockerClient);
 
             return serversDb.Select(s => {
                 return new ServerWithDockerInfo

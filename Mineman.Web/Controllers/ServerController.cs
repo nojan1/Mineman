@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Mineman.Common.Models.Client;
 using Mineman.Service;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,19 @@ namespace Mineman.Web.Controllers
         public async Task<IActionResult> Get()
         {
             return Ok(await _serverRepository.GetServers());
+        }
+
+        [HttpPost("")]
+        public async Task<IActionResult> Add([FromBody]ServerAddModel inputModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            await _serverRepository.Add(inputModel);
+
+            return Ok();
         }
     }
 }

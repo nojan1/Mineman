@@ -18,6 +18,7 @@ module.exports = (env) => {
         module: {
             rules: [
                 { test: /\.ts$/, include: /ClientApp/, use: ['awesome-typescript-loader?silent=true', 'angular2-template-loader'] },
+                //{ test: /\.d.ts$/, include: "../Mineman.Common/Models/Client", use: ['awesome-typescript-loader?silent=true', 'angular2-template-loader']},
                 { test: /\.html$/, use: 'html-loader?minimize=false' },
                 { test: /\.css$/, use: ['to-string-loader', 'css-loader'] },
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' }

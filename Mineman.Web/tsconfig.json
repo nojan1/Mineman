@@ -7,6 +7,7 @@
     "emitDecoratorMetadata": true,
     "skipDefaultLibCheck": true,
     "lib": [ "es6", "dom" ],
+    "typeRoots": [ "./node_modules/@types", "../Mineman.Common/Models/Client" ],
     "types": [ "node" ]
   },
   "exclude": [ "bin", "node_modules" ],
