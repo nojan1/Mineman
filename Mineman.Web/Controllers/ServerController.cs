@@ -28,7 +28,7 @@ namespace Mineman.Web.Controllers
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody]ServerAddModel inputModel)
         {
-            if (!ModelState.IsValid)
+            if (inputModel == null || !ModelState.IsValid)
             {
                 return BadRequest();
             }

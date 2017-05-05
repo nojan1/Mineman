@@ -6,6 +6,7 @@ using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
 using Newtonsoft.Json;
 using SharpCompress.Archives.Tar;
+using SharpCompress.Common;
 using SharpCompress.Writers;
 using System;
 using System.Collections.Generic;
@@ -59,26 +60,35 @@ namespace Mineman.Service.Managers
                 zipArchive.ExtractToDirectory(workingDir);
             }
 
-            File.Copy(dockerFilePath, workingDir);
+            File.Copy(dockerFilePath, Path.Combine(workingDir, "Dockerfile"), true);
 
-            //TODO: Support large servers... use files instead of in memory ;)
-            using (var stream = new MemoryStream())
+            var dockerArchivePath = Path.GetTempFileName();
+            using (var stream = File.OpenWrite(dockerArchivePath))
             {
-                using (var writer = WriterFactory.Open(stream, SharpCompress.Common.ArchiveType.Tar, new WriterOptions(SharpCompress.Common.CompressionType.GZip)))
+                using (var writer = WriterFactory.Open(stream, ArchiveType.Tar, new WriterOptions(CompressionType.None)))
                 {
                     writer.WriteAll(workingDir, "*", SearchOption.AllDirectories);
                 }
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                var responseStream = await _dockerClient.Miscellaneous.BuildImageFromDockerfileAsync(stream, new Docker.DotNet.Models.ImageBuildParameters(), CancellationToken.None);
-                var imageId = await WaitForId(responseStream);
-
-                image.CreatedInDocker = true;
-                image.DockerId = imageId;
-                _context.Update(image);
-                await _context.SaveChangesAsync();
             }
+
+            var responseStream = await _dockerClient.Miscellaneous.BuildImageFromDockerfileAsync(File.OpenRead(dockerArchivePath), 
+                                                    new Docker.DotNet.Models.ImageBuildParameters
+                                                    {
+                                                        Dockerfile = "Dockerfile",
+                                                        Labels = new Dictionary<string, string>()
+                                                        {
+                                                            { "creator", "mineman" }
+                                                        }
+                                                    },
+                                                    CancellationToken.None);
+
+            var imageId = await WaitForId(responseStream);
+
+            image.CreatedInDocker = true;
+            image.DockerId = imageId;
+
+            _context.Update(image);
+            await _context.SaveChangesAsync();
         }
 
         private async Task<string> WaitForId(Stream responseStream)

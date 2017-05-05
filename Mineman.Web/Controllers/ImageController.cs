@@ -21,16 +21,20 @@ namespace Mineman.Web.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Get()
         {
-            return Ok();
+            return Ok(_imageRepository.Get());
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Add([FromBody]ImageAddModel inputModel)
+        public async Task<IActionResult> Add(ImageAddModel inputModel)
         {
-            if (!ModelState.IsValid)
+            if (inputModel == null ||
+                !ModelState.IsValid ||
+                inputModel.ImageContents.Count != 1)
             {
                 return BadRequest();
             }
+
+            await _imageRepository.Add(inputModel);
 
             return Ok();
         }

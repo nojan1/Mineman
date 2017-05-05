@@ -41,7 +41,7 @@ namespace WebApplicationBasic
             {
                 return new DockerClientConfiguration(new Uri(
                         Configuration.GetValue<string>("DockerHost")
-                    )).CreateClient();
+                    )).CreateClient(Version.Parse("1.24"));
             });
             services.AddTransient<IServerRepository, ServerRepository>();
             services.AddTransient<IImageRepository, ImageRepository>();
