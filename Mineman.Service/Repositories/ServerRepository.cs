@@ -31,9 +31,14 @@ namespace Mineman.Service.Repositories
             {
                 Description = serverAddModel.Description,
                 Image = _context.Images.FirstOrDefault(i => i.ID == serverAddModel.ImageID),
-                World = _context.Worlds.FirstOrDefault(w => w.ID == serverAddModel.WorldID),
-                Mods = serverAddModel.ModIDs.Select(id => _context.Mods.FirstOrDefault(m => m.ID == id)).ToArray()
+                World = _context.Worlds.FirstOrDefault(w => w.ID == serverAddModel.WorldID)
             };
+
+            if(server.Image.SupportsMods && serverAddModel.ModIDs != null)
+            {
+
+                server.Mods = serverAddModel.ModIDs.Select(id => _context.Mods.FirstOrDefault(m => m.ID == id)).ToArray();
+            }
 
             await _context.Servers.AddAsync(server);
             await _context.SaveChangesAsync();

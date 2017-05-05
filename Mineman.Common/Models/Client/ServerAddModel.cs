@@ -13,7 +13,6 @@ namespace Mineman.Common.Models.Client
         public int WorldID { get; set; }
         [Required]
         public int ImageID { get; set; }
-        [Required]
         public ICollection<int> ModIDs { get; set; }
 
     }
