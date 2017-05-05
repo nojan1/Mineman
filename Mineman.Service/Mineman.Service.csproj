@@ -6,10 +6,17 @@
 
   <ItemGroup>
     <PackageReference Include="Docker.DotNet" Version="2.124.3" />
+    <PackageReference Include="sharpcompress" Version="0.15.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

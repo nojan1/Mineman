@@ -11,9 +11,9 @@ using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Helpers;
 
-namespace Mineman.Service
+namespace Mineman.Service.Repositories
 {
-    public class ServerRepository
+    public class ServerRepository : IServerRepository
     {
         private readonly DatabaseContext _context;
         private readonly IDockerClient _dockerClient;

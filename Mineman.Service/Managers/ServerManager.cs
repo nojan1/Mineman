@@ -1,4 +1,6 @@
 ﻿using Docker.DotNet;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
@@ -11,21 +13,24 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Mineman.Service
+namespace Mineman.Service.Managers
 {
-    public class ServerManager
+    public class ServerManager : IServerManager
     {
         private readonly DatabaseContext _context;
         private readonly IDockerClient _dockerClient;
         private readonly Configuration _configuration;
+        private readonly IHostingEnvironment _environment;
 
         public ServerManager(DatabaseContext context,
                              IDockerClient dockerClient,
-                             Configuration configuration)
+                             IOptions<Configuration> configuration,
+                             IHostingEnvironment environment)
         {
             _context = context;
             _dockerClient = dockerClient;
-            _configuration = configuration;
+            _configuration = configuration.Value;
+            _environment = environment;
         }
 
         public async Task Start(Server server)
@@ -64,8 +69,8 @@ namespace Mineman.Service
 
         private async Task CreateContainer(Server server)
         {
-            var worldPath = Path.Combine(_configuration.WorldDirectory, server.World.Path);
-            var serverPropertiesPath = Path.Combine(_configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
+            var worldPath = Path.Combine(_environment.ContentRootPath, _configuration.WorldDirectory, server.World.Path);
+            var serverPropertiesPath = Path.Combine(_environment.ContentRootPath, _configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
 
             var heapMax = server.MemoryAllocationMB;
             var heapStart = server.MemoryAllocationMB * 0.6;
@@ -79,7 +84,7 @@ namespace Mineman.Service
 
             var response = await _dockerClient.Containers.CreateContainerAsync(new Docker.DotNet.Models.CreateContainerParameters
             {
-                Image = server.Image.Tag,
+                Image = server.Image.DockerId,
                 Env = new List<string> { javaOpts },
                 ExposedPorts = new Dictionary<string, object>()
                 {
@@ -99,7 +104,8 @@ namespace Mineman.Service
 
             server.ContainerID = response.ID;
 
-            //TODO: Save container ID to database
+            _context.Update(server);
+            await _context.SaveChangesAsync();
         }
     }
 }

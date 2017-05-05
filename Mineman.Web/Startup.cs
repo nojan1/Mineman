@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Mineman.Common.Database;
 using Docker.DotNet;
 using Mineman.Service;
+using Mineman.Service.Repositories;
+using Mineman.Service.Managers;
 
 namespace WebApplicationBasic
 {
@@ -41,14 +43,24 @@ namespace WebApplicationBasic
                         Configuration.GetValue<string>("DockerHost")
                     )).CreateClient();
             });
-            services.AddTransient<ServerRepository>();
+            services.AddTransient<IServerRepository, ServerRepository>();
+            services.AddTransient<IImageRepository, ImageRepository>();
+            services.AddTransient<ModRepository, ModRepository>();
+            services.AddTransient<IWorldRepository, WorldRepository>();
+
+            services.AddTransient<IServerManager, ServerManager>();
+            services.AddTransient<IImageManager, ImageManager>();
+
+            services.AddTransient<BackgroundService>();
+
+            services.Configure<Mineman.Common.Models.Configuration>(Configuration);
 
             // Add framework services.
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, DatabaseContext context)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, DatabaseContext context, BackgroundService service)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -79,6 +91,8 @@ namespace WebApplicationBasic
             });
 
             context.Database.EnsureCreated();
+
+            service.Start();
         }
     }
 }

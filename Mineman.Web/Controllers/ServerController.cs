@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service;
+using Mineman.Service.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Mineman.Web.Controllers
     [Route("api/Server")]
     public class ServerController : Controller
     {
-        private readonly ServerRepository _serverRepository;
+        private readonly IServerRepository _serverRepository;
 
-        public ServerController(ServerRepository serverRepository)
+        public ServerController(IServerRepository serverRepository)
         {
             _serverRepository = serverRepository;
         }

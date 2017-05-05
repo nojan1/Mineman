@@ -14,8 +14,11 @@ namespace Mineman.Common.Database.Models
     {
         public int ID { get; set; }
         public string Tag { get; set; }
+        public string DockerId { get; set; }
         public ServerType Type { get; set; }
         public bool SupportsMods { get; set; }
         public string ModDirectory { get; set; }
+        public bool CreatedInDocker { get; set; }
+        public string ImageContentZipPath { get; set; }
     }
 }
