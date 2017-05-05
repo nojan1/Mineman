@@ -1,0 +1,15 @@
+<html>
+    <body>
+          <form method="post" action="http://localhost:5000/api/image" enctype="multipart/form-data">
+              DisplayName: <br />
+              <input type="text" name="DisplayName" /> <br/>
+              Type: <br />
+              <select name="Type"><option value="1">Vanilla</option><option value="2">Forge</option></select ><br />
+              Image contents zip: <br />
+              <input type="file" name="ImageContents" /><br />
+              Mod directory (empty for no mods): <br />
+              <input type="text" name="ModDir" /> <br />
+              <input type="submit" value="Skicka" />
+          </form>
+    </body>
+</html>
