@@ -57,7 +57,7 @@ namespace Mineman.Service
         {
             try
             {
-                foreach (var image in _imageRepository.Get().Where(i => !i.CreatedInDocker))
+                foreach (var image in _imageRepository.Get().Where(i => i.BuildStatus == null))
                 {
                     await _imageManager.CreateImage(image);
                 }

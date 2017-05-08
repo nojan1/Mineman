@@ -14,6 +14,9 @@ using Docker.DotNet;
 using Mineman.Service;
 using Mineman.Service.Repositories;
 using Mineman.Service.Managers;
+using Mineman.Common.Models;
+using Microsoft.Extensions.Options;
+using System.IO;
 
 namespace WebApplicationBasic
 {
@@ -60,7 +63,12 @@ namespace WebApplicationBasic
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, DatabaseContext context, BackgroundService service)
+        public void Configure(IApplicationBuilder app, 
+                              IHostingEnvironment env, 
+                              ILoggerFactory loggerFactory, 
+                              DatabaseContext context, 
+                              BackgroundService service,
+                              IOptions<Configuration> configuration)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -91,8 +99,23 @@ namespace WebApplicationBasic
             });
 
             context.Database.EnsureCreated();
+            EnsureFoldersCreated(env, configuration.Value);
 
             service.Start();
+        }
+
+        private void EnsureFoldersCreated(IHostingEnvironment env, Configuration configuration)
+        {
+            Action<string> createDirectory = (path) =>
+            {
+                var fullPath = Path.Combine(env.ContentRootPath, path);
+                Directory.CreateDirectory(fullPath);
+            };
+
+            createDirectory(configuration.WorldDirectory);
+            createDirectory(configuration.ServerPropertiesDirectory);
+            createDirectory(configuration.ModDirectory);
+            createDirectory(configuration.ImageZipFileDirectory);
         }
     }
 }

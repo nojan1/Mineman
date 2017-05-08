@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
@@ -30,7 +31,7 @@ namespace Mineman.Service.Repositories
 
         public ICollection<Image> Get()
         {
-            return _context.Images.ToList();
+            return _context.Images.Include(x => x.BuildStatus).ToList();
         }
 
         public async Task Add(ImageAddModel imageAddModel)
@@ -51,7 +52,7 @@ namespace Mineman.Service.Repositories
                 Type = imageAddModel.Type,
                 SupportsMods = !string.IsNullOrEmpty(imageAddModel.ModDir),
                 ModDirectory = imageAddModel.ModDir ?? "",
-                CreatedInDocker = false
+                BuildStatus = null
             };
 
             await _context.Images.AddAsync(server);

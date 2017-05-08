@@ -18,7 +18,7 @@ namespace Mineman.Common.Database.Models
         public ServerType Type { get; set; }
         public bool SupportsMods { get; set; }
         public string ModDirectory { get; set; }
-        public bool CreatedInDocker { get; set; }
+        public ImageBuildStatus BuildStatus { get; set; }
         public string ImageContentZipPath { get; set; }
     }
 }
