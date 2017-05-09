@@ -7,4 +7,4 @@ WORKDIR /server
 
 RUN echo "eula=true" > /server/eula.txt
 
-CMD if [ -f "COMMAND" ]; then command="$(cat 'COMMAND')"; else command="minecraft_server.jar"; fi ; java $JAVA_OPTS $command nogui
+CMD if [ -f "COMMAND" ]; then command="$(cat 'COMMAND')"; else command="minecraft_server.jar"; fi ; java $JAVA_OPTS -jar $command nogui

@@ -5,7 +5,8 @@ namespace Mineman.Service.Managers
 {
     public interface IServerManager
     {
-        Task Start(Server server);
-        Task Stop(Server server);
+        Task<bool> Start(Server server);
+        Task<bool> Stop(Server server);
+        Task<bool> DestroyContainer(Server server);
     }
 }

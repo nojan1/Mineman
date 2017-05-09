@@ -13,7 +13,7 @@ namespace Mineman.Common.Database.Models
     public class Image
     {
         public int ID { get; set; }
-        public string Tag { get; set; }
+        public string Name { get; set; }
         public string DockerId { get; set; }
         public ServerType Type { get; set; }
         public bool SupportsMods { get; set; }

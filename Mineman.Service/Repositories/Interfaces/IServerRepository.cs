@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Mineman.Common.Models;
 using Mineman.Common.Models.Client;
+using Mineman.Common.Database.Models;
 
 namespace Mineman.Service.Repositories
 {
@@ -9,5 +10,6 @@ namespace Mineman.Service.Repositories
     {
         Task Add(ServerAddModel serverAddModel);
         Task<ICollection<ServerWithDockerInfo>> GetServers();
+        Task<Server> Get(int id);
     }
 }

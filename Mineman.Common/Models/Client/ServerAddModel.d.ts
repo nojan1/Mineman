@@ -4,5 +4,7 @@ declare module server {
 		worldID: number;
 		imageID: number;
 		modIDs: number[];
+		serverPort: number;
+		memoryAllocationMB: number;
 	}
 }

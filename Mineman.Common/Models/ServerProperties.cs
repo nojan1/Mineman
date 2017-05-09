@@ -15,15 +15,15 @@ namespace Mineman.Common.Models
         [NonUserChangableProperty]
         public bool Enable_Query { get; set; } = true;
         [NonUserChangableProperty]
-        public int Server_Port { get; set; }
+        public int Server_Port { get; set; } = 25565;
         [NonUserChangableProperty]
-        public string Level_Name { get; set; }
+        public string Level_Name { get; set; } = "world";
         [NonUserChangableProperty]
         public bool Enable_Rcon { get; set; } = true;
         [NonUserChangableProperty]
-        public int Query__Port { get; set; }
+        public int Query__Port { get; set; } = 26565;
         [NonUserChangableProperty]
-        public int Rcon__Port { get; set; }
+        public int Rcon__Port { get; set; } = 27565;
         [NonUserChangableProperty]
         public string Rcon__Password { get; set; }
 

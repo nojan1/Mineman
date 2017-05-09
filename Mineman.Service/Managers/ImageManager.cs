@@ -49,6 +49,8 @@ namespace Mineman.Service.Managers
 
         public async Task CreateImage(Image image)
         {
+            _logger.LogInformation($"About to create docker image for mineman image. ImageID: {image.ID}");
+
             if (image.BuildStatus != null)
                 return;
 
@@ -70,6 +72,8 @@ namespace Mineman.Service.Managers
 
                 File.Copy(dockerFilePath, Path.Combine(workingDir, "Dockerfile"), true);
 
+                _logger.LogInformation($"Image creation folder preparation complete. ImageID: {image.ID}");
+
                 using (var stream = File.OpenWrite(dockerArchivePath))
                 {
                     using (var writer = WriterFactory.Open(stream, ArchiveType.Tar, new WriterOptions(CompressionType.None)))
@@ -82,6 +86,11 @@ namespace Mineman.Service.Managers
                                                         new Docker.DotNet.Models.ImageBuildParameters
                                                         {
                                                             Dockerfile = "Dockerfile",
+                                                            //TODO: Fix so that tags can be used on built images...
+                                                            //Tags = new List<string>
+                                                            //{
+                                                            //    image.Name.Replace(' ', '_')
+                                                            //},
                                                             Labels = new Dictionary<string, string>()
                                                             {
                                                             { "creator", "mineman" }
@@ -89,8 +98,12 @@ namespace Mineman.Service.Managers
                                                         },
                                                         CancellationToken.None);
 
+                _logger.LogInformation($"Parsing build log and waiting for docker image id. ImageID: {image.ID}");
+
                 logBuilder = new StringBuilder();
                 imageId = await WaitForId(responseStream, logBuilder);
+
+                _logger.LogInformation($"Image created in docker. ImageID: {image.ID}, DockerID: {imageId}");
             }
             catch (Exception e)
             {

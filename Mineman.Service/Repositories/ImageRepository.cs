@@ -48,6 +48,7 @@ namespace Mineman.Service.Repositories
 
             var server = new Image
             {
+                Name = imageAddModel.DisplayName,
                 ImageContentZipPath = zipName,
                 Type = imageAddModel.Type,
                 SupportsMods = !string.IsNullOrEmpty(imageAddModel.ModDir),

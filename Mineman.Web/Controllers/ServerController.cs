@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service;
+using Mineman.Service.Managers;
 using Mineman.Service.Repositories;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,13 @@ namespace Mineman.Web.Controllers
     public class ServerController : Controller
     {
         private readonly IServerRepository _serverRepository;
+        private readonly IServerManager _serverManager;
 
-        public ServerController(IServerRepository serverRepository)
+        public ServerController(IServerRepository serverRepository,
+                                IServerManager serverManager)
         {
             _serverRepository = serverRepository;
+            _serverManager = serverManager;
         }
 
         [HttpGet("")]
@@ -36,6 +40,24 @@ namespace Mineman.Web.Controllers
             await _serverRepository.Add(inputModel);
 
             return Ok();
+        }
+
+        [HttpPost("start/{serverId:int}")]
+        public async Task<IActionResult> Start(int serverId)
+        {
+            var server = await _serverRepository.Get(serverId);
+            var result = await _serverManager.Start(server);
+
+            return Ok(new { started = result });
+        }
+
+        [HttpPost("stop/{serverId:int}")]
+        public async Task<IActionResult> Stop(int serverId)
+        {
+            var server = await _serverRepository.Get(serverId);
+            var result = await _serverManager.Stop(server);
+
+            return Ok(new { started = result });
         }
     }
 }
