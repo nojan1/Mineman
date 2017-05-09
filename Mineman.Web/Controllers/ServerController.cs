@@ -48,7 +48,7 @@ namespace Mineman.Web.Controllers
             var server = await _serverRepository.Get(serverId);
             var result = await _serverManager.Start(server);
 
-            return Ok(new { started = result });
+            return Ok(new { success = result });
         }
 
         [HttpPost("stop/{serverId:int}")]
@@ -57,7 +57,22 @@ namespace Mineman.Web.Controllers
             var server = await _serverRepository.Get(serverId);
             var result = await _serverManager.Stop(server);
 
-            return Ok(new { started = result });
+            return Ok(new { success = result });
+        }
+
+        [HttpPost("recreate/{serverId:int}")]
+        public async Task<IActionResult> Recreate(int serverId)
+        {
+            var server = await _serverRepository.Get(serverId);
+
+            if (await _serverManager.DestroyContainer(server))
+            {
+                return Ok(new { success = await _serverManager.Start(server) });
+            }
+            else
+            {
+                return Ok(new { success = false });
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
             return Ok(_imageRepository.Get());
         }

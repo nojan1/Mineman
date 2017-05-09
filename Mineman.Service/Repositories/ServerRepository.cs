@@ -60,7 +60,7 @@ namespace Mineman.Service.Repositories
                 return new ServerWithDockerInfo
                 {
                      Server = s,
-                     IsAlive = containerInfo.Any(x => x.ID == s.ContainerID && x.Status == "running")
+                     IsAlive = containerInfo.Any(x => x.ID == s.ContainerID && x.State == "running")
                 };
             }).ToList();
         }

@@ -5,10 +5,7 @@ using System.Text;
 
 namespace Mineman.Common.Models
 {
-    public class NonUserChangableProperty : Attribute
-    {
-
-    }
+    public class NonUserChangableProperty : Attribute { }
 
     public class ServerProperties
     {
@@ -59,5 +56,10 @@ namespace Mineman.Common.Models
         public string Level_Seed { get; set; } = "";
         public bool Prevent_Proxy_Connections { get; set; } = false;
         public string Motd { get; set; } = "";
+
+        public ServerProperties()
+        {
+            Rcon__Password = Guid.NewGuid().ToString("N");
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Docker.DotNet;
+using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -49,7 +50,7 @@ namespace Mineman.Service.Managers
                     await CreateContainer(server);
                 }
 
-                var result = await _dockerClient.Containers.StartContainerAsync(server.ContainerID, new Docker.DotNet.Models.ContainerStartParameters
+                var result = await _dockerClient.Containers.StartContainerAsync(server.ContainerID, new ContainerStartParameters
                 {
 
                 });
@@ -83,7 +84,7 @@ namespace Mineman.Service.Managers
                 _logger.LogInformation($"About to stop server. ServerID: {server.ID}");
 
                 var result = await _dockerClient.Containers.StopContainerAsync(server.ContainerID,
-                new Docker.DotNet.Models.ContainerStopParameters
+                new ContainerStopParameters
                 {
                     WaitBeforeKillSeconds = 10
                 },
@@ -122,16 +123,15 @@ namespace Mineman.Service.Managers
 
             try
             {
-
                 _logger.LogInformation($"About to destroy container for server. ServerID: {server.ID} ContainerID: {server.ContainerID}");
 
                 var container = await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID);
-                if (container.Status == "running")
+                if (container.State == "running")
                 {
                     await Stop(server);
                 }
 
-                await _dockerClient.Containers.RemoveContainerAsync(server.ContainerID, new Docker.DotNet.Models.ContainerRemoveParameters
+                await _dockerClient.Containers.RemoveContainerAsync(server.ContainerID, new ContainerRemoveParameters
                 {
                     Force = true
                 });
@@ -165,34 +165,44 @@ namespace Mineman.Service.Managers
 
             File.WriteAllText(serverPropertiesPath, server.SerializedProperties);
 
-            var mods = server.Image.SupportsMods ? server.Mods.Select(m => Path.Combine(_configuration.ModDirectory, m.Path))
-                                                 : null;
+            var binds = new List<string>
+            {
+                $"{worldPath}:/server/world",
+                $"{serverPropertiesPath}:/server/server.properties"
+            };
 
-            var response = await _dockerClient.Containers.CreateContainerAsync(new Docker.DotNet.Models.CreateContainerParameters
+            if (server.Image.SupportsMods && server.Mods != null)
+            {
+                foreach(var mod in server.Mods) {
+                    var containerPath = $"/server/{server.Image.ModDirectory}/{mod.Path}";
+                    var localPath = Path.Combine(_configuration.ModDirectory, mod.Path);
+
+                    binds.Append($"{localPath}:{containerPath}");
+                }
+            }
+
+            var response = await _dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters
             {
                 Image = server.Image.DockerId,
                 Env = new List<string> { javaOpts },
                 ExposedPorts = new Dictionary<string, object>()
                 {
-                    { server.MainPort.ToString() + "/tcp", new { } },
-                    { server.QueryPort.ToString() + "/tcp", new { }},
-                    { server.RconPort.ToString() + "/tcp", new { }}
+                    { "25565/tcp", new { } },
+                    { "26565/tcp", new { }},
+                    { "27565/tcp", new { }}
                 },
-                //Volumes = new Dictionary<string, object>()
-                //{
-                //    { "/server/world", new { } },
-                //    { "/server/server.properties", new { } }
-                //},
                 Labels = new Dictionary<string, string>()
                 {
                     { "creator", "mineman" }
                 },
-                HostConfig = new Docker.DotNet.Models.HostConfig
+                HostConfig = new HostConfig
                 {
-                    Binds = new List<string>
+                    Binds = binds,
+                    PortBindings = new Dictionary<string, IList<PortBinding>>
                     {
-                        $"{worldPath}:/server/world",
-                        $"{serverPropertiesPath}:/server/server.properties"
+                        {"25565/tcp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = server.MainPort.ToString() } } },
+                        {"26565/tcp", new List<PortBinding> { new PortBinding { HostIP = "127.0.0.1", HostPort = server.QueryPort.ToString() } } },
+                        {"27565/tcp", new List<PortBinding> { new PortBinding { HostIP = "127.0.0.1", HostPort = server.RconPort.ToString() } } }
                     }
                 }
             });
