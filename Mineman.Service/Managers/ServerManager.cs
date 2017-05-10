@@ -50,6 +50,8 @@ namespace Mineman.Service.Managers
                     await CreateContainer(server);
                 }
 
+                WriteServerProperties(server);
+
                 var result = await _dockerClient.Containers.StartContainerAsync(server.ContainerID, new ContainerStartParameters
                 {
 
@@ -163,7 +165,7 @@ namespace Mineman.Service.Managers
 
             var javaOpts = $"JAVA_OPTS=-Xmx{heapMax}m -Xms{heapStart}m";
 
-            File.WriteAllText(serverPropertiesPath, server.SerializedProperties);
+            WriteServerProperties(server);
 
             var binds = new List<string>
             {
@@ -211,6 +213,12 @@ namespace Mineman.Service.Managers
 
             _context.Update(server);
             await _context.SaveChangesAsync();
+        }
+
+        private void WriteServerProperties(Server server)
+        {
+            var serverPropertiesPath = Path.Combine(_environment.ContentRootPath, _configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
+            File.WriteAllText(serverPropertiesPath, server.SerializedProperties);
         }
     }
 }
