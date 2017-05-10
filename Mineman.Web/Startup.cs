@@ -17,6 +17,7 @@ using Mineman.Service.Managers;
 using Mineman.Common.Models;
 using Microsoft.Extensions.Options;
 using System.IO;
+using Mineman.Service.MinecraftQuery;
 
 namespace WebApplicationBasic
 {
@@ -53,6 +54,7 @@ namespace WebApplicationBasic
 
             services.AddTransient<IServerManager, ServerManager>();
             services.AddTransient<IImageManager, ImageManager>();
+            services.AddTransient<IMinecraftServerQuery, MinecraftServerQuery>();
 
             services.AddTransient<BackgroundService>();
 

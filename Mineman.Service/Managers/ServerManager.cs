@@ -188,7 +188,7 @@ namespace Mineman.Service.Managers
                 ExposedPorts = new Dictionary<string, object>()
                 {
                     { "25565/tcp", new { } },
-                    { "26565/tcp", new { }},
+                    { "26565/udp", new { }},
                     { "27565/tcp", new { }}
                 },
                 Labels = new Dictionary<string, string>()
@@ -201,8 +201,8 @@ namespace Mineman.Service.Managers
                     PortBindings = new Dictionary<string, IList<PortBinding>>
                     {
                         {"25565/tcp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = server.MainPort.ToString() } } },
-                        {"26565/tcp", new List<PortBinding> { new PortBinding { HostIP = "127.0.0.1", HostPort = server.QueryPort.ToString() } } },
-                        {"27565/tcp", new List<PortBinding> { new PortBinding { HostIP = "127.0.0.1", HostPort = server.RconPort.ToString() } } }
+                        {"26565/udp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = server.QueryPort.ToString() } } },
+                        {"27565/tcp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = server.RconPort.ToString() } } }
                     }
                 }
             });

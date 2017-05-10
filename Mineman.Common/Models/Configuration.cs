@@ -13,5 +13,6 @@ namespace Mineman.Common.Models
         public string ModDirectory { get; set; }
         public string ImageZipFileDirectory { get; set; }
         public string DockerfilePath { get; set; }
+        public string QueryIpAddress { get; set; }
     }
 }
