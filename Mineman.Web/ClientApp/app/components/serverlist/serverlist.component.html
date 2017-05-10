@@ -2,8 +2,8 @@
     <img src="/images/spinner.gif" />
 </div>
 
-<ul *ngIf="servers" id="serverlist">
+<ul *ngIf="servers" id="serverlist" class="list-unstyled" style="margin-top:20px;">
     <li *ngFor="let server of servers">
-        <server [server]="server"></server>
+        <server [serverWithInfo]="server"></server>
     </li>
 </ul>

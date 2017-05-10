@@ -8,6 +8,8 @@ import { ServerComponent } from './components/serverlist/server.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 
+import { ServerService } from './services/servers.service';
+
 @NgModule({
     bootstrap: [ AppComponent ],
     declarations: [
@@ -16,6 +18,9 @@ import { JoinPipe } from './components/pipes/join.pipe';
         ServerListComponent,
         ServerComponent,
         JoinPipe
+    ],
+    providers: [
+        ServerService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.

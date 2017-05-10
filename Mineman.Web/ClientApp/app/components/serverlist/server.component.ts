@@ -5,7 +5,7 @@
     templateUrl: './server.component.html'
 })
 export class ServerComponent implements OnInit {
-    @Input() server: server.serverAddModel;
+    @Input() serverWithInfo: any;
 
     ngOnInit() {
 

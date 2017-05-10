@@ -6,3 +6,8 @@
     width: 400px;
     margin: 0 auto 0 auto;
 }
+
+#serverlist {
+    list-style:none;
+    list-style-type:none;
+}
