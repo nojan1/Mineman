@@ -1,0 +1,11 @@
+[Unit]
+Description=Minecraft server manager
+
+[Service]
+Environment="ASPNETCORE_ENVIRONMENT=Production"
+Type=simple
+ExecStart=/usr/bin/dotnet /opt/mineman
+
+[Install]
+Requires=docker.service
+WantedBy=multi-user.target
