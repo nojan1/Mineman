@@ -11,9 +11,8 @@ namespace Mineman.Service.Tests
         public void ModelSerializesCorrectly()
         {
             var serverProperties = new ServerProperties();
-            var serializer = new ServerPropertiesSerializer();
 
-            var data = serializer.Serialize(serverProperties);
+            var data = ServerPropertiesSerializer.Serialize(serverProperties);
 
             Assert.DoesNotContain("_", data);
             Assert.NotEmpty(data);
@@ -61,11 +60,27 @@ prevent-proxy-connections=false
 motd=A Minecraft Server
 enable-rcon=false";
 
-            var serializer = new ServerPropertiesSerializer();
-            var serverProperties = serializer.Deserialize(data);
+            var serverProperties = ServerPropertiesSerializer.Deserialize(data);
 
             Assert.Equal("A Minecraft Server", serverProperties.Motd);
             Assert.Equal(25565, serverProperties.Server_Port);
+        }
+
+        [Fact]
+        public void PropertiesAreMergedCorrectly()
+        {
+            var a = new ServerProperties();
+            var b = new ServerProperties();
+
+            b.Server_Port = 1000;
+            b.Allow_Flight = true;
+            b.Motd = "test";
+
+            ServerPropertiesSerializer.Merge(a, b);
+
+            Assert.NotEqual(a.Server_Port, b.Server_Port);
+            Assert.Equal(a.Allow_Flight, b.Allow_Flight);
+            Assert.Equal(a.Motd, b.Motd);
         }
     }
 }

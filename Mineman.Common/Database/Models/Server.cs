@@ -18,5 +18,6 @@ namespace Mineman.Common.Database.Models
         public int RconPort { get; set; }
         public string SerializedProperties { get; set; }
         public bool ShouldBeRunning { get; set; }
+        public bool NeedsRecreate { get; set; }
     }
 }

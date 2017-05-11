@@ -45,8 +45,16 @@ namespace Mineman.Service.Managers
                 _logger.LogInformation($"About to start server. ServerID: {server.ID}");
 
                 if (string.IsNullOrEmpty(server.ContainerID) ||
-                   await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) == null)
+                   await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) == null || 
+                   server.NeedsRecreate)
                 {
+                    _logger.LogInformation($"Needs to create container before starting. ServerID: {server.ID}");
+
+                    if (!string.IsNullOrEmpty(server.ContainerID))
+                    {
+                        await DestroyContainer(server);
+                    }
+
                     await CreateContainer(server);
                 }
 
@@ -100,6 +108,11 @@ namespace Mineman.Service.Managers
                 _logger.LogInformation($"Server stopped. ServerID: {server.ID}");
 
                 server.ShouldBeRunning = false;
+
+                if (server.NeedsRecreate)
+                {
+                    await DestroyContainer(server);
+                }
 
                 _context.Update(server);
                 await _context.SaveChangesAsync();
@@ -210,6 +223,7 @@ namespace Mineman.Service.Managers
             });
 
             server.ContainerID = response.ID;
+            server.NeedsRecreate = false;
 
             _context.Update(server);
             await _context.SaveChangesAsync();

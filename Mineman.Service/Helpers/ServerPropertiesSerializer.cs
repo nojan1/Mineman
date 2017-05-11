@@ -8,18 +8,18 @@ using System.IO;
 
 namespace Mineman.Service.Helpers
 {
-    public class ServerPropertiesSerializer
+    public static class ServerPropertiesSerializer
     {
-        public void WriteToFile(ServerProperties serverProperties, string filename)
+        public static void WriteToFile(ServerProperties serverProperties, string filename)
         {
             File.WriteAllText(filename, Serialize(serverProperties));
         }
 
-        public string Serialize(ServerProperties serverProperties)
+        public static string Serialize(ServerProperties serverProperties)
         {
             var lines = new List<string>();
-            
-            foreach(var property in serverProperties.GetType().GetProperties())
+
+            foreach (var property in serverProperties.GetType().GetProperties())
             {
                 var name = property.Name.ToLower()
                                         .Replace("__", ".")
@@ -33,15 +33,15 @@ namespace Mineman.Service.Helpers
             return string.Join(Environment.NewLine, lines);
         }
 
-        public ServerProperties Deserialize(string data)
+        public static ServerProperties Deserialize(string data)
         {
             var serverProperties = new ServerProperties();
             var properties = typeof(ServerProperties).GetProperties();
 
-            foreach(var line in data.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var line in data.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
             {
                 var parts = line.Split('=');
-                if(parts.Length == 2)
+                if (parts.Length == 2)
                 {
                     var name = parts[0].Trim()
                                        .Replace(".", "__")
@@ -50,7 +50,7 @@ namespace Mineman.Service.Helpers
                     var rawValue = parts[1].Trim();
 
                     var property = properties.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
-                    if(property != null)
+                    if (property != null)
                     {
                         var value = Convert.ChangeType(rawValue, property.PropertyType);
 
@@ -60,6 +60,26 @@ namespace Mineman.Service.Helpers
             }
 
             return serverProperties;
+        }
+
+        public static ServerProperties Merge(ServerProperties existingProperties, ServerProperties newProperties)
+        {
+            var properties = typeof(ServerProperties).GetProperties();
+
+            foreach (var property in properties)
+            {
+                if (property.GetCustomAttribute(typeof(NonUserChangableProperty)) == null)
+                {
+                    var value = property.GetValue(newProperties);
+
+                    if (value != null)
+                    {
+                        property.SetValue(existingProperties, value);
+                    }
+                }
+            }
+
+            return existingProperties;
         }
     }
 }

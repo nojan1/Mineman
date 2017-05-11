@@ -28,7 +28,7 @@ namespace Mineman.Service.Repositories
 
         public async Task Add(ServerAddModel serverAddModel)
         {
-            var serializedProperties = new ServerPropertiesSerializer().Serialize(new ServerProperties());
+            var serializedProperties = ServerPropertiesSerializer.Serialize(new ServerProperties());
 
             var server = new Server
             {
@@ -71,6 +71,32 @@ namespace Mineman.Service.Repositories
                                          .Include(s => s.World)
                                          .Include(s => s.Mods)
                                          .FirstOrDefaultAsync(s => s.ID == id);
+        }
+
+        public async Task<Server> UpdateConfiguration(int id, ServerConfigurationModel configurationModel)
+        {
+            var server = await Get(id);
+
+            var existingProperties = ServerPropertiesSerializer.Deserialize(server.SerializedProperties);
+            var mergedProperties = ServerPropertiesSerializer.Merge(existingProperties, configurationModel.Properties);
+
+            server.SerializedProperties = ServerPropertiesSerializer.Serialize(mergedProperties);
+            server.MainPort = configurationModel.ServerPort;
+            server.MemoryAllocationMB = configurationModel.MemoryAllocationMB;
+            server.Description = configurationModel.Description;
+            server.World = _context.Worlds.FirstOrDefault(w => w.ID == configurationModel.WorldID);
+
+            if (server.Image.SupportsMods && configurationModel.ModIDs != null)
+            {
+                server.Mods = configurationModel.ModIDs.Select(i => _context.Mods.FirstOrDefault(m => m.ID == i)).ToArray();
+            }
+
+            server.NeedsRecreate = true;
+
+            _context.Update(server);
+            await _context.SaveChangesAsync();
+
+            return server;
         }
     }
 }

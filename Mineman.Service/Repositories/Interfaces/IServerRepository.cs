@@ -11,5 +11,6 @@ namespace Mineman.Service.Repositories
         Task Add(ServerAddModel serverAddModel);
         Task<ICollection<ServerWithDockerInfo>> GetServers();
         Task<Server> Get(int id);
+        Task<Server> UpdateConfiguration(int id, ServerConfigurationModel configurationModel);
     }
 }

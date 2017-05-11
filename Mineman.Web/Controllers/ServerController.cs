@@ -87,5 +87,18 @@ namespace Mineman.Web.Controllers
                 return Ok(new { success = false });
             }
         }
+
+        [HttpPost("{serverId:int}")]
+        public async Task<IActionResult> UpdateConfiguration(int serverId, [FromBody]ServerConfigurationModel configurationModel)
+        {
+            if(configurationModel == null || !ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var server = await _serverRepository.UpdateConfiguration(serverId, configurationModel);
+
+            return Ok(server);
+        }
     }
 }
