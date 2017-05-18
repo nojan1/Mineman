@@ -7,10 +7,12 @@ using Mineman.Service.Repositories;
 using Docker.DotNet;
 using System.Threading;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Mineman.Web.Controllers
 {
     [Route("api/server/log")]
+    [Authorize]
     public class LogController : Controller
     {
         private readonly IServerRepository _serverRepository;

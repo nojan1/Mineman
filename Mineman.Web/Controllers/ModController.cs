@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Models;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/Mod")]
+    [Authorize]
     public class ModController : Controller
     {
         private readonly IModRepository _modRepository;
@@ -47,6 +49,7 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpGet("download/{modId}")]
+        [AllowAnonymous]
         public async Task<IActionResult> Download(int modId)
         {
             var mod = await _modRepository.Get(modId);

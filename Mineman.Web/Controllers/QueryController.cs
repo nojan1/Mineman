@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mineman.Service.MinecraftQuery;
 using Mineman.Service.Repositories;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/server/query")]
+    [Authorize]
     public class QueryController : Controller
     {
         private readonly IServerRepository _serverRepository;
@@ -22,6 +24,7 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpGet("{serverId:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> Get(int serverId)
         {
             var server = await _serverRepository.Get(serverId);

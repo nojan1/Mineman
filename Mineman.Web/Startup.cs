@@ -18,6 +18,15 @@ using Mineman.Common.Models;
 using Microsoft.Extensions.Options;
 using System.IO;
 using Mineman.Service.MinecraftQuery;
+using Mineman.Common.Database.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Mineman.Web.Middleware;
+using Mineman.Web.Models;
+using Mineman.Web.Helpers;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace WebApplicationBasic
 {
@@ -40,6 +49,17 @@ namespace WebApplicationBasic
         {
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
+
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 4;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            })
+            .AddEntityFrameworkStores<DatabaseContext>()
+            .AddDefaultTokenProviders();
 
             services.AddTransient<IDockerClient>(service =>
             {
@@ -70,7 +90,8 @@ namespace WebApplicationBasic
                               ILoggerFactory loggerFactory, 
                               DatabaseContext context, 
                               BackgroundService service,
-                              IOptions<Configuration> configuration)
+                              IOptions<Configuration> configuration,
+                              UserManager<ApplicationUser> userManager)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -89,6 +110,48 @@ namespace WebApplicationBasic
 
             app.UseStaticFiles();
 
+            var secretKey = "keykeykeykeykeykeykeykeykeykeykeykeykeykeykey";
+            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                //// The signing key must match!
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = signingKey,
+
+                // Validate the JWT Issuer (iss) claim
+                ValidateIssuer = true,
+                ValidIssuer = "ExampleIssuer",
+
+                // Validate the JWT Audience (aud) claim
+                ValidateAudience = true,
+                ValidAudience = "ExampleAudience",
+
+                // Validate the token expiry
+                ValidateLifetime = true,
+
+                // If you want to allow a certain amount of clock drift, set that here:
+                ClockSkew = TimeSpan.Zero
+            };
+
+            //Remap "sub" to be name, original is nameidentifier. Needed for default identity unboxing
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["sub"] = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
+
+            app.UseJwtBearerAuthentication(new JwtBearerOptions
+            {
+                AuthenticationScheme = "Identity.Application",
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true,
+                TokenValidationParameters = tokenValidationParameters,
+            });
+
+            var options = new TokenProviderOptions
+            {
+                Audience = "ExampleAudience",
+                Issuer = "ExampleIssuer",
+                SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
+            };
+            app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -102,8 +165,23 @@ namespace WebApplicationBasic
 
             context.Database.EnsureCreated();
             EnsureFoldersCreated(env, configuration.Value);
+            EnsureAdminUserExists(userManager);
 
             service.Start();
+        }
+
+        private void EnsureAdminUserExists(UserManager<ApplicationUser> userManager)
+        {
+            if(userManager.Users.Count() == 0)
+            {
+                var user = new ApplicationUser { UserName = "admin" };
+                var result = userManager.CreateAsync(user, "admin").Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create initial user! {string.Join(",", result.Errors.Select(e => e.Code))}");
+                }
+            }
         }
 
         private void EnsureFoldersCreated(IHostingEnvironment env, Configuration configuration)

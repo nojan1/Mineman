@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Repositories;
 using System;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/Image")]
+    [Authorize]
     public class ImageController : Controller
     {
         private readonly IImageRepository _imageRepository;

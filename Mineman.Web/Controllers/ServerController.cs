@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service;
 using Mineman.Service.Managers;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/Server")]
+    [Authorize]
     public class ServerController : Controller
     {
         private readonly IServerRepository _serverRepository;
@@ -25,6 +27,7 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpGet("")]
+        [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
             return Ok(await _serverRepository.GetServers());

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Repositories;
 using Mineman.Web.Helpers;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/World")]
+    [Authorize]
     public class WorldController : Controller
     {
         private readonly IWorldRepository _worldRepository;
@@ -20,7 +22,7 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> Get()
+        public  IActionResult Get()
         {
             return Ok(_worldRepository.Get());
         }
