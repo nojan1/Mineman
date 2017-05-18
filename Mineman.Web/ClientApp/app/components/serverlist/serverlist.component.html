@@ -2,8 +2,12 @@
     <img src="/images/spinner.gif" />
 </div>
 
-<ul *ngIf="servers" id="serverlist" class="list-unstyled" style="margin-top:20px;">
+<ul *ngIf="servers && servers.length > 0" id="serverlist" class="list-unstyled" style="margin-top:20px;">
     <li *ngFor="let server of servers">
         <server [serverWithInfo]="server"></server>
     </li>
 </ul>
+
+<div *ngIf="servers && servers.length == 0" class="text-center">
+    <h2>No servers :(</h2>
+</div>

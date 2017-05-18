@@ -9,6 +9,9 @@ import { ServerComponent } from './components/serverlist/server.component';
 import { JoinPipe } from './components/pipes/join.pipe';
 
 import { ServerService } from './services/servers.service';
+import { AuthService } from './services/auth.service';
+
+import { AuthModule } from './auth.module';
 
 @NgModule({
     bootstrap: [ AppComponent ],
@@ -20,7 +23,8 @@ import { ServerService } from './services/servers.service';
         JoinPipe
     ],
     providers: [
-        ServerService
+        ServerService,
+        AuthService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
@@ -28,7 +32,8 @@ import { ServerService } from './services/servers.service';
             { path: '', redirectTo: 'serverlist', pathMatch: 'full' },
             { path: 'serverlist', component: ServerListComponent },
             { path: '**', redirectTo: 'serverlist' }
-        ])
+        ]),
+        AuthModule
     ]
 })
 export class AppModule {
