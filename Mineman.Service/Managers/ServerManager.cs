@@ -170,8 +170,8 @@ namespace Mineman.Service.Managers
         {
             _logger.LogInformation($"About to create container for server. ServerID: {server.ID}, ImageID: {server.Image.ID}");
 
-            var worldPath = Path.Combine(_environment.ContentRootPath, _configuration.WorldDirectory, server.World.Path);
-            var serverPropertiesPath = Path.Combine(_environment.ContentRootPath, _configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
+            var worldPath = _environment.BuildPath(_configuration.WorldDirectory, server.World.Path);
+            var serverPropertiesPath = _environment.BuildPath(_configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
 
             var heapMax = server.MemoryAllocationMB;
             var heapStart = Convert.ToInt32(server.MemoryAllocationMB * 0.6);
@@ -190,7 +190,7 @@ namespace Mineman.Service.Managers
             {
                 foreach(var mod in server.Mods) {
                     var containerPath = $"/server/{server.Image.ModDirectory}/{mod.Path}";
-                    var localPath = Path.Combine(_configuration.ModDirectory, mod.Path);
+                    var localPath = _environment.BuildPath(_configuration.ModDirectory, mod.Path);
 
                     binds.Append($"{localPath}:{containerPath}");
                 }

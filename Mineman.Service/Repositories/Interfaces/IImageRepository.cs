@@ -8,6 +8,6 @@ namespace Mineman.Service.Repositories
     public interface IImageRepository
     {
         Task Add(ImageAddModel imageAddModel);
-        ICollection<Image> Get();
+        ICollection<Image> GetImages();
     }
 }

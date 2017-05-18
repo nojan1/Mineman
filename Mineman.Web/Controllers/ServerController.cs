@@ -16,30 +16,18 @@ namespace Mineman.Web.Controllers
     {
         private readonly IServerRepository _serverRepository;
         private readonly IServerManager _serverManager;
-        private readonly IMinecraftServerQuery _minecraftServerQuery;
 
         public ServerController(IServerRepository serverRepository,
-                                IServerManager serverManager,
-                                IMinecraftServerQuery minecraftServerQuery)
+                                IServerManager serverManager)
         {
             _serverRepository = serverRepository;
             _serverManager = serverManager;
-            _minecraftServerQuery = minecraftServerQuery;
         }
 
         [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             return Ok(await _serverRepository.GetServers());
-        }
-
-        [HttpGet("query/{serverId:int}")]
-        public async Task<IActionResult> GetQuery(int serverId)
-        {
-            var server = await _serverRepository.Get(serverId);
-            var queryInfo = await _minecraftServerQuery.GetInfo(server);
-
-            return Ok(queryInfo);
         }
 
         [HttpPost("")]
@@ -73,12 +61,13 @@ namespace Mineman.Web.Controllers
             return Ok(new { success = result });
         }
 
-        [HttpPost("recreate/{serverId:int}")]
-        public async Task<IActionResult> Recreate(int serverId)
+        [HttpPost("restart/{serverId:int}")]
+        public async Task<IActionResult> Restart(int serverId, bool forceRecreate)
         {
             var server = await _serverRepository.Get(serverId);
+            server.NeedsRecreate = forceRecreate;
 
-            if (await _serverManager.DestroyContainer(server))
+            if (await _serverManager.Stop(server))
             {
                 return Ok(new { success = await _serverManager.Start(server) });
             }

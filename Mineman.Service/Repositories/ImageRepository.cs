@@ -29,7 +29,7 @@ namespace Mineman.Service.Repositories
             _environment = environment;
         }
 
-        public ICollection<Image> Get()
+        public ICollection<Image> GetImages()
         {
             return _context.Images.Include(x => x.BuildStatus).ToList();
         }

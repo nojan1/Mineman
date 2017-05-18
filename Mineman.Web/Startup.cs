@@ -49,7 +49,7 @@ namespace WebApplicationBasic
             });
             services.AddTransient<IServerRepository, ServerRepository>();
             services.AddTransient<IImageRepository, ImageRepository>();
-            services.AddTransient<ModRepository, ModRepository>();
+            services.AddTransient<IModRepository, ModRepository>();
             services.AddTransient<IWorldRepository, WorldRepository>();
 
             services.AddTransient<IServerManager, ServerManager>();

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
+using Mineman.Service.Helpers;
 using Mineman.Service.Models;
 using Newtonsoft.Json;
 using SharpCompress.Archives.Tar;
@@ -54,9 +55,9 @@ namespace Mineman.Service.Managers
             if (image.BuildStatus != null)
                 return;
 
-            var dockerFilePath = Path.Combine(_environment.ContentRootPath, _configuration.DockerfilePath);
-            var workingDir = Path.Combine(_environment.ContentRootPath, _configuration.ImageZipFileDirectory, Guid.NewGuid().ToString("N"));
-            var zipPath = Path.Combine(_environment.ContentRootPath, _configuration.ImageZipFileDirectory, image.ImageContentZipPath);
+            var dockerFilePath = _environment.BuildPath(_configuration.DockerfilePath);
+            var workingDir = _environment.BuildPath(_configuration.ImageZipFileDirectory, Guid.NewGuid().ToString("N"));
+            var zipPath = _environment.BuildPath(_configuration.ImageZipFileDirectory, image.ImageContentZipPath);
 
             string imageId = null;
             var logBuilder = new StringBuilder();

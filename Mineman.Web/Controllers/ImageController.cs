@@ -21,7 +21,7 @@ namespace Mineman.Web.Controllers
         [HttpGet("")]
         public IActionResult Get()
         {
-            return Ok(_imageRepository.Get());
+            return Ok(_imageRepository.GetImages());
         }
 
         [HttpPost("")]
