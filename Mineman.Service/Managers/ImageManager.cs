@@ -1,4 +1,5 @@
 ﻿using Docker.DotNet;
+using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -46,6 +48,27 @@ namespace Mineman.Service.Managers
             _configuration = configuration.Value;
             _environment = environment;
             _logger = logger;
+        }
+
+        public async Task RemoveUnsuedImages()
+        {
+            var imageIdsFromDb = _context.Images.Select(i => i.DockerId).ToList();
+            var imagesFromDocker = await DockerQueryHelper.GetImages(_dockerClient);
+
+            foreach(var image in imagesFromDocker.Where(i => !imageIdsFromDb.Any(i2 => i.ID == i2)))
+            {
+                _logger.LogInformation($"Found image in docker that was not found in database, removing. ImageID: {image.ID}");
+
+                var result = await _dockerClient.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters
+                {
+                    
+                });
+
+                if(!result.Any(x => x.Keys.Contains("Deleted")))
+                {
+                    _logger.LogWarning($"Image may not have been removed correctly");
+                }
+            }
         }
 
         public async Task CreateImage(Image image)

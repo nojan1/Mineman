@@ -45,7 +45,7 @@ namespace Mineman.Service.Managers
                 _logger.LogInformation($"About to start server. ServerID: {server.ID}");
 
                 if (string.IsNullOrEmpty(server.ContainerID) ||
-                   await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) == null || 
+                   await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) == null ||
                    server.NeedsRecreate)
                 {
                     _logger.LogInformation($"Needs to create container before starting. ServerID: {server.ID}");
@@ -93,19 +93,7 @@ namespace Mineman.Service.Managers
             {
                 _logger.LogInformation($"About to stop server. ServerID: {server.ID}");
 
-                var result = await _dockerClient.Containers.StopContainerAsync(server.ContainerID,
-                new ContainerStopParameters
-                {
-                    WaitBeforeKillSeconds = 10
-                },
-                CancellationToken.None);
-
-                if (!result)
-                {
-                    throw new Exception("Server failed to stop");
-                }
-
-                _logger.LogInformation($"Server stopped. ServerID: {server.ID}");
+                await Stop(server.ContainerID);
 
                 server.ShouldBeRunning = false;
 
@@ -127,29 +115,37 @@ namespace Mineman.Service.Managers
             }
         }
 
-        public async Task<bool> DestroyContainer(Server server)
+        private async Task Stop(string containerID)
         {
-            if (string.IsNullOrEmpty(server.ContainerID))
-            {
-                _logger.LogWarning($"Tried to destroy container when no container id was set for server. ServerID: {server.ID}");
+            _logger.LogInformation($"About to stop container. ContainerId: {containerID}");
 
-                return true;
+            var result = await _dockerClient.Containers.StopContainerAsync(containerID,
+            new ContainerStopParameters
+            {
+                WaitBeforeKillSeconds = 10
+            },
+            CancellationToken.None);
+
+            if (!result)
+            {
+                throw new Exception("Container failed to stop");
             }
 
+            _logger.LogInformation($"Container stopped. ContainerID: {containerID}");
+        }
+
+        public async Task<bool> DestroyContainer(Server server)
+        {
             try
             {
-                _logger.LogInformation($"About to destroy container for server. ServerID: {server.ID} ContainerID: {server.ContainerID}");
-
-                var container = await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID);
-                if (container.State == "running")
+                if (string.IsNullOrEmpty(server.ContainerID))
                 {
-                    await Stop(server);
+                    _logger.LogWarning($"Tried to destroy container when no container id was set for server. ServerID: {server.ID}");
+
+                    return true;
                 }
 
-                await _dockerClient.Containers.RemoveContainerAsync(server.ContainerID, new ContainerRemoveParameters
-                {
-                    Force = true
-                });
+                await DestroyContainer(server.ContainerID);
 
                 server.ContainerID = null;
 
@@ -160,9 +156,37 @@ namespace Mineman.Service.Managers
             }
             catch (Exception e)
             {
-                _logger.LogError(new EventId(), e, $"Error occurred when removing container for server. ServerID: {server.ID}");
+                _logger.LogError(new EventId(), e, $"Error occurred when destroying container for server. ServerID: {server.ID}");
 
                 return false;
+            }
+        }
+
+        private async Task DestroyContainer(string containerID)
+        {
+            _logger.LogInformation($"About to destroy container for server. ContainerID: {containerID}");
+
+            var container = await DockerQueryHelper.GetContainer(_dockerClient, containerID);
+            if (container.State == "running")
+            {
+                await Stop(containerID);
+            }
+
+            await _dockerClient.Containers.RemoveContainerAsync(containerID, new ContainerRemoveParameters
+            {
+                Force = true
+            });
+        }
+
+        public async Task RemoveUnusedContainers()
+        {
+            var containerIdsInDatabase = _context.Servers.Select(s => s.ContainerID).ToList();
+            var containersInDocker = await DockerQueryHelper.GetContainers(_dockerClient);
+
+            foreach (var container in containersInDocker.Where(c => !containerIdsInDatabase.Any(id => c.ID == id)))
+            {
+                _logger.LogInformation($"Container found in docker but doesn't exist in database, destroying. ContainerID: {container.ID}");
+                await DestroyContainer(container.ID);
             }
         }
 
@@ -188,7 +212,8 @@ namespace Mineman.Service.Managers
 
             if (server.Image.SupportsMods && server.Mods != null)
             {
-                foreach(var mod in server.Mods) {
+                foreach (var mod in server.Mods)
+                {
                     var containerPath = $"/server/{server.Image.ModDirectory}/{mod.Path}";
                     var localPath = _environment.BuildPath(_configuration.ModDirectory, mod.Path);
 

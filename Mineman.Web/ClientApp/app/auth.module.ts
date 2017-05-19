@@ -8,7 +8,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, auth
     return new AuthHttp(new AuthConfig({
         tokenName: 'token',
         tokenGetter: (() => authService.GetToken()),
-        globalHeaders: [{ 'Content-Type': 'application/json' }],
+        globalHeaders: [/*{ 'Content-Type': 'application/json' }*/],
     }), http, options);
 }
 

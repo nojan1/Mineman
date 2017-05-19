@@ -6,5 +6,6 @@ namespace Mineman.Service.Managers
     public interface IImageManager
     {
         Task CreateImage(Image image);
+        Task RemoveUnsuedImages();
     }
 }

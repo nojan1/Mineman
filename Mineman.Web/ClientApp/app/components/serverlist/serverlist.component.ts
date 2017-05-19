@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 
 import { ServerService } from '../../services/servers.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'serverlist',
-    templateUrl: './serverlist.component.html'
+    templateUrl: './serverlist.component.html',
+    styleUrls: ['./serverlist.component.css']
 })
 export class ServerListComponent implements OnInit {
     public servers: any[];
 
-    constructor(private serverService: ServerService) { }
+    constructor(private serverService: ServerService, public authService: AuthService) { }
 
     public ngOnInit() {
         this.serverService.getServers()
@@ -23,5 +25,9 @@ export class ServerListComponent implements OnInit {
                         });
                 });
             });
+    }
+
+    public addServer(event: Event) {
+
     }
 }

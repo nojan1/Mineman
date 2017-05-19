@@ -2,7 +2,8 @@
 
 @Component({
     selector: 'server',
-    templateUrl: './server.component.html'
+    templateUrl: './server.component.html',
+    styleUrls: ['./server.component.css']
 })
 export class ServerComponent implements OnInit {
     @Input() serverWithInfo: any;

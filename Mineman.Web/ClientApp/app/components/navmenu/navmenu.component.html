@@ -8,18 +8,24 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Mineman</a>
+            <a class="navbar-brand" [routerLink]="['/']">Mineman</a>
         </div>
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-                <li *ngIf="authService.isLoggedIn"><a href="#">Images</a></li>
-                <li *ngIf="authService.isLoggedIn"><a href="#">Worlds</a></li>
-                <li *ngIf="authService.isLoggedIn"><a href="#">Mods</a></li>
+                <li *ngIf="authService.isLoggedIn" [routerLinkActive]="['link-active']">
+                    <a [routerLink]="['/images']">Images</a>
+                </li>
+                <li *ngIf="authService.isLoggedIn" [routerLinkActive]="['link-active']">
+                    <a [routerLink]="['/worlds']">Worlds</a>
+                </li>
+                <li *ngIf="authService.isLoggedIn" [routerLinkActive]="['link-active']">
+                    <a [routerLink]="['/mods']">Mods</a>
+                </li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                <li *ngIf="!authService.isLoggedIn"><a (click)="doLogin()" >Log in</a></li>
+                <li *ngIf="!authService.isLoggedIn"><a (click)="doLogin()">Log in</a></li>
                 <li *ngIf="authService.isLoggedIn"><a (click)="authService.Logout()">Log out</a></li>
             </ul>
         </div>

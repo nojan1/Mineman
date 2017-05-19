@@ -1,0 +1,43 @@
+﻿<h2 class="pull-left">Images</h2>
+<button class="btn btn-default pull-right" [routerLink]="['/images/add']">
+    New Image
+</button>
+<div class="clearfix"></div>
+<hr/>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Mod directory
+            </th>
+            <th>
+                Build status
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let image of images">
+            <td>
+                {{image.name}}
+            </td>
+            <td>
+                {{image.modDir}}
+            </td>
+            <td>
+                {{image.buildStatus}}
+            </td>
+            <td>
+                <button class="btn btn-danger disabled pull-right">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

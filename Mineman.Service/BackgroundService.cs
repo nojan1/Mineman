@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Mineman.Service.Helpers;
 using Mineman.Service.Managers;
 using Mineman.Service.Repositories;
 using System;
@@ -34,10 +35,20 @@ namespace Mineman.Service
         {
             _logger.LogInformation("Background service starting up");
 
+            RemoveUnusedResourcesFromDocker().Wait();
+
             Task.Run(() =>
             {
                 WorkingLoop().Wait();
             });
+        }
+
+        private async Task RemoveUnusedResourcesFromDocker()
+        {
+            _logger.LogInformation("Checking docker for containers/images not present in database");
+
+            await _serverManager.RemoveUnusedContainers();
+            await _imageManager.RemoveUnsuedImages();
         }
 
         private async Task WorkingLoop()

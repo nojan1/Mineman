@@ -2,6 +2,12 @@
     <img src="/images/spinner.gif" />
 </div>
 
+<div *ngIf="authService.isLoggedIn" class="clearfix">
+    <button class="btn btn-default pull-right" (click)="addServer($event)">
+        New server
+    </button>
+</div>
+
 <ul *ngIf="servers && servers.length > 0" id="serverlist" class="list-unstyled" style="margin-top:20px;">
     <li *ngFor="let server of servers">
         <server [serverWithInfo]="server"></server>

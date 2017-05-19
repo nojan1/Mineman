@@ -8,5 +8,6 @@ namespace Mineman.Service.Managers
         Task<bool> Start(Server server);
         Task<bool> Stop(Server server);
         Task<bool> DestroyContainer(Server server);
+        Task RemoveUnusedContainers();
     }
 }

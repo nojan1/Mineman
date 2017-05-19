@@ -26,5 +26,17 @@ namespace Mineman.Service.Helpers
         {
             return (await GetContainers(dockerClient)).FirstOrDefault(c => c.ID == containerID);
         }
+
+        public static async Task<IList<ImagesListResponse>> GetImages(IDockerClient dockerClient)
+        {
+            return await dockerClient.Images.ListImagesAsync(new ImagesListParameters
+            {
+                All = true,
+                Filters = new Dictionary<string, IDictionary<string, bool>>
+                {
+                    { "label", new Dictionary<string, bool> { { "creator=mineman", true } }  }
+                }
+            });
+        }
     }
 }
