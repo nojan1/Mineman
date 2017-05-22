@@ -10,12 +10,10 @@ interface TokenResponse {
 }
 
 @Injectable()
-export class AuthService implements OnInit {
+export class AuthService {
     public isLoggedIn: boolean;
 
-    constructor(private http: Http) { }
-
-    ngOnInit() {
+    constructor(private http: Http) {
         if (this.ReadToken()) {
             this.isLoggedIn = true;
         }

@@ -13,6 +13,8 @@ import { JoinPipe } from './components/pipes/join.pipe';
 
 import { ServerService } from './services/servers.service';
 import { AuthService } from './services/auth.service';
+import { ImageService } from './services/image.service';
+import { ErrorService } from './services/error.service';
 
 import { AuthModule } from './auth.module';
 
@@ -32,7 +34,9 @@ import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
     ],
     providers: [
         ServerService,
-        AuthService
+        AuthService,
+        ImageService,
+        ErrorService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.

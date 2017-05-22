@@ -1,7 +1,7 @@
 ﻿<h2>New image</h2>
 <hr />
 
-<form class="form" (ngSubmit)="onSubmit(); $event.preventDefault()" #addImageForm="ngForm">
+<form class="form" method="post" (ngSubmit)="onSubmit(); $event.preventDefault()" #addImageForm="ngForm">
     <div class="form-group">
         <label>Display name</label>
         <input type="text" name="DisplayName" class="form-control" [(ngModel)]="imageAddModel.DisplayName" required/>
