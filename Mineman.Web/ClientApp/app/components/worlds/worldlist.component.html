@@ -1,0 +1,35 @@
+﻿<h2 class="pull-left">Worlds</h2>
+<button class="btn btn-default pull-right" [routerLink]="['/worlds/add']">
+    New world
+</button>
+<div class="clearfix"></div>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Display name
+            </th>
+            <th>
+                Used by (not implemented)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let world of worlds">
+            <td>
+                {{world.displayName}}
+            </td>
+            <td>
+                N/A
+            </td>
+            <td>
+                <button class="btn btn-danger disabled pull-right">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

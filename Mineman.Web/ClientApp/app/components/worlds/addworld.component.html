@@ -1,0 +1,15 @@
+﻿<h2>New world</h2>
+<hr />
+
+<form class="form" method="post" (ngSubmit)="onSubmit(); $event.preventDefault()" #addWorldForm="ngForm">
+    <div class="form-group">
+        <label>Display name</label>
+        <input type="text" name="DisplayName" class="form-control" [(ngModel)]="worldAddModel.DisplayName" required />
+    </div>
+    <div class="form-group">
+        <label>World contents (leave empty for an empty world)</label>
+        <input type="file" name="ImageContents" (change)="fileEvent($event)" class="form-control" />
+    </div>
+  
+    <input type="submit" class="btn btn-primary" [disabled]="!addWorldForm.form.valid" value="Create" />
+</form>

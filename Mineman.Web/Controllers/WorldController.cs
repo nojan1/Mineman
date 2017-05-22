@@ -28,7 +28,7 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Add([FromBody]WorldAddModel inputModel)
+        public async Task<IActionResult> Add(WorldAddModel inputModel)
         {
             if (inputModel == null || !ModelState.IsValid)
             {

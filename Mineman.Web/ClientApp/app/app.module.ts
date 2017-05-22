@@ -8,6 +8,8 @@ import { ServerListComponent } from './components/serverlist/serverlist.componen
 import { ServerComponent } from './components/serverlist/server.component';
 import { ImageListComponent } from './components/images/imagelist.component';
 import { AddImageComponent } from './components/images/addimage.component';
+import { WorldListComponent } from './components/worlds/worldlist.component';
+import { AddWorldComponent } from './components/worlds/addworld.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 
@@ -15,6 +17,7 @@ import { ServerService } from './services/servers.service';
 import { AuthService } from './services/auth.service';
 import { ImageService } from './services/image.service';
 import { ErrorService } from './services/error.service';
+import { WorldService } from './services/world.service';
 
 import { AuthModule } from './auth.module';
 
@@ -30,13 +33,16 @@ import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
         ServerComponent,
         JoinPipe,
         ImageListComponent,
-        AddImageComponent
+        AddImageComponent,
+        WorldListComponent,
+        AddWorldComponent
     ],
     providers: [
         ServerService,
         AuthService,
         ImageService,
-        ErrorService
+        ErrorService,
+        WorldService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
@@ -46,6 +52,8 @@ import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
             { path: 'serverlist', component: ServerListComponent },
             { path: 'images', component: ImageListComponent },
             { path: 'images/add', component: AddImageComponent },
+            { path: 'worlds', component: WorldListComponent },
+            { path: 'worlds/add', component: AddWorldComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),
         AuthModule,
