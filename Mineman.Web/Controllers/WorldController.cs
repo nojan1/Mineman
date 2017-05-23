@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Repositories;
 using Mineman.Web.Helpers;
@@ -35,17 +36,19 @@ namespace Mineman.Web.Controllers
                 return BadRequest();
             }
 
+            World world;
+
             if(inputModel.WorldFile == null || inputModel.WorldFile.Count < 1)
             {
-                await _worldRepository.AddEmpty(inputModel.DisplayName);
+                world = await _worldRepository.AddEmpty(inputModel.DisplayName);
             }
             else
             {
-                await _worldRepository.AddFromZip(inputModel.DisplayName,
+                world = await _worldRepository.AddFromZip(inputModel.DisplayName,
                                                   FileUploadHelper.ZipFromFormFile(inputModel.WorldFile.First()));
             }
 
-            return Ok();
+            return Ok(world);
         }
     }
 }

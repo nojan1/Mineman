@@ -1,0 +1,8 @@
+﻿<div class="form-horizontal">
+    <div class="form-group" *ngFor="let propertyName of userProperties">
+        <label class="col-sm-5 control-label">{{propertyName}}</label>
+        <div class="col-sm-7">
+            <input type="text" class="form-control" [(ngModel)]="propertyValues[propertyName]" />
+        </div>
+    </div>
+</div>

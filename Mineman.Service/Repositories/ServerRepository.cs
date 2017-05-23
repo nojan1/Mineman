@@ -26,7 +26,7 @@ namespace Mineman.Service.Repositories
             _dockerClient = dockerClient;
         }
 
-        public async Task Add(ServerAddModel serverAddModel)
+        public async Task<Server> Add(ServerAddModel serverAddModel)
         {
             var serializedProperties = ServerPropertiesSerializer.Serialize(new ServerProperties());
 
@@ -49,6 +49,8 @@ namespace Mineman.Service.Repositories
 
             await _context.Servers.AddAsync(server);
             await _context.SaveChangesAsync();
+
+            return server;
         }
 
         public async Task<ICollection<ServerWithDockerInfo>> GetServers()
@@ -65,12 +67,25 @@ namespace Mineman.Service.Repositories
             }).ToList();
         }
 
+        public async Task<ServerWithDockerInfo> GetWithDockerInfo(int id)
+        {
+            var server = await Get(id);
+            var isAlive = string.IsNullOrEmpty(server.ContainerID) ? false  
+                                                                   : (await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID)).State == "running";
+
+            return new ServerWithDockerInfo
+            {
+                Server = server,
+                IsAlive = isAlive
+            };
+        }
+
         public async Task<Server> Get(int id)
         {
             return await _context.Servers.Include(s => s.Image)
-                                         .Include(s => s.World)
-                                         .Include(s => s.Mods)
-                                         .FirstOrDefaultAsync(s => s.ID == id);
+                                               .Include(s => s.World)
+                                               .Include(s => s.Mods)
+                                               .FirstOrDefaultAsync(s => s.ID == id);
         }
 
         public async Task<Server> UpdateConfiguration(int id, ServerConfigurationModel configurationModel)

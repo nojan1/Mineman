@@ -34,7 +34,7 @@ namespace Mineman.Service.Repositories
             return _context.Images.Include(x => x.BuildStatus).ToList();
         }
 
-        public async Task Add(ImageAddModel imageAddModel)
+        public async Task<Image> Add(ImageAddModel imageAddModel)
         {
             string zipName = $"{Guid.NewGuid().ToString("N")}.zip";
             string imageContentZipPath = Path.Combine(_environment.ContentRootPath, _configuration.ImageZipFileDirectory, zipName);
@@ -46,7 +46,7 @@ namespace Mineman.Service.Repositories
                 await stream.CopyToAsync(file);
             }
 
-            var server = new Image
+            var image = new Image
             {
                 Name = imageAddModel.DisplayName,
                 ImageContentZipPath = zipName,
@@ -56,8 +56,10 @@ namespace Mineman.Service.Repositories
                 BuildStatus = null
             };
 
-            await _context.Images.AddAsync(server);
+            await _context.Images.AddAsync(image);
             await _context.SaveChangesAsync();
+
+            return image;
         }
     }
 }

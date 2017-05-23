@@ -34,12 +34,12 @@ namespace Mineman.Service.Repositories
             return _context.Worlds.ToList();
         }
 
-        public async Task AddEmpty(string displayName)
+        public async Task<World> AddEmpty(string displayName)
         {
-            await AddFromZip(displayName, null);
+            return await AddFromZip(displayName, null);
         }
 
-        public async Task AddFromZip(string displayName, ZipArchive zipArchive)
+        public async Task<World> AddFromZip(string displayName, ZipArchive zipArchive)
         {
             var folderName = Guid.NewGuid().ToString("N");
             var worldFolderPath = Path.Combine(_environment.ContentRootPath, _configuration.WorldDirectory, folderName);
@@ -51,13 +51,16 @@ namespace Mineman.Service.Repositories
                 zipArchive.ExtractToDirectory(worldFolderPath);
             }
 
-            await _context.Worlds.AddAsync(new World
+            var world = new World
             {
-               DisplayName = displayName,
-               Path = folderName
-            });
+                DisplayName = displayName,
+                Path = folderName
+            };
 
+            await _context.Worlds.AddAsync(world);
             await _context.SaveChangesAsync();
+
+            return world;
         }
     }
 }

@@ -1,0 +1,74 @@
+﻿<div *ngIf="serverConfigurationModel">
+    <h2 class="pull-left">Details for "{{serverConfigurationModel.Description}}"</h2>
+
+    <ul class="list-inline pull-right">
+        <li>
+            <button class="btn btn-default" (click)="saveChanges()">
+                Save changes
+            </button>
+        </li>
+        <li>
+            <button class="btn btn-success" (click)="setServerRunningState(true)" *ngIf="!isAlive" [disabled]="!serverConfigurationForm.form.pristine">
+                Start
+            </button>
+        </li>
+        <li>
+            <button class="btn btn-danger pull-right" (click)="setServerRunningState(false)" *ngIf="isAlive" [disabled]="!serverConfigurationForm.form.pristine">
+                Stop
+            </button>
+        </li>
+    </ul>
+
+    <div class="clearfix"></div>
+    <hr />
+
+    <form #serverConfigurationForm="ngForm">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        General settings
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" name="Description" class="form-control" [(ngModel)]="serverConfigurationModel.Description" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Port</label>
+                            <input type="text" name="ServerPort" class="form-control" [(ngModel)]="serverConfigurationModel.ServerPort" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Memory allocation in MB</label>
+                            <input type="text" name="MemoryAllocationMB" class="form-control" [(ngModel)]="serverConfigurationModel.MemoryAllocationMB" required />
+                        </div>
+                        <div class="form-group">
+                            <label>World</label>
+                            <select name="WorldID" class="form-control" [(ngModel)]="serverConfigurationModel.WorldID" required>
+                                <option *ngFor="let world of worlds" [ngValue]="world.id">
+                                    {{world.displayName}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mods (Not implemented)</label>
+                            <input type="text" name="ModIDs" class="form-control" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        server.properties file
+                    </div>
+                    <div class="panel-body">
+                        <propertieseditor [userProperties]="userProperties" [(propertyValues)]="serverConfigurationModel.Properties"></propertieseditor>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

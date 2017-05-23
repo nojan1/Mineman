@@ -3,7 +3,7 @@
 </div>
 
 <div *ngIf="authService.isLoggedIn" class="clearfix">
-    <button class="btn btn-default pull-right" (click)="addServer($event)">
+    <button class="btn btn-default pull-right" [routerLink]="['/server/add']">
         New server
     </button>
 </div>

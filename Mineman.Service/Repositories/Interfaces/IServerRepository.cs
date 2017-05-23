@@ -8,8 +8,9 @@ namespace Mineman.Service.Repositories
 {
     public interface IServerRepository
     {
-        Task Add(ServerAddModel serverAddModel);
+        Task<Server> Add(ServerAddModel serverAddModel);
         Task<ICollection<ServerWithDockerInfo>> GetServers();
+        Task<ServerWithDockerInfo> GetWithDockerInfo(int id);
         Task<Server> Get(int id);
         Task<Server> UpdateConfiguration(int id, ServerConfigurationModel configurationModel);
     }

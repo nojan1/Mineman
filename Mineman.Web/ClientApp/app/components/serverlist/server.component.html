@@ -1,11 +1,25 @@
-﻿<div class="serverrow well well-sm serveroffline" *ngIf="serverWithInfo.server && !serverWithInfo.isAlive">
-    <h3>{{serverWithInfo.server.description}} - offline</h3>
+﻿<div class="serverrow well well-sm serveroffline" *ngIf="!serverWithInfo.isAlive">
+    <div *ngIf="authService.isLoggedIn" class="pull-right">
+        <button class="btn btn-info btn-sm" [routerLink]="['/server', serverWithInfo.id]">
+            <span class="glyphicon glyphicon-wrench"></span>
+        </button>
+    </div>
+    <div class="clearfix"></div>
+
+    <h3>{{serverWithInfo.description}} - offline</h3>
     <p>
         <!--<i>{{serverWithInfo.motd}}</i>-->
     </p>
 </div>
 
 <div class="serverrow well" *ngIf="serverWithInfo.isAlive">
+    <div *ngIf="authService.isLoggedIn" class="pull-right">
+        <button class="btn btn-info btn-sm" [routerLink]="['/server', serverWithInfo.id]">
+            <span class="glyphicon glyphicon-wrench"></span>
+        </button>
+    </div>
+    <div class="clearfix"></div>
+
     <div class="media">
         <div class="pull-left media-object thumbnail" style="width:160px; height:160px;line-height:150px;position:relative;padding:10px;margin-right:10px;">
             <img (src)="serverWithInfo.imagelist" style="position:absolute; top:0;right:0;left:0;bottom:0;margin:auto; width:150px;max-height:150px;" />
@@ -14,11 +28,11 @@
         <div class="media-body">
             <div class="media-header">
                 <h3 style="float:left;margin:0;padding:0;">
-                    {{serverWithInfo.server.description}}
+                    {{serverWithInfo.description}}
                 </h3>
 
                 <h4 style="float:right;margin:0;padding:0;">
-                    <!--{{serverWithInfo.domainname}} ({{serverWithInfo.address}})--> @ Port: {{serverWithInfo.server.mainPort}}
+                    <!--{{serverWithInfo.domainname}} ({{serverWithInfo.address}})--> @ Port: {{serverWithInfo.mainPort}}
                 </h4>
 
                 <div style="clear:both;"></div>

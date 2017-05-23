@@ -31,9 +31,6 @@
     <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
     <ProjectReference Include="..\Mineman.Service\Mineman.Service.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\Client\" />
-  </ItemGroup>
   <Target Name="RunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
     <Exec Command="npm install" />

@@ -18,4 +18,10 @@ export class ErrorService {
 
         return Observable.empty();
     }
+
+    public catchObservableSilent<T>(error: any, caught: Observable<T>) {
+        console.error(error);
+
+        return Observable.empty();
+    }
 }

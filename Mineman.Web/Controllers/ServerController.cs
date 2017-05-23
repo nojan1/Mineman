@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service;
+using Mineman.Service.Helpers;
 using Mineman.Service.Managers;
 using Mineman.Service.MinecraftQuery;
 using Mineman.Service.Repositories;
+using Mineman.Web.Models.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +32,24 @@ namespace Mineman.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
-            return Ok(await _serverRepository.GetServers());
+            var servers = (await _serverRepository.GetServers())
+                                   .Select(x => x.Server.ToClientServer(x.IsAlive));
+
+            return Ok(servers);
+        }
+
+        [HttpGet("{serverId:int}")]
+        public async Task<IActionResult> Get(int serverId)
+        {
+            var serverWithDockerInfo = await _serverRepository.GetWithDockerInfo(serverId);
+            var properties = ServerPropertiesSerializer.GetUserChangableProperties();
+
+            return Ok(new
+            {
+                server = serverWithDockerInfo.Server,
+                isAlive = serverWithDockerInfo.IsAlive,
+                properties = properties
+            });
         }
 
         [HttpPost("")]
@@ -41,9 +60,9 @@ namespace Mineman.Web.Controllers
                 return BadRequest();
             }
 
-            await _serverRepository.Add(inputModel);
+            var server = await _serverRepository.Add(inputModel);
 
-            return Ok();
+            return Ok(server);
         }
 
         [HttpPost("start/{serverId:int}")]

@@ -81,5 +81,13 @@ namespace Mineman.Service.Helpers
 
             return existingProperties;
         }
+
+        public static ICollection<string> GetUserChangableProperties()
+        {
+            return typeof(ServerProperties).GetProperties()
+                        .Where(p => p.GetCustomAttribute(typeof(NonUserChangableProperty)) == null)
+                        .Select(p => p.Name)
+                        .ToList();
+        }
     }
 }

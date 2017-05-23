@@ -3,12 +3,12 @@
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-    selector: 'server',
-    templateUrl: './server.component.html',
-    styleUrls: ['./server.component.css']
+    selector: 'propertieseditor',
+    templateUrl: './propertieseditor.component.html'
 })
-export class ServerComponent implements OnInit {
-    @Input() serverWithInfo: any;
+export class PropertiesEditorComponent implements OnInit {
+    @Input() userProperties: string[];
+    @Input() propertyValues: any;
 
     constructor(public authService: AuthService) { }
 

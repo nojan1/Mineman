@@ -10,8 +10,12 @@ import { ImageListComponent } from './components/images/imagelist.component';
 import { AddImageComponent } from './components/images/addimage.component';
 import { WorldListComponent } from './components/worlds/worldlist.component';
 import { AddWorldComponent } from './components/worlds/addworld.component';
+import { AddServerComponent } from './components/servers/addserver.component';
+import { ServerDetailsComponent } from './components/servers/serverdetails.component';
+import { PropertiesEditorComponent } from './components/servers/propertieseditor.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
+import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
 
 import { ServerService } from './services/servers.service';
 import { AuthService } from './services/auth.service';
@@ -32,10 +36,14 @@ import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
         ServerListComponent,
         ServerComponent,
         JoinPipe,
+        NormalizedPropertyNamePipe,
         ImageListComponent,
         AddImageComponent,
         WorldListComponent,
-        AddWorldComponent
+        AddWorldComponent,
+        AddServerComponent,
+        ServerDetailsComponent,
+        PropertiesEditorComponent
     ],
     providers: [
         ServerService,
@@ -54,6 +62,8 @@ import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
             { path: 'images/add', component: AddImageComponent },
             { path: 'worlds', component: WorldListComponent },
             { path: 'worlds/add', component: AddWorldComponent },
+            { path: 'server/add', component: AddServerComponent },
+            { path: 'server/:id', component: ServerDetailsComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),
         AuthModule,

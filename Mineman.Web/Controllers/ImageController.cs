@@ -36,9 +36,9 @@ namespace Mineman.Web.Controllers
                 return BadRequest();
             }
 
-            await _imageRepository.Add(inputModel);
+            var image = await _imageRepository.Add(inputModel);
 
-            return Ok();
+            return Ok(image);
         }
     }
 }

@@ -7,8 +7,8 @@ namespace Mineman.Service.Repositories
 {
     public interface IWorldRepository
     {
-        Task AddEmpty(string displayName);
-        Task AddFromZip(string displayName, ZipArchive zipArchive);
+        Task<World> AddEmpty(string displayName);
+        Task<World> AddFromZip(string displayName, ZipArchive zipArchive);
         ICollection<World> Get();
     }
 }
