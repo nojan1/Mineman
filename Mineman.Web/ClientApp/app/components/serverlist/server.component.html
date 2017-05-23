@@ -37,7 +37,7 @@
 
                 <div style="clear:both;"></div>
                 <p>
-                    <i>{{serverWithInfo.server.motd}}</i>
+                    <i>{{serverWithInfo.motd}}</i>
                 </p>
             </div>
             <div *ngIf="serverWithInfo.isAlive && serverWithInfo.query">
@@ -58,7 +58,7 @@
                 </div>
             </div>
 
-            <div *ngIf="serverWithInfo.server.mods">
+            <div *ngIf="serverWithInfo.mods">
                 <p>
                     <b>Mods in use: </b>
                     <i ng-repeat="mod in serverWithInfo.modlist">

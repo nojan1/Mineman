@@ -7,13 +7,13 @@
                 Save changes
             </button>
         </li>
-        <li>
-            <button class="btn btn-success" (click)="setServerRunningState(true)" *ngIf="!isAlive" [disabled]="!serverConfigurationForm.form.pristine">
+        <li *ngIf="!isAlive">
+            <button class="btn btn-success" (click)="setServerRunningState(true)" [disabled]="!serverConfigurationForm.form.pristine">
                 Start
             </button>
         </li>
-        <li>
-            <button class="btn btn-danger pull-right" (click)="setServerRunningState(false)" *ngIf="isAlive" [disabled]="!serverConfigurationForm.form.pristine">
+        <li *ngIf="isAlive">
+            <button class="btn btn-danger" (click)="setServerRunningState(false)" [disabled]="!serverConfigurationForm.form.pristine">
                 Stop
             </button>
         </li>

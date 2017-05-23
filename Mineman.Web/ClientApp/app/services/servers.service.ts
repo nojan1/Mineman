@@ -37,12 +37,12 @@ export class ServerService {
 
     public start(serverId: number): Observable<boolean> {
         return this.authHttp.post("/api/server/start/" + serverId, {})
-            .map(r => r.json().result);
+            .map(r => r.json().success);
     }
 
     public stop(serverId: number): Observable<boolean> {
         return this.authHttp.post("/api/server/stop/" + serverId, {})
-            .map(r => r.json().result);
+            .map(r => r.json().success);
     }
 
     public updateConfiguration(serverId: number, serverConfigurationModel: any) {

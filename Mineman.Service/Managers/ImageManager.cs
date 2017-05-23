@@ -55,7 +55,11 @@ namespace Mineman.Service.Managers
             var imageIdsFromDb = _context.Images.Select(i => i.DockerId).ToList();
             var imagesFromDocker = await DockerQueryHelper.GetImages(_dockerClient);
 
-            foreach(var image in imagesFromDocker.Where(i => !imageIdsFromDb.Any(i2 => i.ID == i2)))
+            foreach(var image in imagesFromDocker.Where(i => !imageIdsFromDb.Any(i2 =>
+            {
+                var cleanedId = i.ID.Substring(i.ID.IndexOf(':') + 1);
+                return cleanedId.StartsWith(i2);
+            })))
             {
                 _logger.LogInformation($"Found image in docker that was not found in database, removing. ImageID: {image.ID}");
 
