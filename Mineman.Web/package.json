@@ -44,6 +44,7 @@
     "webpack-hot-middleware": "^2.12.2",
     "webpack-merge": "^0.14.1",
     "zone.js": "^0.7.6",
-    "angular2-jwt": "^0.2.3"
+    "angular2-jwt": "^0.2.3",
+    "ng2-toastr": "^1.6.0"
   }
 }

@@ -27,6 +27,7 @@ import { AuthModule } from './auth.module';
 
 import { ModalModule } from 'angular2-modal';
 import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
+import { ToastModule } from 'ng2-toastr/ng2-toastr';
 
 @NgModule({
     bootstrap: [ AppComponent ],
@@ -68,7 +69,8 @@ import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
         ]),
         AuthModule,
         ModalModule.forRoot(),
-        BootstrapModalModule
+        BootstrapModalModule,
+        ToastModule.forRoot()
     ]
 })
 export class AppModule {

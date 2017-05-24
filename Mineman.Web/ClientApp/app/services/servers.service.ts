@@ -49,4 +49,9 @@ export class ServerService {
         return this.authHttp.post("/api/server/" + serverId, serverConfigurationModel)
             .map(r => r.json());
     }
+
+    public rconCommand(serverId: number, command: string): Observable<string> {
+        return this.authHttp.post("/api/server/rcon/" + serverId, { Command: command })
+            .map(r => r.json().Response);
+    }
 }

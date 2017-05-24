@@ -141,7 +141,6 @@ namespace Mineman.Service.Managers
             finally
             {
                 //Cleanup
-                try { File.Delete(zipPath); } catch { }
                 try { File.Delete(dockerArchivePath); } catch { }
                 try { Directory.Delete(workingDir, true);  } catch { }
             }

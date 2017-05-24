@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Mineman.Service.Helpers;
 using Mineman.Service.Managers;
+using Mineman.Service.Rcon;
 using Mineman.Service.Repositories;
 using System;
 using System.Collections.Generic;
@@ -17,18 +18,21 @@ namespace Mineman.Service
         private readonly IImageRepository _imageRepository;
         private readonly IServerRepository _serverRepository;
         private readonly ILogger<BackgroundService> _logger;
+        private readonly IConnectionPool _connectionPool;
 
         public BackgroundService(IServerManager serverManager,
                                  IImageManager imageManager,
                                  IImageRepository imageRepository,
                                  IServerRepository serverRepository,
-                                 ILogger<BackgroundService> logger)
+                                 ILogger<BackgroundService> logger,
+                                 IConnectionPool connectionPool)
         {
             _serverManager = serverManager;
             _imageManager = imageManager;
             _imageRepository = imageRepository;
             _serverRepository = serverRepository;
             _logger = logger;
+            _connectionPool = connectionPool;
         }
 
         public void Start()
@@ -59,6 +63,7 @@ namespace Mineman.Service
             {
                 await StartIdleContainers();
                 await CreateImages();
+                _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
 
                 await Task.Delay(TimeSpan.FromSeconds(30));
             }

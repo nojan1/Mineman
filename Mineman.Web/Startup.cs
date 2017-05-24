@@ -27,6 +27,7 @@ using Mineman.Web.Middleware;
 using Mineman.Web.Models;
 using Mineman.Web.Helpers;
 using System.IdentityModel.Tokens.Jwt;
+using Mineman.Service.Rcon;
 
 namespace WebApplicationBasic
 {
@@ -75,6 +76,7 @@ namespace WebApplicationBasic
             services.AddTransient<IServerManager, ServerManager>();
             services.AddTransient<IImageManager, ImageManager>();
             services.AddTransient<IMinecraftServerQuery, MinecraftServerQuery>();
+            services.AddTransient<IConnectionPool, ConnectionPool>();
 
             services.AddTransient<BackgroundService>();
 
