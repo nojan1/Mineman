@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mineman.Common", "Mineman.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mineman.Service.Tests", "Mineman.Service.Tests\Mineman.Service.Tests.csproj", "{9C72565D-3A66-46EA-90A1-78C2553045A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mineman.WorldParsing", "Mineman.WorldParsing\Mineman.WorldParsing.csproj", "{790432BC-B491-465F-AB9A-F3A107240415}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mineman.WorldParsing.Tests", "Mineman.WorldParsing.Tests\Mineman.WorldParsing.Tests.csproj", "{DF1100D2-05DA-4EB6-B67B-4EAF1594E530}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{9C72565D-3A66-46EA-90A1-78C2553045A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C72565D-3A66-46EA-90A1-78C2553045A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C72565D-3A66-46EA-90A1-78C2553045A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{790432BC-B491-465F-AB9A-F3A107240415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{790432BC-B491-465F-AB9A-F3A107240415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{790432BC-B491-465F-AB9A-F3A107240415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{790432BC-B491-465F-AB9A-F3A107240415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF1100D2-05DA-4EB6-B67B-4EAF1594E530}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF1100D2-05DA-4EB6-B67B-4EAF1594E530}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF1100D2-05DA-4EB6-B67B-4EAF1594E530}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF1100D2-05DA-4EB6-B67B-4EAF1594E530}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
