@@ -1,101 +1,102 @@
-﻿using Mineman.WorldParsing.Blocks;
+﻿using ImageSharp;
+using Mineman.WorldParsing.Blocks;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace Mineman.WorldParsing.MapTools
 {
     public class MapRenderer2D
     {
-        private static readonly Dictionary<BiomeType, Color> biomeColorTable = new Dictionary<BiomeType, Color>()
+        private static readonly Dictionary<BiomeType, Rgba32> biomeColorTable = new Dictionary<BiomeType, Rgba32>()
         {
-            { BiomeType.Ocean, Color.Blue },
-            { BiomeType.Plains, Color.Lime },
-            { BiomeType.Desert, Color.LightYellow },
-            { BiomeType.Extreme_Hills, Color.Gray },
-            { BiomeType.Forest, Color.DarkGreen },
-            { BiomeType.Taiga, Color.LightSteelBlue },
-            { BiomeType.Swampland, Color.Brown },
-            { BiomeType.River, Color.LightBlue },
-            { BiomeType.Hell, Color.Red },
-            { BiomeType.Sky, Color.WhiteSmoke },
-            { BiomeType.Frozen_Ocean, Color.Cyan },
-            { BiomeType.Frozen_River, Color.Cyan },
-            { BiomeType.Ice_Plains, Color.LightCyan },
-            { BiomeType.Ice_Mountains, Color.LightCyan },
-            { BiomeType.Mushroom_Island, Color.LightPink },
-            { BiomeType.Mushroom_Island_Shore, Color.LightPink },
-            { BiomeType.Beach, Color.SandyBrown },
-            { BiomeType.Desert_Hills, Color.Sienna },
-            { BiomeType.Forest_Hills, Color.Salmon },
-            { BiomeType.Taiga_Hills, Color.RosyBrown },
-            { BiomeType.Extreme_Hills_Edge, Color.Olive },
-            { BiomeType.Jungle, Color.Moccasin },
-            { BiomeType.Jungle_Hills, Color.NavajoWhite },
+            { BiomeType.Ocean, Rgba32.Blue },
+            { BiomeType.Plains, Rgba32.Lime },
+            { BiomeType.Desert, Rgba32.LightYellow },
+            { BiomeType.Extreme_Hills, Rgba32.Gray },
+            { BiomeType.Forest, Rgba32.DarkGreen },
+            { BiomeType.Taiga, Rgba32.LightSteelBlue },
+            { BiomeType.Swampland, Rgba32.Brown },
+            { BiomeType.River, Rgba32.LightBlue },
+            { BiomeType.Hell, Rgba32.Red },
+            { BiomeType.Sky, Rgba32.WhiteSmoke },
+            { BiomeType.Frozen_Ocean, Rgba32.Cyan },
+            { BiomeType.Frozen_River, Rgba32.Cyan },
+            { BiomeType.Ice_Plains, Rgba32.LightCyan },
+            { BiomeType.Ice_Mountains, Rgba32.LightCyan },
+            { BiomeType.Mushroom_Island, Rgba32.LightPink },
+            { BiomeType.Mushroom_Island_Shore, Rgba32.LightPink },
+            { BiomeType.Beach, Rgba32.SandyBrown },
+            { BiomeType.Desert_Hills, Rgba32.Sienna },
+            { BiomeType.Forest_Hills, Rgba32.Salmon },
+            { BiomeType.Taiga_Hills, Rgba32.RosyBrown },
+            { BiomeType.Extreme_Hills_Edge, Rgba32.Olive },
+            { BiomeType.Jungle, Rgba32.Moccasin },
+            { BiomeType.Jungle_Hills, Rgba32.NavajoWhite },
         };
 
-        private static readonly Dictionary<int, Color> blockColorTable = new Dictionary<int, Color>()
+        private static readonly Dictionary<int, Rgba32> blockColorTable = new Dictionary<int, Rgba32>()
         {
-            {1, Color.Gray},
-            {2, Color.LightGreen },
-            {3, Color.Brown },
-            {4, Color.DarkGray },
-            {5, Color.SaddleBrown },
-            {8, Color.Blue },
-            {9, Color.Blue },
-            {10, Color.OrangeRed },
-            {11, Color.Orange },
-            {12, Color.Beige },
-            {13, Color.SlateGray },
-            {16, Color.DimGray },
-            {18, Color.DarkGreen },
-            {31, Color.LightGreen },
-            {32, Color.Beige },
-            {35, Color.CornflowerBlue },
-            {37, Color.LightGoldenrodYellow },
-            {38, Color.MistyRose },
-            {43, Color.Gray },
-            {44, Color.Gray },
-            {48, Color.PaleGreen },
-            {50, Color.Yellow },
-            {53, Color.BurlyWood },
-            {59, Color.ForestGreen },
-            {67, Color.Gray },
-            {78, Color.GhostWhite },
-            {79, Color.LightCyan },
-            {80, Color.GhostWhite },
-            {85, Color.Brown },
-            {98, Color.LightSlateGray },
-            {107, Color.Brown },
-            {108, Color.Crimson },
-            {109, Color.Gray },
-            {111, Color.Olive },
-            {114, Color.Maroon },
-            {125, Color.Brown },
-            {126, Color.Brown },
-            {128, Color.SandyBrown },
-            {134, Color.BurlyWood },
-            {135, Color.BurlyWood },
-            {136, Color.BurlyWood },
-            {156, Color.Gainsboro },
-            {163, Color.BurlyWood },
-            {164, Color.BurlyWood },
-            {174, Color.Cyan },
-            {175, Color.LawnGreen },
-            {180, Color.IndianRed },
-            {183, Color.Brown },
-            {184, Color.Brown },
-            {185, Color.Brown },
-            {186, Color.Brown },
-            {187, Color.Brown },
-            {188, Color.Brown },
-            {189, Color.Brown },
-            {190, Color.Brown },
-            {191, Color.Brown },
-            {192, Color.Brown },
-            {212, Color.DarkCyan }
+            {1, Rgba32.Gray},
+            {2, Rgba32.LightGreen },
+            {3, Rgba32.Sienna },
+            {4, Rgba32.DarkGray },
+            {5, Rgba32.SaddleBrown },
+            {8, Rgba32.Blue },
+            {9, Rgba32.Blue },
+            {10, Rgba32.OrangeRed },
+            {11, Rgba32.Orange },
+            {12, Rgba32.Beige },
+            {13, Rgba32.SlateGray },
+            {16, Rgba32.DimGray },
+            {18, Rgba32.DarkGreen },
+            {31, Rgba32.LightGreen },
+            {32, Rgba32.Beige },
+            {35, Rgba32.CornflowerBlue },
+            {37, Rgba32.LightGoldenrodYellow },
+            {38, Rgba32.MistyRose },
+            {43, Rgba32.Gray },
+            {44, Rgba32.Gray },
+            {48, Rgba32.PaleGreen },
+            {50, Rgba32.Yellow },
+            {53, Rgba32.BurlyWood },
+            {59, Rgba32.ForestGreen },
+            {67, Rgba32.Gray },
+            {78, Rgba32.GhostWhite },
+            {79, Rgba32.LightCyan },
+            {80, Rgba32.GhostWhite },
+            {85, Rgba32.Brown },
+            {98, Rgba32.LightSlateGray },
+            {107, Rgba32.Brown },
+            {108, Rgba32.Crimson },
+            {109, Rgba32.Gray },
+            {111, Rgba32.Olive },
+            {114, Rgba32.Maroon },
+            {125, Rgba32.Brown },
+            {126, Rgba32.Brown },
+            {128, Rgba32.SandyBrown },
+            {134, Rgba32.BurlyWood },
+            {135, Rgba32.BurlyWood },
+            {136, Rgba32.BurlyWood },
+            {156, Rgba32.Gainsboro },
+            {163, Rgba32.BurlyWood },
+            {164, Rgba32.BurlyWood },
+            {174, Rgba32.Cyan },
+            {175, Rgba32.LawnGreen },
+            {180, Rgba32.IndianRed },
+            {183, Rgba32.Brown },
+            {184, Rgba32.Brown },
+            {185, Rgba32.Brown },
+            {186, Rgba32.Brown },
+            {187, Rgba32.Brown },
+            {188, Rgba32.Brown },
+            {189, Rgba32.Brown },
+            {190, Rgba32.Brown },
+            {191, Rgba32.Brown },
+            {192, Rgba32.Brown },
+            {212, Rgba32.DarkCyan }
         };
 
         private readonly WorldParser _parser;
@@ -105,10 +106,10 @@ namespace Mineman.WorldParsing.MapTools
             _parser = parser;
         }
 
-        public Bitmap GenerateBlockBitmap()
+        public Image<Rgba32> GenerateBlockBitmap()
         {
             var regions = _parser.Regions.ToList();
-
+            
             var minX = regions.Min(r => r.X);
             var maxX = regions.Max(r => r.X);
             var minZ = regions.Min(r => r.Z);
@@ -117,7 +118,7 @@ namespace Mineman.WorldParsing.MapTools
             var imageWidth = (maxX - minX + 1) * 32 * 16;
             var imageHeight = (maxZ - minZ + 1) * 32 * 16;
 
-            var bitmap = new Bitmap(imageWidth, imageHeight);
+            var bitmap = new Image<Rgba32>(imageWidth, imageHeight);
             var populated = new List<(int, int)>(16 * 16);
 
             var biomes = new List<BiomeType>();
@@ -140,14 +141,14 @@ namespace Mineman.WorldParsing.MapTools
                             if(!biomes.Contains(block.Biome)) biomes.Add(block.Biome);
 
                             var color = blockColorTable.ContainsKey(block.Id) ? blockColorTable[block.Id]
-                                                                              : Color.HotPink;
+                                                                              : Rgba32.HotPink;
                             
                             populated.Add((block.WorldX, block.WorldZ));
 
                             var dX = minX * 32 * 16;
                             var dZ = minZ * 32 * 16;
 
-                            bitmap.SetPixel(block.WorldX - dX, block.WorldZ - dZ, color);
+                            bitmap[block.WorldX - dX, block.WorldZ - dZ] = color;
                         }
 
                         if (populated.Count == (16 * 16))
@@ -161,7 +162,7 @@ namespace Mineman.WorldParsing.MapTools
             return bitmap;
         }
 
-        public Bitmap GenerateBiomeBitmap()
+        public Image<Rgba32> GenerateBiomeBitmap()
         {
             var regions = _parser.Regions.ToList();
 
@@ -173,7 +174,7 @@ namespace Mineman.WorldParsing.MapTools
             var imageWidth = (maxX - minX + 1) * 32 * 16;
             var imageHeight = (maxZ - minZ + 1) * 32 * 16;
 
-            var bitmap = new Bitmap(imageWidth, imageHeight);
+            var bitmap = new Image<Rgba32>(imageWidth, imageHeight);
 
             foreach (var region in regions)
             {
@@ -183,20 +184,20 @@ namespace Mineman.WorldParsing.MapTools
                     {
                         foreach (var block in chunk.Blocks)
                         {
-                            Color color;
+                            Rgba32 color;
                             if (biomeColorTable.ContainsKey(block.Biome))
                             {
                                 color = biomeColorTable[block.Biome];
                             }
                             else
                             {
-                                color = Color.Aquamarine;
+                                color = Rgba32.Aquamarine;
                             }
 
                             var dX = minX * 32 * 16;
                             var dZ = minZ * 32 * 16;
 
-                            bitmap.SetPixel(block.WorldX - dX, block.WorldZ - dZ, color);
+                            //bitmap.SetPixel(block.WorldX - dX, block.WorldZ - dZ, color);
                         }
                     }
                 }
