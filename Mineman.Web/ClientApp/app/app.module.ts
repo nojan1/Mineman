@@ -13,6 +13,7 @@ import { AddWorldComponent } from './components/worlds/addworld.component';
 import { AddServerComponent } from './components/servers/addserver.component';
 import { ServerDetailsComponent } from './components/servers/serverdetails.component';
 import { PropertiesEditorComponent } from './components/servers/propertieseditor.component';
+import { LoginComponent } from './components/navmenu/login.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
@@ -44,7 +45,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         AddWorldComponent,
         AddServerComponent,
         ServerDetailsComponent,
-        PropertiesEditorComponent
+        PropertiesEditorComponent,
+        LoginComponent
     ],
     providers: [
         ServerService,
@@ -65,6 +67,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
             { path: 'worlds/add', component: AddWorldComponent },
             { path: 'server/add', component: AddServerComponent },
             { path: 'server/:id', component: ServerDetailsComponent },
+            { path: 'login', component: LoginComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),
         AuthModule,

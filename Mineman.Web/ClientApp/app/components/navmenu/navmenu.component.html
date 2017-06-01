@@ -25,8 +25,8 @@
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
-                <li *ngIf="!authService.isLoggedIn"><a (click)="doLogin()">Log in</a></li>
-                <li *ngIf="authService.isLoggedIn"><a (click)="authService.Logout()">Log out</a></li>
+                <li *ngIf="!authService.isLoggedIn"><a [routerLink]="['/login']">Log in</a></li>
+                <li *ngIf="authService.isLoggedIn"><a href="javascript:void(0)" (click)="authService.Logout()">Log out</a></li>
             </ul>
         </div>
     </div>

@@ -9,8 +9,4 @@ import { AuthService } from '../../services/auth.service';
 })
 export class NavMenuComponent {
     constructor(public authService: AuthService) { } 
-
-    public doLogin() {
-        this.authService.Login("admin", "admin");
-    }
 }
