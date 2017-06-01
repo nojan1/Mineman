@@ -1563,9 +1563,12 @@ namespace Mineman.WorldParsing.Blocks
             }
         }
 
+        public byte BlockLight { get; private set; }
+        public byte SkyLight { get; private set; }
+
         private byte _data;
 
-        public Block(int id, int y, int z, int x, byte biomeId, byte data)
+        public Block(int id, int y, int z, int x, byte biomeId, byte data, byte blockLight, byte skyLight)
         {
             BaseId = id;
             WorldX = x;
@@ -1573,6 +1576,8 @@ namespace Mineman.WorldParsing.Blocks
             WorldY = y;
 
             Biome = (BiomeType)biomeId;
+            BlockLight = blockLight;
+            SkyLight = skyLight;
 
             _data = data;
         }

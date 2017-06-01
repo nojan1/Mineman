@@ -1,8 +1,18 @@
 ﻿<div class="serverrow well" [class.serveroffline]="!serverWithInfo.isAlive">
     <div *ngIf="authService.isLoggedIn" class="pull-right">
-        <button class="btn btn-info btn-sm" [routerLink]="['/server', serverWithInfo.id]">
-            <span class="glyphicon glyphicon-wrench"></span>
-        </button>
+
+        <ul class="list-inline">
+            <li *ngIf="serverWithInfo.isAlive">
+                <button class="btn btn-info btn-sm" [routerLink]="['/server/log', serverWithInfo.id]">
+                    <span class="glyphicon glyphicon-time"></span>
+                </button>
+            </li>
+            <li>
+                <button class="btn btn-info btn-sm" [routerLink]="['/server', serverWithInfo.id]">
+                    <span class="glyphicon glyphicon-wrench"></span>
+                </button>
+            </li>
+        </ul>
     </div>
     <div class="clearfix"></div>
 
@@ -37,13 +47,10 @@
             </div>
             <div *ngIf="serverWithInfo.isAlive && serverWithInfo.query">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <b>Server software: </b> {{serverWithInfo.query.responseFields["game_id"]}} {{serverWithInfo.query.responseFields["version"]}}
                     </div>
-                    <div class="col-md-4">
-                        <b>Level name: </b> {{serverWithInfo.query.responseFields["map"]}}
-                    </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <b>Players: </b> {{serverWithInfo.query.numPlayers}} / {{serverWithInfo.query.maxPlayers}}
                     </div>
                 </div>

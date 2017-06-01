@@ -1,0 +1,8 @@
+﻿<div *ngIf="logData">
+    <h2>Log data as of {{logData.timestamp | date:'medium'}}</h2>
+
+    <hr />
+
+    <div class="logdata-container" [innerHtml]="logData.log | logformatting">
+    </div>
+</div>

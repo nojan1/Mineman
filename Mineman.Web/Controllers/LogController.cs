@@ -8,6 +8,7 @@ using Docker.DotNet;
 using System.Threading;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
 
 namespace Mineman.Web.Controllers
 {
@@ -38,15 +39,35 @@ namespace Mineman.Web.Controllers
                     new Docker.DotNet.Models.ContainerLogsParameters
                     {
                         ShowStderr = true,
-                        ShowStdout = true,
+                        ShowStdout = true
                     }, CancellationToken.None);
 
             using (var reader = new StreamReader(response))
             {
+                var data = await reader.ReadToEndAsync();
+
+                var log = string.Join("\n", data.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                              .Select(l =>
+                              {
+                                  if(l.Length > 8)
+                                  {
+                                      var bytes = l.ToCharArray()
+                                                   .Select(c => (byte)Convert.ToInt32(c))
+                                                   .Skip(8)
+                                                   .ToArray();
+
+                                      return Encoding.ASCII.GetString(bytes);
+                                  }
+                                  else
+                                  {
+                                      return l;
+                                  }
+                              }));
+
                 return Ok(new
                 {
                     Timestamp = DateTimeOffset.Now,
-                    Log = await reader.ReadToEndAsync()
+                    Log = log
                 });
             }
         }

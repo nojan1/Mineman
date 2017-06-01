@@ -14,9 +14,11 @@ import { AddServerComponent } from './components/servers/addserver.component';
 import { ServerDetailsComponent } from './components/servers/serverdetails.component';
 import { PropertiesEditorComponent } from './components/servers/propertieseditor.component';
 import { LoginComponent } from './components/navmenu/login.component';
+import { LogViewerComponent } from './components/servers/logviewer.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
+import { LogFormattingPipe } from './components/pipes/logformatting.pipe';
 
 import { ServerService } from './services/servers.service';
 import { AuthService } from './services/auth.service';
@@ -39,6 +41,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         ServerComponent,
         JoinPipe,
         NormalizedPropertyNamePipe,
+        LogFormattingPipe,
         ImageListComponent,
         AddImageComponent,
         WorldListComponent,
@@ -46,7 +49,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         AddServerComponent,
         ServerDetailsComponent,
         PropertiesEditorComponent,
-        LoginComponent
+        LoginComponent,
+        LogViewerComponent
     ],
     providers: [
         ServerService,
@@ -67,6 +71,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
             { path: 'worlds/add', component: AddWorldComponent },
             { path: 'server/add', component: AddServerComponent },
             { path: 'server/:id', component: ServerDetailsComponent },
+            { path: 'server/log/:id', component: LogViewerComponent },
             { path: 'login', component: LoginComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),

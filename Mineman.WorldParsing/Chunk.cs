@@ -54,7 +54,7 @@ namespace Mineman.WorldParsing
 
                     byte biomeId = _biomeIds[i % 256];
 
-                    yield return BlockFactory.CreateFromData(blockId, y, z, x, biomeId, _data[i]);
+                    yield return BlockFactory.CreateFromId(blockId, y, z, x, biomeId, _data[i], _blockLight[i], _skylight[i]);
                 }
             }
         }
