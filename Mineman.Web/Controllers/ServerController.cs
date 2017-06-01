@@ -40,7 +40,8 @@ namespace Mineman.Web.Controllers
                                    {
                                        var mapPaths = _worldRepository.GetMapImages(x.Server.ID).Result;
                                        return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath));
-                                   });
+                                   })
+                                   .OrderBy(c => c.IsAlive);
 
             return Ok(servers);
         }
