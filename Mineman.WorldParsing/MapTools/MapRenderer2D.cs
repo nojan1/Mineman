@@ -37,6 +37,8 @@ namespace Mineman.WorldParsing.MapTools
 
             var biomes = new List<BiomeType>();
 
+            int actualMinX = Int32.MaxValue, actualMaxX = 0, actualMinZ = Int32.MaxValue, actualMaxZ = 0;
+
             foreach (var region in regions)
             {
                 foreach (var column in region.Columns)
@@ -61,7 +63,15 @@ namespace Mineman.WorldParsing.MapTools
                             var dX = minX * 32 * 16;
                             var dZ = minZ * 32 * 16;
 
-                            bitmap[block.WorldX - dX, block.WorldZ - dZ] = color;
+                            var x = block.WorldX - dX;
+                            var z = block.WorldZ - dZ;
+
+                            actualMinX = Math.Min(actualMinX, x);
+                            actualMaxX = Math.Max(actualMaxX, x);
+                            actualMinZ = Math.Min(actualMinZ, z);
+                            actualMaxZ = Math.Max(actualMaxZ, z);
+
+                            bitmap[x, z] = color;
                         }
 
                         if (populated.Count == (16 * 16))
@@ -72,7 +82,18 @@ namespace Mineman.WorldParsing.MapTools
                 }
             }
 
-            return bitmap;
+            actualMinX = Math.Max(0, actualMinX - 10);
+            actualMinZ = Math.Max(0, actualMinZ - 10);
+
+            var newWidth = Math.Min(bitmap.Width - actualMinX, actualMaxX - actualMinX + 10);
+            var newHeight = Math.Min(bitmap.Height - actualMinZ, actualMaxZ - actualMinZ + 10);
+
+            return bitmap.Crop(new Rectangle(
+                    actualMinX,
+                    actualMinZ,
+                    newWidth,
+                    newHeight
+                ));
         }
 
         public Image<Rgba32> GenerateBiomeBitmap()
