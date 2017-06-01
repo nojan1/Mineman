@@ -21,10 +21,37 @@
 }
 
 .thumbnail {
-    height: 200px;
-}    
+    width: 160px;
+    height: 160px;
+    line-height: 150px;
+    position: relative;
+    padding: 10px;
+    margin-right: 10px
+}
+
+.thumbnail img {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    margin: auto;
+    width: 150px;
+    max-height: 150px;
+}
 
 .thumbnail img .pull-right
 {
     width: 50px;
+}
+
+.serveroffline .thumbnail {
+    width: 100px;
+    height: 100px;
+    line-height: 90px;
+}
+
+.serveroffline .thumbnail img {
+    width:90px;
+    height:90px;
 }

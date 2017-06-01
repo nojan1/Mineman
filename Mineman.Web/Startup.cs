@@ -28,6 +28,8 @@ using Mineman.Web.Models;
 using Mineman.Web.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using Mineman.Service.Rcon;
+using Mineman.WorldParsing;
+using Mineman.WorldParsing.MapTools;
 
 namespace WebApplicationBasic
 {
@@ -78,6 +80,13 @@ namespace WebApplicationBasic
             services.AddTransient<IMinecraftServerQuery, MinecraftServerQuery>();
             services.AddTransient<IConnectionPool, ConnectionPool>();
 
+            services.AddTransient<ITextureProvider, TextureProvider>(service =>
+            {
+                return new TextureProvider(Configuration.GetValue<string>("MapGenerationResourcePackPath"));
+            });
+            services.AddTransient<IWorldParserFactory, WorldParserFactory>();
+            services.AddTransient<IMapRendererFactory, MapRendererFactory>();
+            services.AddTransient<MapGenerationService>();
             services.AddTransient<BackgroundService>();
 
             services.Configure<Mineman.Common.Models.Configuration>(Configuration);

@@ -1,18 +1,4 @@
-﻿<div class="serverrow well well-sm serveroffline" *ngIf="!serverWithInfo.isAlive">
-    <div *ngIf="authService.isLoggedIn" class="pull-right">
-        <button class="btn btn-info btn-sm" [routerLink]="['/server', serverWithInfo.id]">
-            <span class="glyphicon glyphicon-wrench"></span>
-        </button>
-    </div>
-    <div class="clearfix"></div>
-
-    <h3>{{serverWithInfo.description}} - offline</h3>
-    <p>
-        <!--<i>{{serverWithInfo.motd}}</i>-->
-    </p>
-</div>
-
-<div class="serverrow well" *ngIf="serverWithInfo.isAlive">
+﻿<div class="serverrow well" [class.serveroffline]="!serverWithInfo.isAlive">
     <div *ngIf="authService.isLoggedIn" class="pull-right">
         <button class="btn btn-info btn-sm" [routerLink]="['/server', serverWithInfo.id]">
             <span class="glyphicon glyphicon-wrench"></span>
@@ -21,11 +7,20 @@
     <div class="clearfix"></div>
 
     <div class="media">
-        <div class="pull-left media-object thumbnail" style="width:160px; height:160px;line-height:150px;position:relative;padding:10px;margin-right:10px;">
-            <img (src)="serverWithInfo.imagelist" style="position:absolute; top:0;right:0;left:0;bottom:0;margin:auto; width:150px;max-height:150px;" />
+        <div class="pull-left media-object thumbnail">
+            <img src="/api/server/map/{{serverWithInfo.id}}?thumb=true" *ngIf="serverWithInfo.hasMap" />
+            <img src="/images/default.png" *ngIf="!serverWithInfo.hasMap" />
         </div>
 
-        <div class="media-body">
+        <div class="media-body" *ngIf="!serverWithInfo.isAlive">
+            <div class="media-header">
+                <h3 style="float:left;margin:0;padding:0;">
+                    {{serverWithInfo.description}}
+                </h3>
+            </div>
+        </div>
+
+        <div class="media-body" *ngIf="serverWithInfo.isAlive">
             <div class="media-header">
                 <h3 style="float:left;margin:0;padding:0;">
                     {{serverWithInfo.description}}
@@ -66,10 +61,6 @@
                     </i>
                 </p>
             </div>
-
-            <!--<p ng-show="serverWithInfo.overview" style="bottom:0;">
-                <a href="overview/" target="_blank">Open overview (rendered {{serverWithInfo.overview.rendertime}})</a>
-            </p>-->
         </div>
     </div>
 </div>

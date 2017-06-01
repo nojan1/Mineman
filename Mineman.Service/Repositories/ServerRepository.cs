@@ -55,7 +55,7 @@ namespace Mineman.Service.Repositories
 
         public async Task<ICollection<ServerWithDockerInfo>> GetServers()
         {
-            var serversDb = _context.Servers.ToList();
+            var serversDb = _context.Servers.Include(s => s.World).ToList();
             var containerInfo = await DockerQueryHelper.GetContainers(_dockerClient);
 
             return serversDb.Select(s => {

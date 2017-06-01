@@ -11,6 +11,8 @@ using Mineman.Common.Models;
 using System.IO;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
+using Mineman.Service.Models;
+using Mineman.Service.Helpers;
 
 namespace Mineman.Service.Repositories
 {
@@ -32,6 +34,20 @@ namespace Mineman.Service.Repositories
         public ICollection<World> Get()
         {
             return _context.Worlds.ToList();
+        }
+
+        public async Task<MapImagePaths> GetMapImages(int worldId)
+        {
+            var world = await _context.Worlds.FindAsync(worldId);
+
+            var fullSizePath = _environment.BuildPath(_configuration.WorldDirectory, world.Path, "map.png");
+            var thumbPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path, "map_thumb.png");
+
+            return new MapImagePaths
+            {
+                MapPath = File.Exists(fullSizePath) ? fullSizePath : null,
+                MapThumbPath = File.Exists(thumbPath) ? thumbPath : null
+            };
         }
 
         public async Task<World> AddEmpty(string displayName)

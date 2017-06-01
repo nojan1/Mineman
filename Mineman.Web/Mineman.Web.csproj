@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
     <ProjectReference Include="..\Mineman.Service\Mineman.Service.csproj" />
+    <ProjectReference Include="..\Mineman.WorldParsing\Mineman.WorldParsing.csproj" />
   </ItemGroup>
   <Target Name="RunWebpack" AfterTargets="ComputeFilesToPublish">
     <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->

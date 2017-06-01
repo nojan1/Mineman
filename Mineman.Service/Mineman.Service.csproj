@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
+    <ProjectReference Include="..\Mineman.WorldParsing\Mineman.WorldParsing.csproj" />
   </ItemGroup>
 
   <ItemGroup>

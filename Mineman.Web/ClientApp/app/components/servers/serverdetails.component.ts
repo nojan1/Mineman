@@ -82,7 +82,7 @@ export class ServerDetailsComponent implements OnInit {
                 if (success) {
                     this.loadServer();
                 } else {
-                    //alert("Failed to change server run status");
+                    alert("Failed to change server run status");
                     this.toastr.error("Error when changing server run status");
                 }
             });
@@ -92,7 +92,7 @@ export class ServerDetailsComponent implements OnInit {
         this.serverService.updateConfiguration(this.serverId, this.serverConfigurationModel)
             .catch(this.errorService.catchObservable)
             .subscribe(() => {
-                //alert("Saved. TODO: Remove me!");
+                alert("Saved. TODO: Remove me!");
                 this.toastr.info("Server configuration saved successfully");
             });
     }

@@ -20,12 +20,15 @@ namespace Mineman.Web.Controllers
     {
         private readonly IServerRepository _serverRepository;
         private readonly IServerManager _serverManager;
+        private readonly IWorldRepository _worldRepository;
 
         public ServerController(IServerRepository serverRepository,
-                                IServerManager serverManager)
+                                IServerManager serverManager,
+                                IWorldRepository worldRepository)
         {
             _serverRepository = serverRepository;
             _serverManager = serverManager;
+            _worldRepository = worldRepository;
         }
 
         [HttpGet("")]
@@ -33,7 +36,11 @@ namespace Mineman.Web.Controllers
         public async Task<IActionResult> Get()
         {
             var servers = (await _serverRepository.GetServers())
-                                   .Select(x => x.Server.ToClientServer(x.IsAlive));
+                                   .Select(x =>
+                                   {
+                                       var mapPaths = _worldRepository.GetMapImages(x.Server.ID).Result;
+                                       return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath));
+                                   });
 
             return Ok(servers);
         }
@@ -43,9 +50,11 @@ namespace Mineman.Web.Controllers
         {
             var serverWithDockerInfo = await _serverRepository.GetWithDockerInfo(serverId);
             var properties = ServerPropertiesSerializer.GetUserChangableProperties();
+            var mapPaths = await _worldRepository.GetMapImages(serverWithDockerInfo.Server.World.ID);
 
             return Ok(new
             {
+                hasMapImage = !string.IsNullOrEmpty(mapPaths.MapPath),
                 server = serverWithDockerInfo.Server,
                 isAlive = serverWithDockerInfo.IsAlive,
                 properties = properties
@@ -110,6 +119,24 @@ namespace Mineman.Web.Controllers
             var server = await _serverRepository.UpdateConfiguration(serverId, configurationModel);
 
             return Ok(server);
+        }
+
+        [HttpGet("map/{serverId:int}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Map(int serverId, bool thumb)
+        {
+            var server = await _serverRepository.Get(serverId);
+            var paths = await _worldRepository.GetMapImages(server.World.ID);
+            var pathToUse = thumb ? paths.MapThumbPath : paths.MapPath;
+
+            if (string.IsNullOrEmpty(pathToUse))
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return File(System.IO.File.OpenRead(pathToUse), "image/png");
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Mineman.WorldParsing
 {
-    public class WorldParser
+    public class WorldParser : IWorldParser
     {
         private string _worldPath;
 

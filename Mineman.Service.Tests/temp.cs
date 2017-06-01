@@ -28,7 +28,7 @@ namespace Mineman.Service.Tests
 
 
 
-            var renderer = new MapRenderer2D(parser);
+            var renderer = new MapRenderer2D(parser, new TextureProvider(@"C:\Dev\Resources\default-resourcepack"));
             //var bitmap = renderer.GenerateBiomeBitmap();
             var bitmap = renderer.GenerateBlockBitmap();
             bitmap.Save(@"C:\Users\hedlundn\Desktop\map.png");

@@ -19,13 +19,18 @@ namespace Mineman.Service
         private readonly IServerRepository _serverRepository;
         private readonly ILogger<BackgroundService> _logger;
         private readonly IConnectionPool _connectionPool;
+        private readonly MapGenerationService _mapGenerationService;
+
+        private Task _mapGenerationTask;
+        private DateTimeOffset _nextMapGeneration;
 
         public BackgroundService(IServerManager serverManager,
                                  IImageManager imageManager,
                                  IImageRepository imageRepository,
                                  IServerRepository serverRepository,
                                  ILogger<BackgroundService> logger,
-                                 IConnectionPool connectionPool)
+                                 IConnectionPool connectionPool,
+                                 MapGenerationService mapGenerationService)
         {
             _serverManager = serverManager;
             _imageManager = imageManager;
@@ -33,6 +38,9 @@ namespace Mineman.Service
             _serverRepository = serverRepository;
             _logger = logger;
             _connectionPool = connectionPool;
+            _mapGenerationService = mapGenerationService;
+
+            _nextMapGeneration = DateTimeOffset.Now;
         }
 
         public void Start()
@@ -64,6 +72,14 @@ namespace Mineman.Service
                 await StartIdleContainers();
                 await CreateImages();
                 _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
+
+                if((_mapGenerationTask == null || _mapGenerationTask.IsCompleted) && _nextMapGeneration <= DateTimeOffset.Now)
+                {
+                    _mapGenerationTask = _mapGenerationService.GenerateForAllWorlds().ContinueWith((task) =>
+                    {
+                        _nextMapGeneration = DateTimeOffset.Now + TimeSpan.FromHours(2);
+                    });
+                }
 
                 await Task.Delay(TimeSpan.FromSeconds(30));
             }

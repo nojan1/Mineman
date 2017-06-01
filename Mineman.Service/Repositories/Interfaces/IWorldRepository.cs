@@ -2,6 +2,7 @@
 using System.IO.Compression;
 using System.Threading.Tasks;
 using Mineman.Common.Database.Models;
+using Mineman.Service.Models;
 
 namespace Mineman.Service.Repositories
 {
@@ -10,5 +11,6 @@ namespace Mineman.Service.Repositories
         Task<World> AddEmpty(string displayName);
         Task<World> AddFromZip(string displayName, ZipArchive zipArchive);
         ICollection<World> Get();
+        Task<MapImagePaths> GetMapImages(int worldId);
     }
 }

@@ -14,5 +14,6 @@ namespace Mineman.Common.Models
         public string ImageZipFileDirectory { get; set; }
         public string DockerfilePath { get; set; }
         public string QueryIpAddress { get; set; }
+        public string MapGenerationResourcePackPath { get; set; }
     }
 }
