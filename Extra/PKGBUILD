@@ -2,11 +2,11 @@
 pkgname=mineman-git
 pkgver=1.0
 pkgrel=1
-arch=(x86_64 x86)
+arch=(x86_64)
 url="https://github.com/nojan1/Mineman"
 license=('MIT')
-depends=(dotnet docker)
-makedepends=(nodejs-webpack)
+depends=(dotnet-cli docker)
+makedepends=(dotnet-sdk)
 backup=(opt/mineman/database.db)
 source=($pkgname::git+https://github.com/nojan1/Mineman)
 md5sums=('SKIP')
@@ -22,10 +22,6 @@ build() {
 	cd "$pkgname/Mineman.Web"
 	
 	dotnet restore
-	
-	webpack -p --config webpack.config.js
-	webpack -p --config webpack.config.vendor.js
-	
 	dotnet publish -c Release -f $framework -o build
 }
 
@@ -33,10 +29,10 @@ package() {
 	cd "$pkgname"
 	
 	mkdir -p $pkgdir/usr/lib/systemd/system/
-	install -m644 Extra/mimeman.service $pkgdir/usr/lib/systemd/system/
+	install -m644 Extra/mineman.service $pkgdir/usr/lib/systemd/system/
 	
 	mkdir -p $pkgdir/opt/mineman
-	install -m644 Mineman.Web/build/* $pkgdir/opt/mineman/
+	cp -r Mineman.Web/build/* $pkgdir/opt/mineman/
 	install -m644 Extra/appsettings.json $pkgdir/opt/mineman/
 	
 	mkdir -p $pkgdir/usr/share/mineman/world
