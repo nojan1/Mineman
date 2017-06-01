@@ -1,6 +1,7 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
@@ -153,6 +154,27 @@ namespace Mineman.Service.Managers
             image.DockerId = imageId;
 
             _context.Update(image);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task InvalidateMissingImages()
+        {
+            var imagesIdsFromDocker = (await DockerQueryHelper.GetImages(_dockerClient))
+                                           .Select(i => i.ID.Substring(i.ID.IndexOf(':') + 1));
+
+            var imagesFromDb = _context.Images.Include(i => i.BuildStatus)
+                                              .Where(i => i.DockerId != null);
+            
+            foreach(var image in imagesFromDb.Where(i => !imagesIdsFromDocker.Any(i2 => i2.StartsWith(i.DockerId))))
+            {
+                image.DockerId = null;
+
+                if(image.BuildStatus != null)
+                {
+                    _context.Remove(image.BuildStatus);
+                }
+            }
+
             await _context.SaveChangesAsync();
         }
 

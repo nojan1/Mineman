@@ -69,8 +69,10 @@ namespace Mineman.Service
 
             while (true)
             {
-                await StartIdleContainers();
+                await InvalidateMissingImages();
                 await CreateImages();
+                await StartIdleContainers();
+                
                 _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
 
                 if((_mapGenerationTask == null || _mapGenerationTask.IsCompleted) && _nextMapGeneration <= DateTimeOffset.Now)
@@ -82,6 +84,18 @@ namespace Mineman.Service
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(30));
+            }
+        }
+
+        private async Task InvalidateMissingImages()
+        {
+            try
+            {
+                await _imageManager.InvalidateMissingImages();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(new EventId(), e, $"BackgroundService: Error when invalidating missing images");
             }
         }
 
