@@ -103,7 +103,7 @@ namespace Mineman.Service
         {
             try
             {
-                foreach (var image in _imageRepository.GetImages().Where(i => i.BuildStatus == null))
+                foreach (var image in _imageRepository.GetImages().Where(i => i.BuildStatus == null || !i.BuildStatus.BuildSucceeded))
                 {
                     await _imageManager.CreateImage(image);
                 }

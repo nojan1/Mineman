@@ -83,9 +83,10 @@ namespace Mineman.Service.Repositories
         public async Task<Server> Get(int id)
         {
             return await _context.Servers.Include(s => s.Image)
-                                               .Include(s => s.World)
-                                               .Include(s => s.Mods)
-                                               .FirstOrDefaultAsync(s => s.ID == id);
+                                         .Include(s => s.Image.BuildStatus)
+                                         .Include(s => s.World)
+                                         .Include(s => s.Mods)
+                                         .FirstOrDefaultAsync(s => s.ID == id);
         }
 
         public async Task<Server> UpdateConfiguration(int id, ServerConfigurationModel configurationModel)

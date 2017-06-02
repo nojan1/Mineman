@@ -78,9 +78,12 @@ export class ServerDetailsComponent implements OnInit {
 
         result
             .catch(this.errorService.catchObservable)
-            .subscribe((success) => {
-                if (success) {
+            .subscribe((result) => {
+                if (result == 0) {
                     this.loadServer();
+                } else if (result == 2) {
+                    alert("It was not possible to perform the action at this time. Underlying resources not yet ready, will be automaticly performed later");
+                    this.toastr.warning("It was not possible to perform the action at this time. Underlying resources not yet ready, will be automaticly performed later");
                 } else {
                     alert("Failed to change server run status");
                     this.toastr.error("Error when changing server run status");

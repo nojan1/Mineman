@@ -30,7 +30,7 @@ namespace Mineman.Service.Models
                 }
                 else if(rawObject.status != null)
                 {
-                    Info = rawObject.status + " " + rawObject.progressDetail.ToString();
+                    Info = rawObject.status + " " + rawObject.progressDetail?.ToString();
                 }
                 else
                 {

@@ -17,6 +17,13 @@ using System.Threading.Tasks;
 
 namespace Mineman.Service.Managers
 {
+    public enum ServerStartResult
+    {
+        Success = 0,
+        Fail = 1,
+        LaterStart = 2
+    }
+
     public class ServerManager : IServerManager
     {
         private readonly DatabaseContext _context;
@@ -38,17 +45,39 @@ namespace Mineman.Service.Managers
             _logger = logger;
         }
 
-        public async Task<bool> Start(Server server)
+        public async Task<ServerStartResult> Start(Server server)
         {
             try
             {
                 _logger.LogInformation($"About to start server. ServerID: {server.ID}");
+
+                if (server.Image == null)
+                {
+                    throw new ArgumentNullException("No image has been set on server");
+                }
 
                 if (string.IsNullOrEmpty(server.ContainerID) ||
                    await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) == null ||
                    server.NeedsRecreate)
                 {
                     _logger.LogInformation($"Needs to create container before starting. ServerID: {server.ID}");
+
+                    if (server.Image.BuildStatus != null && !server.Image.BuildStatus.BuildSucceeded)
+                    {
+                        throw new Exception($"Unable to start server! Image build did not succeed. ServerID: {server.ID}");
+                    }
+
+                    if (string.IsNullOrEmpty(server.Image.DockerId) || server.Image.BuildStatus == null)
+                    {
+                        _logger.LogInformation($"Unable to create container underlying image not yet built. Marking server for later start. ServerID: {server.ID}");
+
+                        server.ShouldBeRunning = true;
+
+                        _context.Update(server);
+                        await _context.SaveChangesAsync();
+
+                        return ServerStartResult.LaterStart;
+                    }
 
                     if (!string.IsNullOrEmpty(server.ContainerID))
                     {
@@ -77,13 +106,13 @@ namespace Mineman.Service.Managers
                 _context.Update(server);
                 await _context.SaveChangesAsync();
 
-                return true;
+                return ServerStartResult.Success;
             }
             catch (Exception e)
             {
                 _logger.LogError(new EventId(), e, $"Error occurred when starting server. ServerID: {server.ID}");
 
-                return false;
+                return ServerStartResult.Fail;
             }
         }
 

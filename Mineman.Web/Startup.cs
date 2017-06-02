@@ -30,6 +30,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Mineman.Service.Rcon;
 using Mineman.WorldParsing;
 using Mineman.WorldParsing.MapTools;
+using Mineman.Service.Helpers;
 
 namespace WebApplicationBasic
 {
@@ -51,7 +52,9 @@ namespace WebApplicationBasic
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DatabaseContext>(options =>
-                options.UseSqlite(Configuration.GetConnectionString("MainDatabase")));
+            {
+                options.UseSqlite(Configuration.GetConnectionString("MainDatabase"));
+            });
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -96,27 +99,30 @@ namespace WebApplicationBasic
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, 
-                              IHostingEnvironment env, 
-                              ILoggerFactory loggerFactory, 
-                              DatabaseContext context, 
+        public void Configure(IApplicationBuilder app,
+                              IHostingEnvironment env,
+                              ILoggerFactory loggerFactory,
+                              DatabaseContext context,
                               BackgroundService service,
                               IOptions<Configuration> configuration,
                               UserManager<ApplicationUser> userManager)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions {
+                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
+                {
                     HotModuleReplacement = true
                 });
+
+                loggerFactory.AddDebug();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+
             }
 
             app.UseStaticFiles();
@@ -183,7 +189,7 @@ namespace WebApplicationBasic
 
         private void EnsureAdminUserExists(UserManager<ApplicationUser> userManager)
         {
-            if(userManager.Users.Count() == 0)
+            if (userManager.Users.Count() == 0)
             {
                 var user = new ApplicationUser { UserName = "admin" };
                 var result = userManager.CreateAsync(user, "admin").Result;
@@ -199,7 +205,7 @@ namespace WebApplicationBasic
         {
             Action<string> createDirectory = (path) =>
             {
-                var fullPath = Path.Combine(env.ContentRootPath, path);
+                var fullPath = env.BuildPath(path);
                 Directory.CreateDirectory(fullPath);
             };
 

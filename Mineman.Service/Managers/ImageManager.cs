@@ -53,7 +53,10 @@ namespace Mineman.Service.Managers
 
         public async Task RemoveUnsuedImages()
         {
-            var imageIdsFromDb = _context.Images.Select(i => i.DockerId).ToList();
+            var imageIdsFromDb = _context.Images.Select(i => i.DockerId)
+                                                .Where(id => id != null)
+                                                .ToList();
+
             var imagesFromDocker = await DockerQueryHelper.GetImages(_dockerClient);
 
             foreach(var image in imagesFromDocker.Where(i => !imageIdsFromDb.Any(i2 =>
@@ -79,9 +82,6 @@ namespace Mineman.Service.Managers
         public async Task CreateImage(Image image)
         {
             _logger.LogInformation($"About to create docker image for mineman image. ImageID: {image.ID}");
-
-            if (image.BuildStatus != null)
-                return;
 
             var dockerFilePath = _environment.BuildPath(_configuration.DockerfilePath);
             var workingDir = _environment.BuildPath(_configuration.ImageZipFileDirectory, Guid.NewGuid().ToString("N"));
@@ -163,7 +163,8 @@ namespace Mineman.Service.Managers
                                            .Select(i => i.ID.Substring(i.ID.IndexOf(':') + 1));
 
             var imagesFromDb = _context.Images.Include(i => i.BuildStatus)
-                                              .Where(i => i.DockerId != null);
+                                              .Where(i => i.DockerId != null)
+                                              .ToList();
             
             foreach(var image in imagesFromDb.Where(i => !imagesIdsFromDocker.Any(i2 => i2.StartsWith(i.DockerId))))
             {

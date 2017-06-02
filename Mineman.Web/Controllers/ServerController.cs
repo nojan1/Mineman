@@ -41,7 +41,8 @@ namespace Mineman.Web.Controllers
                                        var mapPaths = _worldRepository.GetMapImages(x.Server.ID).Result;
                                        return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath));
                                    })
-                                   .OrderBy(c => c.IsAlive);
+                                   .OrderBy(c => c.IsAlive)
+                                   .ToList();
 
             return Ok(servers);
         }
@@ -51,7 +52,8 @@ namespace Mineman.Web.Controllers
         {
             var serverWithDockerInfo = await _serverRepository.GetWithDockerInfo(serverId);
             var properties = ServerPropertiesSerializer.GetUserChangableProperties();
-            var mapPaths = await _worldRepository.GetMapImages(serverWithDockerInfo.Server.World.ID);
+            var mapPaths = serverWithDockerInfo.Server.World != null ? await _worldRepository.GetMapImages(serverWithDockerInfo.Server.World.ID)
+                                                                     : new Service.Models.MapImagePaths { MapPath = null };
 
             return Ok(new
             {
@@ -81,7 +83,7 @@ namespace Mineman.Web.Controllers
             var server = await _serverRepository.Get(serverId);
             var result = await _serverManager.Start(server);
 
-            return Ok(new { success = result });
+            return Ok(new { result = (int)result });
         }
 
         [HttpPost("stop/{serverId:int}")]

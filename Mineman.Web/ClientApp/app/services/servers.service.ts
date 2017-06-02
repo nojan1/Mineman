@@ -35,14 +35,14 @@ export class ServerService {
             .map(r => r.json());
     }
 
-    public start(serverId: number): Observable<boolean> {
+    public start(serverId: number): Observable<number> {
         return this.authHttp.post("/api/server/start/" + serverId, {})
-            .map(r => r.json().success);
+            .map(r => r.json().result);
     }
 
-    public stop(serverId: number): Observable<boolean> {
+    public stop(serverId: number): Observable<number> {
         return this.authHttp.post("/api/server/stop/" + serverId, {})
-            .map(r => r.json().success);
+            .map(r => r.json().success ? 0 : 1);
     }
 
     public updateConfiguration(serverId: number, serverConfigurationModel: any) {
