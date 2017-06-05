@@ -45,6 +45,7 @@
                     <i>{{serverWithInfo.motd}}</i>
                 </p>
             </div>
+            <loading-inline [isShown]="serverWithInfo.isAlive && !serverWithInfo.query" text="Querying server"></loading-inline>
             <div *ngIf="serverWithInfo.isAlive && serverWithInfo.query">
                 <div class="row">
                     <div class="col-md-6">

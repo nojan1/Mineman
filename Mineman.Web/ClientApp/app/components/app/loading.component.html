@@ -1,0 +1,10 @@
+﻿<div *ngIf="loadingService.loadingMessages.length > 0" id="loading">
+    <div id="loading-inner">
+        <img src="/images/spinner.gif" id="loading-image"/>
+        <div>
+            <span id="loading-text">
+                {{loadingService.loadingMessages | join:","}}
+            </span>
+        </div>
+    </div>
+</div>

@@ -15,6 +15,8 @@ import { ServerDetailsComponent } from './components/servers/serverdetails.compo
 import { PropertiesEditorComponent } from './components/servers/propertieseditor.component';
 import { LoginComponent } from './components/navmenu/login.component';
 import { LogViewerComponent } from './components/servers/logviewer.component';
+import { LoadingComponent } from './components/app/loading.component';
+import { LoadingInlineComponent } from './components/app/loading-inline.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
@@ -25,6 +27,7 @@ import { AuthService } from './services/auth.service';
 import { ImageService } from './services/image.service';
 import { ErrorService } from './services/error.service';
 import { WorldService } from './services/world.service';
+import { LoadingService } from './services/loading.service';
 
 import { AuthModule } from './auth.module';
 
@@ -50,14 +53,17 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         ServerDetailsComponent,
         PropertiesEditorComponent,
         LoginComponent,
-        LogViewerComponent
+        LogViewerComponent,
+        LoadingComponent,
+        LoadingInlineComponent
     ],
     providers: [
         ServerService,
         AuthService,
         ImageService,
         ErrorService,
-        WorldService
+        WorldService,
+        LoadingService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.

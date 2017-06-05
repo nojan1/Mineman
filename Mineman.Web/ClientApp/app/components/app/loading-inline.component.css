@@ -1,0 +1,18 @@
+﻿.loading-inline
+{
+    border:1px solid #EEEEEE;
+    border-radius:5px;
+    padding:5px;
+
+    line-height:30px;
+}
+
+.loading-inline img {
+    height:30px;
+}
+
+.loading-inline .media-body span {
+    vertical-align:middle;
+    font-size:1.3em;
+    font-style:italic;
+}

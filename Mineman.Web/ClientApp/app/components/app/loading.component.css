@@ -1,0 +1,37 @@
+﻿#loading{
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    background-color:#000000;
+    opacity:0.8;
+    z-index:1001;
+    width: 100%;
+    height: 100%;
+}
+
+#loading #loading-inner {
+    position:relative;
+    padding:0;
+    top:50%;
+    left:50%;
+    z-index:1002;
+    opacity:1;
+    text-align:center;
+
+    width:500px;
+    margin-left:-250px;
+    margin-top:-300px;
+}
+
+#loading #loading-text {
+    color:white;
+    font-size:2.5em;
+}
+
+#loading #loading-image {
+    opacity:1;
+    margin:0 auto;
+    width:300px;
+}

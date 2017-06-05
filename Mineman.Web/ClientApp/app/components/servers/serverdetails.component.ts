@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { WorldService } from '../../services/world.service';
 import { ErrorService } from '../../services/error.service';
 import { ServerService } from '../../services/servers.service';
+import { LoadingService } from '../../services/loading.service';
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
@@ -26,6 +27,7 @@ export class ServerDetailsComponent implements OnInit {
         private route: ActivatedRoute,
         private worldService: WorldService,
         private toastr: ToastsManager,
+        private loadingService: LoadingService,
         vcRef: ViewContainerRef) {
 
         this.toastr.setRootViewContainerRef(vcRef);
@@ -42,6 +44,8 @@ export class ServerDetailsComponent implements OnInit {
     }
 
     private loadServer() {
+        let loadingHandle = this.loadingService.setLoading("Loading serverdetails");
+
         this.serverService.getSingle(this.serverId)
             .catch(this.errorService.catchObservable)
             .subscribe(x => {
@@ -58,7 +62,12 @@ export class ServerDetailsComponent implements OnInit {
                     MemoryAllocationMB: x.server.memoryAllocationMB,
                     Properties: this.parseServerProperties(x.server.serializedProperties)
                 };
-            });
+            },
+            () => { },
+            () => {
+                this.loadingService.clearLoading(loadingHandle);
+            }
+        );
     }
 
     private parseServerProperties(rawData: string) {
@@ -76,6 +85,8 @@ export class ServerDetailsComponent implements OnInit {
         var result = running ? this.serverService.start(this.serverId)
                              : this.serverService.stop(this.serverId);
 
+        var loadingHandle = this.loadingService.setLoading(running ? "Starting server" : "Stopping server");
+
         result
             .catch(this.errorService.catchObservable)
             .subscribe((result) => {
@@ -88,15 +99,26 @@ export class ServerDetailsComponent implements OnInit {
                     alert("Failed to change server run status");
                     this.toastr.error("Error when changing server run status");
                 }
+            },
+            () => { },
+            () => {
+                this.loadingService.clearLoading(loadingHandle);
             });
     }
 
     public saveChanges() {
+        var loadingHandle = this.loadingService.setLoading("Saving changes");
+
         this.serverService.updateConfiguration(this.serverId, this.serverConfigurationModel)
             .catch(this.errorService.catchObservable)
             .subscribe(() => {
                 alert("Saved. TODO: Remove me!");
                 this.toastr.info("Server configuration saved successfully");
-            });
+            },
+            () => { },
+            () => {
+                this.loadingService.clearLoading(loadingHandle);
+            }
+        );
     }
 }

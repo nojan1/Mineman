@@ -1,7 +1,3 @@
-<div *ngIf="!servers" class="loading">
-    <img src="/images/spinner.gif" />
-</div>
-
 <div *ngIf="authService.isLoggedIn" class="clearfix">
     <button class="btn btn-default pull-right" [routerLink]="['/server/add']">
         New server

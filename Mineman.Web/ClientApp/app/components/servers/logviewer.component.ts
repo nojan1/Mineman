@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { ErrorService } from '../../services/error.service';
 import { ServerService } from '../../services/servers.service';
+import { LoadingService } from '../../services/loading.service';
 
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
@@ -19,7 +20,8 @@ export class LogViewerComponent implements OnInit {
     constructor(private serverService: ServerService,
         private errorService: ErrorService,
         private route: ActivatedRoute,
-        private toastr: ToastsManager) { }
+        private toastr: ToastsManager,
+        private loadingService: LoadingService) { }
 
     public ngOnInit() {
         this.route.params.subscribe(params => {
@@ -29,8 +31,14 @@ export class LogViewerComponent implements OnInit {
     }
 
     private loadLogData() {
+        let loadingHandle = this.loadingService.setLoading("Loading serverdetails");
+
         this.serverService.getLog(this.serverId)
             .catch(this.errorService.catchObservable)
-            .subscribe(data => this.logData = data);
+            .subscribe(data => this.logData = data,
+            () => { },
+            () => {
+                this.loadingService.clearLoading(loadingHandle);
+            });
     }
 }
