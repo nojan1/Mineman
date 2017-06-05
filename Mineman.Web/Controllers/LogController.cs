@@ -9,6 +9,7 @@ using System.Threading;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
+using Mineman.Web.Models.Client;
 
 namespace Mineman.Web.Controllers
 {
@@ -16,6 +17,8 @@ namespace Mineman.Web.Controllers
     [Authorize]
     public class LogController : Controller
     {
+        private const int MAX_LOGLINES = 1000;
+
         private readonly IServerRepository _serverRepository;
         private readonly IDockerClient _dockerClient;
 
@@ -39,30 +42,41 @@ namespace Mineman.Web.Controllers
                     new Docker.DotNet.Models.ContainerLogsParameters
                     {
                         ShowStderr = true,
-                        ShowStdout = true
+                        ShowStdout = true,
+                        Tail = MAX_LOGLINES.ToString(),
+                        Timestamps = true,
                     }, CancellationToken.None);
 
             using (var reader = new StreamReader(response))
             {
                 var data = await reader.ReadToEndAsync();
 
-                var log = string.Join("\n", data.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                var log = data.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
                               .Select(l =>
                               {
                                   if(l.Length > 8)
                                   {
-                                      var bytes = l.ToCharArray()
-                                                   .Select(c => (byte)Convert.ToInt32(c))
+                                      var chars = l.ToCharArray()
+                                                   //.Select(c => (byte)Convert.ToInt32(c))
                                                    .Skip(8)
                                                    .ToArray();
+                                      var newLine = new string(chars);
 
-                                      return Encoding.ASCII.GetString(bytes);
+                                      var parts = newLine.Split(' ');
+                                      DateTimeOffset.TryParse(parts[0], out DateTimeOffset parsedTimestamp);
+
+                                      return new ClientLogPost
+                                      {
+                                          Timestamp = parsedTimestamp,
+                                          Content = string.Join(" ", parts.Skip(1))
+                                      };
                                   }
                                   else
                                   {
-                                      return l;
+                                      return null;
                                   }
-                              }));
+                              })
+                            .Where(x => x != null);
 
                 return Ok(new
                 {

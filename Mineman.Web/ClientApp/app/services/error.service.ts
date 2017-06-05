@@ -16,12 +16,12 @@ export class ErrorService {
 
         alert(error);
 
-        return Observable.empty();
+        return Observable.throw(error);
     }
 
     public catchObservableSilent<T>(error: any, caught: Observable<T>) {
         console.error(error);
 
-        return Observable.empty();
+        return Observable.throw(error);
     }
 }

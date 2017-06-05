@@ -24,7 +24,7 @@ namespace Mineman.Service.Managers
         LaterStart = 2
     }
 
-    public class ServerManager : IServerManager
+    public class ServerManager : ResourceLockingManagerBase, IServerManager
     {
         private readonly DatabaseContext _context;
         private readonly IDockerClient _dockerClient;
@@ -47,100 +47,106 @@ namespace Mineman.Service.Managers
 
         public async Task<ServerStartResult> Start(Server server)
         {
-            try
+            using (ClaimResource(server.ID))
             {
-                _logger.LogInformation($"About to start server. ServerID: {server.ID}");
-
-                if (server.Image == null)
+                try
                 {
-                    throw new ArgumentNullException("No image has been set on server");
-                }
+                    _logger.LogInformation($"About to start server. ServerID: {server.ID}");
 
-                if (string.IsNullOrEmpty(server.ContainerID) ||
-                   await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) == null ||
-                   server.NeedsRecreate)
-                {
-                    _logger.LogInformation($"Needs to create container before starting. ServerID: {server.ID}");
-
-                    if (server.Image.BuildStatus != null && !server.Image.BuildStatus.BuildSucceeded)
+                    if (server.Image == null)
                     {
-                        throw new Exception($"Unable to start server! Image build did not succeed. ServerID: {server.ID}");
+                        throw new ArgumentNullException("No image has been set on server");
                     }
 
-                    if (string.IsNullOrEmpty(server.Image.DockerId) || server.Image.BuildStatus == null)
+                    if (string.IsNullOrEmpty(server.ContainerID) ||
+                       await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID) == null ||
+                       server.NeedsRecreate)
                     {
-                        _logger.LogInformation($"Unable to create container underlying image not yet built. Marking server for later start. ServerID: {server.ID}");
+                        _logger.LogInformation($"Needs to create container before starting. ServerID: {server.ID}");
 
-                        server.ShouldBeRunning = true;
+                        if (server.Image.BuildStatus != null && !server.Image.BuildStatus.BuildSucceeded)
+                        {
+                            throw new Exception($"Unable to start server! Image build did not succeed. ServerID: {server.ID}");
+                        }
 
-                        _context.Update(server);
-                        await _context.SaveChangesAsync();
+                        if (string.IsNullOrEmpty(server.Image.DockerId) || server.Image.BuildStatus == null)
+                        {
+                            _logger.LogInformation($"Unable to create container underlying image not yet built. Marking server for later start. ServerID: {server.ID}");
 
-                        return ServerStartResult.LaterStart;
+                            server.ShouldBeRunning = true;
+
+                            _context.Update(server);
+                            await _context.SaveChangesAsync();
+
+                            return ServerStartResult.LaterStart;
+                        }
+
+                        if (!string.IsNullOrEmpty(server.ContainerID))
+                        {
+                            await DestroyContainer(server);
+                        }
+
+                        await CreateContainer(server);
                     }
 
-                    if (!string.IsNullOrEmpty(server.ContainerID))
+                    WriteServerProperties(server);
+
+                    var result = await _dockerClient.Containers.StartContainerAsync(server.ContainerID, new ContainerStartParameters
                     {
-                        await DestroyContainer(server);
+
+                    });
+
+                    if (!result)
+                    {
+                        throw new Exception("Server failed to start");
                     }
 
-                    await CreateContainer(server);
+                    _logger.LogInformation($"Server started. ServerID: {server.ID}");
+
+                    server.ShouldBeRunning = true;
+
+                    _context.Update(server);
+                    await _context.SaveChangesAsync();
+
+                    return ServerStartResult.Success;
                 }
-
-                WriteServerProperties(server);
-
-                var result = await _dockerClient.Containers.StartContainerAsync(server.ContainerID, new ContainerStartParameters
+                catch (Exception e)
                 {
+                    _logger.LogError(new EventId(), e, $"Error occurred when starting server. ServerID: {server.ID}");
 
-                });
-
-                if (!result)
-                {
-                    throw new Exception("Server failed to start");
+                    return ServerStartResult.Fail;
                 }
-
-                _logger.LogInformation($"Server started. ServerID: {server.ID}");
-
-                server.ShouldBeRunning = true;
-
-                _context.Update(server);
-                await _context.SaveChangesAsync();
-
-                return ServerStartResult.Success;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(new EventId(), e, $"Error occurred when starting server. ServerID: {server.ID}");
-
-                return ServerStartResult.Fail;
             }
         }
 
         public async Task<bool> Stop(Server server)
         {
-            try
+            using (ClaimResource(server.ID))
             {
-                _logger.LogInformation($"About to stop server. ServerID: {server.ID}");
-
-                await Stop(server.ContainerID);
-
-                server.ShouldBeRunning = false;
-
-                if (server.NeedsRecreate)
+                try
                 {
-                    await DestroyContainer(server);
+                    _logger.LogInformation($"About to stop server. ServerID: {server.ID}");
+
+                    await Stop(server.ContainerID);
+
+                    server.ShouldBeRunning = false;
+
+                    if (server.NeedsRecreate)
+                    {
+                        await DestroyContainerInternal(server);
+                    }
+
+                    _context.Update(server);
+                    await _context.SaveChangesAsync();
+
+                    return true;
                 }
+                catch (Exception e)
+                {
+                    _logger.LogError(new EventId(), e, $"Error occurred when stopping server. ServerID: {server.ID}");
 
-                _context.Update(server);
-                await _context.SaveChangesAsync();
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(new EventId(), e, $"Error occurred when stopping server. ServerID: {server.ID}");
-
-                return false;
+                    return false;
+                }
             }
         }
 
@@ -165,6 +171,14 @@ namespace Mineman.Service.Managers
 
         public async Task<bool> DestroyContainer(Server server)
         {
+            using (ClaimResource(server.ID))
+            {
+                return await DestroyContainerInternal(server);
+            }
+        }
+
+        private async Task<bool> DestroyContainerInternal(Server server)
+        {
             try
             {
                 if (string.IsNullOrEmpty(server.ContainerID))
@@ -174,7 +188,7 @@ namespace Mineman.Service.Managers
                     return true;
                 }
 
-                await DestroyContainer(server.ContainerID);
+                await DestroyContainerInternal(server.ContainerID);
 
                 server.ContainerID = null;
 
@@ -191,7 +205,7 @@ namespace Mineman.Service.Managers
             }
         }
 
-        private async Task DestroyContainer(string containerID)
+        private async Task DestroyContainerInternal(string containerID)
         {
             _logger.LogInformation($"About to destroy container for server. ContainerID: {containerID}");
 
@@ -209,13 +223,13 @@ namespace Mineman.Service.Managers
 
         public async Task RemoveUnusedContainers()
         {
-            var containerIdsInDatabase = _context.Servers.Select(s => s.ContainerID).ToList();
+                var containerIdsInDatabase = _context.Servers.Select(s => s.ContainerID).ToList();
             var containersInDocker = await DockerQueryHelper.GetContainers(_dockerClient);
 
             foreach (var container in containersInDocker.Where(c => !containerIdsInDatabase.Any(id => c.ID == id)))
             {
                 _logger.LogInformation($"Container found in docker but doesn't exist in database, destroying. ContainerID: {container.ID}");
-                await DestroyContainer(container.ID);
+                await DestroyContainerInternal(container.ID);
             }
         }
 

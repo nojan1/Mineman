@@ -3,6 +3,12 @@
 
     <hr />
 
-    <div class="logdata-container" [innerHtml]="logData.log | logformatting">
+    <div class="logdata-container">
+        <ul class="list-unstyled">
+            <li *ngFor="let logObject of logData.log">
+                <span class="timestamp">{{logObject.timestamp | date:'short'}}</span>
+                <span class="content">{{logObject.content}}</span>
+            </li>
+        </ul>
     </div>
 </div>

@@ -166,6 +166,7 @@ namespace WebApplicationBasic
                 Audience = "ExampleAudience",
                 Issuer = "ExampleIssuer",
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
+                Expiration = TimeSpan.FromHours(1)
             };
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
 

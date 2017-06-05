@@ -2,3 +2,13 @@
 {
     margin-bottom:30px;
 }
+
+.logdata-container .timestamp {
+    color: deepskyblue;
+    font-style: italic;
+    font-size: smaller;
+}
+
+.logdata-container .content {
+    margin-left:10px;
+}

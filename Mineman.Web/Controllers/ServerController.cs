@@ -111,6 +111,15 @@ namespace Mineman.Web.Controllers
             }
         }
 
+        [HttpDelete("destroy/{serverId:int}")]
+        public async Task<IActionResult> Destroy(int serverId)
+        { 
+            var server = await _serverRepository.Get(serverId);
+            var result = await _serverManager.DestroyContainer(server);
+
+            return Ok(new { success = result });
+        }
+
         [HttpPost("{serverId:int}")]
         public async Task<IActionResult> UpdateConfiguration(int serverId, [FromBody]ServerConfigurationModel configurationModel)
         {

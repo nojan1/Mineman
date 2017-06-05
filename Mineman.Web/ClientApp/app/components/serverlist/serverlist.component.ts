@@ -24,17 +24,7 @@ export class ServerListComponent implements OnInit {
         this.serverService.getServers()
             .catch(this.errorService.catchObservable)
             .subscribe(servers => {
-                this.servers = servers
-
-                this.servers.forEach(s => {
-                    if (s.isAlive) {
-                        this.serverService.queryInfo(s.id)
-                            .catch(this.errorService.catchObservableSilent)
-                            .subscribe(query => {
-                                s.query = query;
-                            });
-                    }
-                });
+                this.servers = servers;
             },
             () => { },
             () => {

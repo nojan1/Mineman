@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { UniversalModule } from 'angular2-universal';
 import { FormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ import { LoginComponent } from './components/navmenu/login.component';
 import { LogViewerComponent } from './components/servers/logviewer.component';
 import { LoadingComponent } from './components/app/loading.component';
 import { LoadingInlineComponent } from './components/app/loading-inline.component';
+import { RconComponent } from './components/servers/rcon.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
@@ -55,9 +56,11 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         LoginComponent,
         LogViewerComponent,
         LoadingComponent,
+        RconComponent,
         LoadingInlineComponent
     ],
     providers: [
+        { provide: LOCALE_ID, useValue: "sv-SE" },
         ServerService,
         AuthService,
         ImageService,
@@ -78,6 +81,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
             { path: 'server/add', component: AddServerComponent },
             { path: 'server/:id', component: ServerDetailsComponent },
             { path: 'server/log/:id', component: LogViewerComponent },
+            { path: 'server/rcon/:id', component: RconComponent },
             { path: 'login', component: LoginComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),

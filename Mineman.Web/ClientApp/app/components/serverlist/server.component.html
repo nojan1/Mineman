@@ -3,13 +3,18 @@
 
         <ul class="list-inline">
             <li *ngIf="serverWithInfo.isAlive">
+                <button class="btn btn-info btn-sm" [routerLink]="['/server/rcon', serverWithInfo.id]">
+                    <span class="glyphicon glyphicon-console"></span>
+                </button>
+            </li>
+            <li *ngIf="serverWithInfo.isAlive">
                 <button class="btn btn-info btn-sm" [routerLink]="['/server/log', serverWithInfo.id]">
                     <span class="glyphicon glyphicon-time"></span>
                 </button>
             </li>
             <li>
                 <button class="btn btn-info btn-sm" [routerLink]="['/server', serverWithInfo.id]">
-                    <span class="glyphicon glyphicon-wrench"></span>
+                    <span class="glyphicon glyphicon-cog"></span>
                 </button>
             </li>
         </ul>
@@ -18,7 +23,9 @@
 
     <div class="media">
         <div class="pull-left media-object thumbnail">
-            <img src="/api/server/map/{{serverWithInfo.id}}?thumb=true" *ngIf="serverWithInfo.hasMap" />
+            <a href="/api/server/map/{{serverWithInfo.id}}" target="_blank" *ngIf="serverWithInfo.hasMap">
+                <img src="/api/server/map/{{serverWithInfo.id}}?thumb=true" />
+            </a>
             <img src="/images/default.png" *ngIf="!serverWithInfo.hasMap" />
         </div>
 
@@ -45,7 +52,8 @@
                     <i>{{serverWithInfo.motd}}</i>
                 </p>
             </div>
-            <loading-inline [isShown]="serverWithInfo.isAlive && !serverWithInfo.query" text="Querying server"></loading-inline>
+
+            <loading-inline [isShown]="serverWithInfo.isAlive && !serverWithInfo.query && !queryFailed" text="Querying server"></loading-inline>
             <div *ngIf="serverWithInfo.isAlive && serverWithInfo.query">
                 <div class="row">
                     <div class="col-md-6">

@@ -1,0 +1,21 @@
+﻿<h2>Rcon console commands</h2>
+<hr />
+
+<form (ngSubmit)="sendCommand($event, command.value);" #commandForm="ngForm">
+    <div class="row">
+        <div class="col-md-11">
+            <input type="text" class="form-control" #command autofocus/>
+        </div>
+        <div class="col-md-1">
+            <input type="submit" class="btn btn-primary" value="Send" />
+        </div>
+    </div>
+</form>
+
+<div class="rcon-response-container">
+    <ul class="list-unstyled">
+        <li *ngFor="let line of responses">
+            {{line}}
+        </li>
+    </ul>
+</div>

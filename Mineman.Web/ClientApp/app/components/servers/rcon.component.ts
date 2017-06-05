@@ -8,14 +8,14 @@ import { LoadingService } from '../../services/loading.service';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 @Component({
-    selector: 'logviewer',
-    templateUrl: './logviewer.component.html',
-    styleUrls: ['./logviewer.component.css']
+    selector: 'rcon',
+    templateUrl: './rcon.component.html',
+    styleUrls: ['./rcon.component.css']
 })
-export class LogViewerComponent implements OnInit {
+export class RconComponent implements OnInit {
 
     public serverId: number;
-    public logData: string;
+    public responses = [];
 
     constructor(private serverService: ServerService,
         private errorService: ErrorService,
@@ -26,19 +26,21 @@ export class LogViewerComponent implements OnInit {
     public ngOnInit() {
         this.route.params.subscribe(params => {
             this.serverId = +params["id"];
-            this.loadLogData();
         });
     }
 
-    private loadLogData() {
-        let loadingHandle = this.loadingService.setLoading("Loading log");
+    public sendCommand(event: Event, command: string) {
+        this.serverService.rconCommand(this.serverId, command)
+            .subscribe(response => {
+                this.insertResponse(response);
+            },
+            error => {
+                this.insertResponse("Error! " + error);
+            },
+            () => { });
+    }
 
-        this.serverService.getLog(this.serverId)
-            .catch(this.errorService.catchObservable)
-            .subscribe(data => this.logData = data,
-            () => { },
-            () => {
-                this.loadingService.clearLoading(loadingHandle);
-            });
+    private insertResponse(response: string) {
+        this.responses.unshift(response);
     }
 }
