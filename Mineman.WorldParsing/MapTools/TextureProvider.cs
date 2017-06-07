@@ -39,66 +39,66 @@ namespace Mineman.WorldParsing.MapTools
             { BiomeType.Jungle_Hills, Rgba32.NavajoWhite },
         };
 
-        private static readonly Dictionary<int, Rgba32> blockColorTable = new Dictionary<int, Rgba32>()
+        private static readonly Dictionary<string, Rgba32> blockColorTable = new Dictionary<string, Rgba32>()
         {
-            {1, Rgba32.Gray},
-            {2, Rgba32.LightGreen },
-            {3, Rgba32.Sienna },
-            {4, Rgba32.DarkGray },
-            {5, Rgba32.SaddleBrown },
-            {8, Rgba32.Blue },
-            {9, Rgba32.Blue },
-            {10, Rgba32.OrangeRed },
-            {11, Rgba32.Orange },
-            {12, Rgba32.Beige },
-            {13, Rgba32.SlateGray },
-            {16, Rgba32.DimGray },
-            {18, Rgba32.DarkGreen },
-            {31, Rgba32.LightGreen },
-            {32, Rgba32.Beige },
-            {35, Rgba32.CornflowerBlue },
-            {37, Rgba32.LightGoldenrodYellow },
-            {38, Rgba32.MistyRose },
-            {43, Rgba32.Gray },
-            {44, Rgba32.Gray },
-            {48, Rgba32.PaleGreen },
-            {50, Rgba32.Yellow },
-            {53, Rgba32.BurlyWood },
-            {59, Rgba32.ForestGreen },
-            {67, Rgba32.Gray },
-            {78, Rgba32.GhostWhite },
-            {79, Rgba32.LightCyan },
-            {80, Rgba32.GhostWhite },
-            {85, Rgba32.Brown },
-            {98, Rgba32.LightSlateGray },
-            {107, Rgba32.Brown },
-            {108, Rgba32.Crimson },
-            {109, Rgba32.Gray },
-            {111, Rgba32.Olive },
-            {114, Rgba32.Maroon },
-            {125, Rgba32.Brown },
-            {126, Rgba32.Brown },
-            {128, Rgba32.SandyBrown },
-            {134, Rgba32.BurlyWood },
-            {135, Rgba32.BurlyWood },
-            {136, Rgba32.BurlyWood },
-            {156, Rgba32.Gainsboro },
-            {163, Rgba32.BurlyWood },
-            {164, Rgba32.BurlyWood },
-            {174, Rgba32.Cyan },
-            {175, Rgba32.LawnGreen },
-            {180, Rgba32.IndianRed },
-            {183, Rgba32.Brown },
-            {184, Rgba32.Brown },
-            {185, Rgba32.Brown },
-            {186, Rgba32.Brown },
-            {187, Rgba32.Brown },
-            {188, Rgba32.Brown },
-            {189, Rgba32.Brown },
-            {190, Rgba32.Brown },
-            {191, Rgba32.Brown },
-            {192, Rgba32.Brown },
-            {212, Rgba32.DarkCyan }
+            {"1", Rgba32.Gray},
+            {"2", Rgba32.LightGreen },
+            {"3", Rgba32.Sienna },
+            {"4", Rgba32.DarkGray },
+            {"5", Rgba32.SaddleBrown },
+            {"8", Rgba32.Blue },
+            {"9", Rgba32.Blue },
+            {"10", Rgba32.OrangeRed },
+            {"11", Rgba32.Orange },
+            {"12", Rgba32.Beige },
+            {"13", Rgba32.SlateGray },
+            {"16", Rgba32.DimGray },
+            {"18", Rgba32.DarkGreen },
+            {"31", Rgba32.LightGreen },
+            {"32", Rgba32.Beige },
+            {"35", Rgba32.CornflowerBlue },
+            {"37", Rgba32.LightGoldenrodYellow },
+            {"38", Rgba32.MistyRose },
+            {"43", Rgba32.Gray },
+            {"44", Rgba32.Gray },
+            {"48", Rgba32.PaleGreen },
+            {"50", Rgba32.Yellow },
+            {"53", Rgba32.BurlyWood },
+            {"59", Rgba32.ForestGreen },
+            {"67", Rgba32.Gray },
+            {"78", Rgba32.GhostWhite },
+            {"79", Rgba32.LightCyan },
+            {"80", Rgba32.GhostWhite },
+            {"85", Rgba32.Brown },
+            {"98", Rgba32.LightSlateGray },
+            {"107", Rgba32.Brown },
+            {"108", Rgba32.Crimson },
+            {"109", Rgba32.Gray },
+            {"111", Rgba32.Olive },
+            {"114", Rgba32.Maroon },
+            {"125", Rgba32.Brown },
+            {"126", Rgba32.Brown },
+            {"128", Rgba32.SandyBrown },
+            {"134", Rgba32.BurlyWood },
+            {"135", Rgba32.BurlyWood },
+            {"136", Rgba32.BurlyWood },
+            {"156", Rgba32.Gainsboro },
+            {"163", Rgba32.BurlyWood },
+            {"164", Rgba32.BurlyWood },
+            {"174", Rgba32.Cyan },
+            {"175", Rgba32.LawnGreen },
+            {"180", Rgba32.IndianRed },
+            {"183", Rgba32.Brown },
+            {"184", Rgba32.Brown },
+            {"185", Rgba32.Brown },
+            {"186", Rgba32.Brown },
+            {"187", Rgba32.Brown },
+            {"188", Rgba32.Brown },
+            {"189", Rgba32.Brown },
+            {"190", Rgba32.Brown },
+            {"191", Rgba32.Brown },
+            {"192", Rgba32.Brown },
+            {"212", Rgba32.DarkCyan }
         };
 
         private string _resourcePackPath;
@@ -112,10 +112,18 @@ namespace Mineman.WorldParsing.MapTools
         {
             if (string.IsNullOrEmpty(_resourcePackPath))
             {
-                if (!blockColorTable.ContainsKey(block.BaseId))
+                if (blockColorTable.ContainsKey(block.Id))
+                {
+                    return blockColorTable[block.Id];
+                }
+                else if (blockColorTable.ContainsKey(block.BaseId.ToString()))
+                {
+                    return blockColorTable[block.BaseId.ToString()];
+                }
+                else
+                {
                     return fallbackColor;
-
-                return blockColorTable[block.BaseId];
+                }
             }
             throw new NotImplementedException();
             //Parse the resource stuff
@@ -155,6 +163,11 @@ namespace Mineman.WorldParsing.MapTools
             var variants = root["variants"];
 
             return new BlockState();
+        }
+
+        public Rgba32 GetBlocklightColor()
+        {
+            return Rgba32.DarkOrange;
         }
     }
 }
