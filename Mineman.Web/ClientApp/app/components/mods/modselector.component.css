@@ -1,0 +1,9 @@
+﻿.modselector-container .well {
+    min-height: 250px;
+    max-height: 300px;
+    overflow-y:scroll;
+}
+
+.modselector-container .well li {
+    cursor: pointer;
+}

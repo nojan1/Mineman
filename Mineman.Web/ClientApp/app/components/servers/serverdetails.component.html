@@ -51,9 +51,9 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Mods (Not implemented)</label>
-                            <input type="text" name="ModIDs" class="form-control" disabled />
+                        <div class="form-group" *ngIf="supportMods">
+                            <label>Mods</label>
+                            <modselector [(modIds)]="serverConfigurationModel.ModIds"></modselector>
                         </div>
                     </div>
                 </div>

@@ -18,10 +18,12 @@ import { LogViewerComponent } from './components/servers/logviewer.component';
 import { LoadingComponent } from './components/app/loading.component';
 import { LoadingInlineComponent } from './components/app/loading-inline.component';
 import { RconComponent } from './components/servers/rcon.component';
+import { ModSelector } from './components/mods/modselector.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
 import { LogFormattingPipe } from './components/pipes/logformatting.pipe';
+import { TruncatePipe } from './components/pipes/truncate.pipe';
 
 import { ServerService } from './services/servers.service';
 import { AuthService } from './services/auth.service';
@@ -30,6 +32,7 @@ import { ImageService } from './services/image.service';
 import { ErrorService } from './services/error.service';
 import { WorldService } from './services/world.service';
 import { LoadingService } from './services/loading.service';
+import { ModsService } from './services/mods.service';
 
 import { AuthModule } from './auth.module';
 
@@ -47,6 +50,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         JoinPipe,
         NormalizedPropertyNamePipe,
         LogFormattingPipe,
+        TruncatePipe,
         ImageListComponent,
         AddImageComponent,
         WorldListComponent,
@@ -58,7 +62,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         LogViewerComponent,
         LoadingComponent,
         RconComponent,
-        LoadingInlineComponent
+        LoadingInlineComponent,
+        ModSelector
     ],
     providers: [
         { provide: LOCALE_ID, useValue: "sv-SE" },
@@ -68,7 +73,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         ErrorService,
         WorldService,
         LoadingService,
-        AuthGuardService
+        AuthGuardService,
+        ModsService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.

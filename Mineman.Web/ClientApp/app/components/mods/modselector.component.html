@@ -1,0 +1,22 @@
+﻿<loading-inline [isShown]="!modLoadingComplete" text="Loading mods"></loading-inline>
+
+<div class="row modselector-container" *ngIf="modLoadingComplete">
+    <div class="col-md-6">
+        <div class="well">
+            <ul class="list-unstyled">
+                <li *ngFor="let mod of notSelectedMods()" (click)="addMod(mod)">
+                    {{mod.displayName | truncate: 25 : "."}} 
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="well">
+            <ul class="list-unstyled">
+                <li *ngFor="let mod of selectedMods()" (click)="removeMod(mod)">
+                    {{mod.displayName | truncate: 25 : "."}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
