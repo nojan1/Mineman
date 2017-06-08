@@ -27,15 +27,29 @@ namespace Mineman.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Get(int serverId)
         {
-            var server = await _serverRepository.Get(serverId);
-            if(server == null)
+            try
             {
-                return BadRequest();
+                var server = await _serverRepository.Get(serverId);
+                if (server == null)
+                {
+                    return BadRequest();
+                }
+
+                var queryInfo = await _minecraftServerQuery.GetInfo(server);
+
+                return Ok(new
+                {
+                    Result = "success",
+                    Data = queryInfo
+                });
             }
-
-            var queryInfo = await _minecraftServerQuery.GetInfo(server);
-
-            return Ok(queryInfo);
+            catch (TimeoutException)
+            {
+                return StatusCode(500, new
+                {
+                    Result = "timeout"
+                });
+            }
         }
     }
 }

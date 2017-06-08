@@ -25,6 +25,7 @@ import { LogFormattingPipe } from './components/pipes/logformatting.pipe';
 
 import { ServerService } from './services/servers.service';
 import { AuthService } from './services/auth.service';
+import { AuthGuardService } from './services/auth-guard.service';
 import { ImageService } from './services/image.service';
 import { ErrorService } from './services/error.service';
 import { WorldService } from './services/world.service';
@@ -66,7 +67,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         ImageService,
         ErrorService,
         WorldService,
-        LoadingService
+        LoadingService,
+        AuthGuardService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
@@ -74,14 +76,14 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         RouterModule.forRoot([
             { path: '', redirectTo: 'serverlist', pathMatch: 'full' },
             { path: 'serverlist', component: ServerListComponent },
-            { path: 'images', component: ImageListComponent },
-            { path: 'images/add', component: AddImageComponent },
-            { path: 'worlds', component: WorldListComponent },
-            { path: 'worlds/add', component: AddWorldComponent },
-            { path: 'server/add', component: AddServerComponent },
-            { path: 'server/:id', component: ServerDetailsComponent },
-            { path: 'server/log/:id', component: LogViewerComponent },
-            { path: 'server/rcon/:id', component: RconComponent },
+            { path: 'images', component: ImageListComponent, canActivate: [AuthGuardService] },
+            { path: 'images/add', component: AddImageComponent, canActivate: [AuthGuardService] },
+            { path: 'worlds', component: WorldListComponent, canActivate: [AuthGuardService] },
+            { path: 'worlds/add', component: AddWorldComponent, canActivate: [AuthGuardService] },
+            { path: 'server/add', component: AddServerComponent, canActivate: [AuthGuardService] },
+            { path: 'server/:id', component: ServerDetailsComponent, canActivate: [AuthGuardService] },
+            { path: 'server/log/:id', component: LogViewerComponent, canActivate: [AuthGuardService] },
+            { path: 'server/rcon/:id', component: RconComponent, canActivate: [AuthGuardService] },
             { path: 'login', component: LoginComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),

@@ -1,6 +1,7 @@
 ﻿import { Injectable, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Headers, Http, URLSearchParams, RequestOptions } from '@angular/http';
-import { AuthHttp, AuthConfig } from 'angular2-jwt';
+import { AuthHttp, AuthConfig, JwtHelper } from 'angular2-jwt';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -13,8 +14,11 @@ interface TokenResponse {
 export class AuthService {
     public isLoggedIn: boolean;
 
-    constructor(private http: Http) {
-        if (this.ReadToken()) {
+    constructor(private http: Http,
+                private jwtHelper: JwtHelper,
+                private router: Router) {
+
+        if (this.ReadToken() && !this.TokenExpired()) {
             this.isLoggedIn = true;
         }
     }
@@ -38,8 +42,10 @@ export class AuthService {
     }
 
     public GetToken = () => {
-        if (!this.isLoggedIn)
-            throw Error("Not logged in");
+        if (!this.isLoggedIn || this.TokenExpired()) {
+            console.info("Not logged in, redirecting to login page");
+            this.router.navigateByUrl("/login");
+        }
 
         return this.ReadToken();
     }
@@ -47,6 +53,10 @@ export class AuthService {
     public Logout = () => {
         this.WriteToken("");
         this.isLoggedIn = false;
+    }
+
+    private TokenExpired() {
+        return this.jwtHelper.isTokenExpired(this.ReadToken());
     }
 
     private WriteToken(token: string) {

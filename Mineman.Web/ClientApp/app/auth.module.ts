@@ -1,6 +1,6 @@
 ﻿import { NgModule } from '@angular/core';
 import { Http, RequestOptions } from '@angular/http';
-import { AuthHttp, AuthConfig } from 'angular2-jwt';
+import { AuthHttp, AuthConfig, JwtHelper } from 'angular2-jwt';
 
 import { AuthService } from './services/auth.service';
 
@@ -8,8 +8,11 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, auth
     return new AuthHttp(new AuthConfig({
         tokenName: 'token',
         tokenGetter: (() => authService.GetToken()),
-        globalHeaders: [/*{ 'Content-Type': 'application/json' }*/],
     }), http, options);
+}
+
+export function jwtHelperServiceFactory() {
+    return new JwtHelper();
 }
 
 @NgModule({
@@ -18,6 +21,10 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, auth
             provide: AuthHttp,
             useFactory: authHttpServiceFactory,
             deps: [Http, RequestOptions, AuthService]
+        },
+        {
+            provide: JwtHelper,
+            useFactory: jwtHelperServiceFactory
         }
     ]
 })

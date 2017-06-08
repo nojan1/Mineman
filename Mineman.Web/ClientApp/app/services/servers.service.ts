@@ -22,7 +22,7 @@ export class ServerService {
 
     public queryInfo(serverId: number) {
         return this.http.get("/api/server/query/" + serverId)
-            .map(r => r.json());
+            .map(r => r.json().data);
     }
 
     public getLog(serverId: number) {
@@ -53,5 +53,10 @@ export class ServerService {
     public rconCommand(serverId: number, command: string): Observable<string> {
         return this.authHttp.post("/api/server/rcon/" + serverId, { Command: command })
             .map(r => r.json().Response);
+    }
+
+    public destroyContainer(serverId: number) {
+        return this.authHttp.delete("/api/server/destroy/" + serverId)
+            .map(r => r.json().success);
     }
 }

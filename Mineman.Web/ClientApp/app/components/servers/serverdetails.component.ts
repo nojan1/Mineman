@@ -1,5 +1,6 @@
 ﻿import { Component, OnInit, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Modal } from 'angular2-modal/plugins/bootstrap';
 
 import { WorldService } from '../../services/world.service';
 import { ErrorService } from '../../services/error.service';
@@ -28,7 +29,8 @@ export class ServerDetailsComponent implements OnInit {
         private worldService: WorldService,
         private toastr: ToastsManager,
         private loadingService: LoadingService,
-        vcRef: ViewContainerRef) {
+        vcRef: ViewContainerRef,
+        private modal: Modal) {
 
         this.toastr.setRootViewContainerRef(vcRef);
     }
@@ -93,11 +95,13 @@ export class ServerDetailsComponent implements OnInit {
                 if (result == 0) {
                     this.loadServer();
                 } else if (result == 2) {
-                    alert("It was not possible to perform the action at this time. Underlying resources not yet ready, will be automaticly performed later");
-                    this.toastr.warning("It was not possible to perform the action at this time. Underlying resources not yet ready, will be automaticly performed later");
+                    this.modal.alert()
+                        .message("It was not possible to perform the action at this time. Underlying resources not yet ready, will be automaticly performed later")
+                        .open();
                 } else {
-                    alert("Failed to change server run status");
-                    this.toastr.error("Error when changing server run status");
+                    this.modal.alert()
+                        .message("Failed to change server run status")
+                        .open();
                 }
             },
             () => { },
@@ -112,7 +116,6 @@ export class ServerDetailsComponent implements OnInit {
         this.serverService.updateConfiguration(this.serverId, this.serverConfigurationModel)
             .catch(this.errorService.catchObservable)
             .subscribe(() => {
-                alert("Saved. TODO: Remove me!");
                 this.toastr.info("Server configuration saved successfully");
             },
             () => { },
@@ -120,5 +123,33 @@ export class ServerDetailsComponent implements OnInit {
                 this.loadingService.clearLoading(loadingHandle);
             }
         );
+    }
+
+    public destroyContainer() {
+        this.modal.confirm()
+            .title("Please confirm")
+            .message("Are you sure you wish to destoy the container?")
+            .open()
+            .then(val => {
+                var loadingHandle = this.loadingService.setLoading("Destroying container");
+
+                this.serverService.destroyContainer(this.serverId)
+                    .catch(this.errorService.catchObservable)
+                    .subscribe((success) => {
+                        if (success) {
+                            this.toastr.info("Container destroyed");
+                            this.loadServer();
+                        } else {
+                            this.modal.alert()
+                                .title("Error")
+                                .message("Container could not be destroyed")
+                                .open();
+                        }
+                    },
+                    () => { },
+                    () => {
+                        this.loadingService.clearLoading(loadingHandle);
+                    });
+            });
     }
 }
