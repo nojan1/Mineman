@@ -111,6 +111,20 @@ namespace Mineman.Web.Controllers
             }
         }
 
+        [HttpPost("imagechange/{serverId:int}")]
+        public async Task<IActionResult> ChangeImage(int serverId, int newImageId)
+        {
+            var server = await _serverRepository.GetWithDockerInfo(serverId);
+
+            if (server.IsAlive)
+            {
+                if (!await _serverManager.Stop(server.Server))
+                    throw new Exception($"Need to stop server before switching image but the server didn't stop. ServerId: {serverId}");
+            }
+
+            return Ok(_serverRepository.ChangeImage(serverId, newImageId));
+        }
+
         [HttpDelete("destroy/{serverId:int}")]
         public async Task<IActionResult> Destroy(int serverId)
         { 

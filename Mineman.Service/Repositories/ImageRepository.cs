@@ -31,7 +31,9 @@ namespace Mineman.Service.Repositories
 
         public ICollection<Image> GetImages()
         {
-            return _context.Images.Include(x => x.BuildStatus).ToList();
+            return _context.Images
+                           .Include(x => x.BuildStatus)
+                           .ToList();
         }
 
         public async Task<Image> Add(ImageAddModel imageAddModel)

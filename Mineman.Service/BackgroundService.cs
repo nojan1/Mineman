@@ -69,18 +69,25 @@ namespace Mineman.Service
 
             while (true)
             {
-                await InvalidateMissingImages();
-                await CreateImages();
-                await StartIdleContainers();
-                
-                _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
-
-                if((_mapGenerationTask == null || _mapGenerationTask.IsCompleted) && _nextMapGeneration <= DateTimeOffset.Now)
+                try
                 {
-                    _mapGenerationTask = _mapGenerationService.GenerateForAllWorlds().ContinueWith((task) =>
+                    await InvalidateMissingImages();
+                    await CreateImages();
+                    await StartIdleContainers();
+
+                    _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
+
+                    if ((_mapGenerationTask == null || _mapGenerationTask.IsCompleted) && _nextMapGeneration <= DateTimeOffset.Now)
                     {
-                        _nextMapGeneration = DateTimeOffset.Now + TimeSpan.FromHours(2);
-                    });
+                        _mapGenerationTask = _mapGenerationService.GenerateForAllWorlds().ContinueWith((task) =>
+                        {
+                            _nextMapGeneration = DateTimeOffset.Now + TimeSpan.FromHours(2);
+                        });
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(new EventId(), e, $"BackgroundService: Error in working loop");
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(30));
@@ -101,31 +108,36 @@ namespace Mineman.Service
 
         private async Task CreateImages()
         {
-            try
+            _logger.LogDebug("BackgroundService: About to create pending images");
+
+            foreach (var image in _imageRepository.GetImages().Where(i => i.BuildStatus == null || !i.BuildStatus.BuildSucceeded))
             {
-                foreach (var image in _imageRepository.GetImages().Where(i => i.BuildStatus == null || !i.BuildStatus.BuildSucceeded))
+                try
                 {
                     await _imageManager.CreateImage(image);
                 }
+                catch (Exception e)
+                {
+                    _logger.LogError(new EventId(), e, $"BackgroundService: Error when creating image");
+                }
             }
-            catch (Exception e)
-            {
-                _logger.LogError(new EventId(), e, $"BackgroundService: Error when creating images");
-            }
+
         }
 
         private async Task StartIdleContainers()
         {
-            try
+            _logger.LogDebug("BackgroundService: About to start idle servers");
+
+            foreach (var server in (await _serverRepository.GetServers()).Where(s => !s.IsAlive && s.Server.ShouldBeRunning))
             {
-                foreach (var server in (await _serverRepository.GetServers()).Where(s => !s.IsAlive && s.Server.ShouldBeRunning))
+                try
                 {
                     await _serverManager.Start(server.Server);
                 }
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(new EventId(), e, $"BackgroundService: Error when starting idle servers");
+                catch (Exception e)
+                {
+                    _logger.LogError(new EventId(), e, $"BackgroundService: Error when starting idle server");
+                }
             }
         }
     }

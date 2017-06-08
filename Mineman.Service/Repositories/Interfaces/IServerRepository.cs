@@ -13,5 +13,6 @@ namespace Mineman.Service.Repositories
         Task<ServerWithDockerInfo> GetWithDockerInfo(int id);
         Task<Server> Get(int id);
         Task<Server> UpdateConfiguration(int id, ServerConfigurationModel configurationModel);
+        Task<Server> ChangeImage(int serverId, int newImageId);
     }
 }

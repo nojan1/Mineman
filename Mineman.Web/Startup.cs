@@ -108,6 +108,7 @@ namespace WebApplicationBasic
                               UserManager<ApplicationUser> userManager)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
@@ -116,8 +117,6 @@ namespace WebApplicationBasic
                 {
                     HotModuleReplacement = true
                 });
-
-                loggerFactory.AddDebug();
             }
             else
             {

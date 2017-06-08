@@ -114,5 +114,16 @@ namespace Mineman.Service.Repositories
 
             return server;
         }
+
+        public async Task<Server> ChangeImage(int id, int newImageId)
+        {
+            var server = await Get(id);
+
+            server.Image = await _context.Images.FindAsync(newImageId);
+            _context.Update(server);
+            await _context.SaveChangesAsync();
+
+            return server;
+        }
     }
 }
