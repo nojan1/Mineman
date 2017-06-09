@@ -41,7 +41,7 @@ namespace Mineman.Web.Controllers
                                        var mapPaths = _worldRepository.GetMapImages(x.Server.ID).Result;
                                        return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath));
                                    })
-                                   .OrderBy(c => c.IsAlive)
+                                   .OrderByDescending(c => c.IsAlive)
                                    .ToList();
 
             return Ok(servers);
@@ -152,6 +152,9 @@ namespace Mineman.Web.Controllers
         public async Task<IActionResult> Map(int serverId, bool thumb)
         {
             var server = await _serverRepository.Get(serverId);
+            if (server.World == null)
+                return BadRequest();
+
             var paths = await _worldRepository.GetMapImages(server.World.ID);
             var pathToUse = thumb ? paths.MapThumbPath : paths.MapPath;
 

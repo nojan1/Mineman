@@ -31,6 +31,7 @@ using Mineman.Service.Rcon;
 using Mineman.WorldParsing;
 using Mineman.WorldParsing.MapTools;
 using Mineman.Service.Helpers;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace WebApplicationBasic
 {
@@ -96,6 +97,11 @@ namespace WebApplicationBasic
 
             // Add framework services.
             services.AddMvc();
+            services.Configure<FormOptions>(x =>
+            {
+                x.ValueLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

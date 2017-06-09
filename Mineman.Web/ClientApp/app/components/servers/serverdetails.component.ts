@@ -19,7 +19,7 @@ export class ServerDetailsComponent implements OnInit {
     public serverId: number;
     public serverConfigurationModel;
     public isAlive;
-    public supportMods;
+    public supportsMods;
 
     public userProperties = [];
     public propertyValues = {};
@@ -67,7 +67,7 @@ export class ServerDetailsComponent implements OnInit {
                     Properties: this.parseServerProperties(x.server.serializedProperties)
                 };
 
-                this.supportMods = x.server.image.supportMods;
+                this.supportsMods = x.server.image.supportsMods;
             },
             () => { },
             () => {

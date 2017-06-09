@@ -5,6 +5,7 @@ using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
 using Mineman.Common.Models.Client;
+using Mineman.Service.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,7 +40,7 @@ namespace Mineman.Service.Repositories
         public async Task<Image> Add(ImageAddModel imageAddModel)
         {
             string zipName = $"{Guid.NewGuid().ToString("N")}.zip";
-            string imageContentZipPath = Path.Combine(_environment.ContentRootPath, _configuration.ImageZipFileDirectory, zipName);
+            string imageContentZipPath = _environment.BuildPath(_configuration.ImageZipFileDirectory, zipName);
             
             using(var file = File.Create(imageContentZipPath))
             {

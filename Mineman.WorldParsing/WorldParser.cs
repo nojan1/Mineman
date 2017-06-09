@@ -24,8 +24,11 @@ namespace Mineman.WorldParsing
             _worldPath = worldPath;
 
             var regionDirectory = Path.Combine(worldPath, "region");
-            _regionFiles = Directory.EnumerateFiles(regionDirectory, "*.mca")
-                                    .ToList();
+
+            _regionFiles = Directory.Exists(regionDirectory)
+                               ? Directory.EnumerateFiles(regionDirectory, "*.mca")
+                                                    .ToList()
+                               : new List<string>();
         }
 
         private IEnumerable<Region> GetRegions()

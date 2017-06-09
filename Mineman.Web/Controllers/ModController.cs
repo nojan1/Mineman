@@ -38,14 +38,18 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Add([FromBody]ModAddModel inputModel)
+        public async Task<IActionResult> Add(ModAddModel inputModel)
         {
-            if (!ModelState.IsValid)
+            if (inputModel == null ||
+                !ModelState.IsValid ||
+                inputModel.ModFile.Count != 1)
             {
                 return BadRequest();
             }
 
-            return Ok();
+            var mod = await _modRepository.Add(inputModel);
+
+            return Ok(mod);
         }
 
         [HttpGet("download/{modId}")]

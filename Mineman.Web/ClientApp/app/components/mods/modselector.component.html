@@ -5,7 +5,7 @@
         <div class="well">
             <ul class="list-unstyled">
                 <li *ngFor="let mod of notSelectedMods()" (click)="addMod(mod)">
-                    {{mod.displayName | truncate: 25 : "."}} 
+                    {{mod.displayName | truncate: 28 : "."}} 
                 </li>
             </ul>
         </div>
@@ -14,7 +14,7 @@
         <div class="well">
             <ul class="list-unstyled">
                 <li *ngFor="let mod of selectedMods()" (click)="removeMod(mod)">
-                    {{mod.displayName | truncate: 25 : "."}}
+                    {{mod.displayName | truncate: 28 : "."}}
                 </li>
             </ul>
         </div>

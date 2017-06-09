@@ -5,6 +5,7 @@ import { ErrorService } from '../../services/error.service';
 import { ServerService } from '../../services/servers.service';
 import { ImageService } from '../../services/image.service';
 import { WorldService } from '../../services/world.service';
+import { LoadingService } from '../../services/loading.service';
 
 @Component({
     selector: 'addserver',
@@ -16,9 +17,10 @@ export class AddServerComponent implements OnInit {
         private errorService: ErrorService,
         private imageService: ImageService,
         private worldService: WorldService,
-        private router: Router) { }
+        private router: Router,
+        private loadingService: LoadingService) { }
 
-    public serverAddModel = { Description: "", WorldID: -1, ImageID: -1, ServerPort: 25565, MemoryAllocationMB: 1024};
+    public serverAddModel = { Description: "", WorldID: -1, ImageID: -1, ServerPort: 25565, MemoryAllocationMB: 1024, ModIds: []};
 
     public images: any[];
     public worlds: any[];
@@ -32,8 +34,16 @@ export class AddServerComponent implements OnInit {
     }
 
     public onSubmit() {
+        var loadingHandle = this.loadingService.setLoading("Adding server");
+
         this.serverService.add(this.serverAddModel)
             .catch(this.errorService.catchObservable)
-            .subscribe(() => this.router.navigateByUrl("/serverlist"));
+            .subscribe(() => {
+                this.router.navigateByUrl("/serverlist");
+            },
+            () => { },
+            () => {
+                this.loadingService.clearLoading(loadingHandle);
+            });
     }
 }

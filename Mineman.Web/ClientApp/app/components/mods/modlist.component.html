@@ -1,0 +1,31 @@
+﻿<h2 class="pull-left">Mods</h2>
+<button class="btn btn-default pull-right" [routerLink]="['/mods/add']">
+    New Mod
+</button>
+<div class="clearfix"></div>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let mod of mods">
+            <td>
+                {{mod.displayName}}
+            </td>
+            <td>
+                <button class="btn btn-danger disabled pull-right">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -14,5 +14,20 @@ export class ModsService {
         return this.authHttp.get("/api/mod")
             .map(r => r.json());
     }
-    
+
+    public Add(displayName: string, modFile: any) {
+        if (!this.authService.isLoggedIn) {
+            return Observable.throw("Not logged in");
+        }
+
+        var data = new FormData();
+        data.append("DisplayName", displayName);
+        data.append("ModFile", modFile);
+
+        var headers = new Headers({
+            "Authorization": "Bearer " + this.authService.GetToken()
+        });
+
+        return this.http.post("/api/mod", data, { headers: headers });
+    }
 }

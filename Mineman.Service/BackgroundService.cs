@@ -90,7 +90,7 @@ namespace Mineman.Service
                     _logger.LogError(new EventId(), e, $"BackgroundService: Error in working loop");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(30));
+                await Task.Delay(TimeSpan.FromMinutes(2));
             }
         }
 

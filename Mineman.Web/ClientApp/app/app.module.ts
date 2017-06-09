@@ -19,6 +19,8 @@ import { LoadingComponent } from './components/app/loading.component';
 import { LoadingInlineComponent } from './components/app/loading-inline.component';
 import { RconComponent } from './components/servers/rcon.component';
 import { ModSelector } from './components/mods/modselector.component';
+import { ModList } from './components/mods/modlist.component';
+import { AddMod } from './components/mods/addmod.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
@@ -63,7 +65,9 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         LoadingComponent,
         RconComponent,
         LoadingInlineComponent,
-        ModSelector
+        ModSelector,
+        ModList,
+        AddMod
     ],
     providers: [
         { provide: LOCALE_ID, useValue: "sv-SE" },
@@ -90,6 +94,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
             { path: 'server/:id', component: ServerDetailsComponent, canActivate: [AuthGuardService] },
             { path: 'server/log/:id', component: LogViewerComponent, canActivate: [AuthGuardService] },
             { path: 'server/rcon/:id', component: RconComponent, canActivate: [AuthGuardService] },
+            { path: 'mods', component: ModList, canActivate: [AuthGuardService] },
+            { path: 'mods/add', component: AddMod, canActivate: [AuthGuardService] },
             { path: 'login', component: LoginComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),

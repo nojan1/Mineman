@@ -31,8 +31,8 @@
         </select>
     </div>
     <div class="form-group">
-        <label>Mods (Not implemented)</label>
-        <input type="text" name="ModIDs" class="form-control" disabled />
+        <label>Mods</label>
+        <modselector [(modIds)]="serverAddModel.ModIds"></modselector>
     </div>
 
     <input type="submit" class="btn btn-primary" [disabled]="!addServerForm.form.valid" value="Create" />

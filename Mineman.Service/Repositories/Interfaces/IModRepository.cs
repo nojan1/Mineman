@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mineman.Common.Database.Models;
+using Mineman.Common.Models.Client;
 
 namespace Mineman.Service.Repositories
 {
@@ -8,5 +9,6 @@ namespace Mineman.Service.Repositories
     {
         Task<Mod> Get(int modId);
         ICollection<Mod> GetMods();
+        Task<Mod> Add(ModAddModel modAddModel);
     }
 }

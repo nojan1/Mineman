@@ -1,0 +1,15 @@
+﻿<h2>New Mod</h2>
+<hr />
+
+<form class="form" method="post" (ngSubmit)="onSubmit(); $event.preventDefault()" #addModForm="ngForm">
+    <div class="form-group">
+        <label>Display name</label>
+        <input type="text" name="DisplayName" class="form-control" [(ngModel)]="modAddModel.DisplayName" required />
+    </div>
+    <div class="form-group">
+        <label>Mod file (.jar)</label>
+        <input type="file" name="ModFile" (change)="fileEvent($event)" class="form-control" required />
+    </div>
+   
+    <input type="submit" class="btn btn-primary" [disabled]="!addModForm.form.valid" value="Create" />
+</form>

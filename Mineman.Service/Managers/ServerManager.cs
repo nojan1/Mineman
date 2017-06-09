@@ -83,7 +83,7 @@ namespace Mineman.Service.Managers
 
                         if (!string.IsNullOrEmpty(server.ContainerID))
                         {
-                            await DestroyContainer(server);
+                            await DestroyContainerInternal(server);
                         }
 
                         await CreateContainer(server);

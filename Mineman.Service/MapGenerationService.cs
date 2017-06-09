@@ -59,6 +59,13 @@ namespace Mineman.Service
 
                         var worldPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
                         var parser = _worldParserFactory.Create(worldPath);
+
+                        if (!parser.Regions.Any())
+                        {
+                            _logger.LogInformation($"World has no region files. Skipping. ID: {world.ID} Path: '{world.Path}'");
+                            continue;
+                        }
+
                         var renderer = _mapRendererFactory.Create2DRender(parser);
 
                         renderer.GenerateBlockBitmap()
