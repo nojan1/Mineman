@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.IO.Compression;
+using Mineman.WorldParsing.Entities;
+using System.Linq;
 
 namespace Mineman.WorldParsing
 {
@@ -39,6 +41,20 @@ namespace Mineman.WorldParsing
             TerrainPopulated = level.GetByteValue("TerrainPopulated") == 1;
         }
 
+        private BlockEntity[] _blockEntities;
+        public BlockEntity[] BlockEntities
+        {
+            get
+            {
+                if(_blockEntities == null)
+                {
+                    _blockEntities = GetBlockEntities();
+                }
+
+                return _blockEntities;
+            }
+        }
+
         public IEnumerable<Chunk> Chunks
         {
             get
@@ -47,9 +63,40 @@ namespace Mineman.WorldParsing
             }
         }
 
+        public IEnumerable<Entity> Entities
+        {
+            get
+            {
+                return GetEntities();
+            }
+        }
+
         public override string ToString()
         {
             return $"Chunk[{XWorld},{ZWorld}]";
+        }
+
+        private BlockEntity[] GetBlockEntities()
+        {
+            var level = _nbtDoc.Query<TagCompound>("Level");
+
+            return level.GetList("TileEntities") //Was called TileEntities in earlier minecraft version. Official name now is BlockEntities
+                    .Value
+                    .Cast<TagCompound>()
+                    .Select(t => new BlockEntity(t))
+                    .ToArray();
+        }
+
+        private IEnumerable<Entity> GetEntities()
+        {
+            var level = _nbtDoc.Query<TagCompound>("Level");
+
+            return level.GetList("Entities").Value
+                .Cast<TagCompound>()
+                .Select(entity =>
+                {
+                    return EntityFactory.CreateFromTag(entity);
+                });
         }
 
         private IEnumerable<Chunk> GetChunks()
@@ -65,8 +112,8 @@ namespace Mineman.WorldParsing
                 var skyLight = To4BitValues(section.GetByteArrayValue("SkyLight"));
                 var blockData = To4BitValues(section.GetByteArrayValue("Data"));
                 var addData = To4BitValues(section.GetByteArrayValue("AddBlocks"));
-
-                yield return new Chunk(y, ZWorld, XWorld, blockLight, blockIds, addData, blockData, skyLight, biomeIds);
+               
+                yield return new Chunk(y, ZWorld, XWorld, blockLight, blockIds, addData, blockData, skyLight, biomeIds, this);
             }
         }
 
@@ -109,7 +156,7 @@ namespace Mineman.WorldParsing
                 return null;
 
             var dataOut = new List<byte>(data.Length * 2);
-            for(int i = 0; i < data.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 dataOut.Add((byte)(data[i] >> 4));
                 dataOut.Add((byte)(data[i] & 0b00001111));

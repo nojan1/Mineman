@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mineman.WorldParsing.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -1568,7 +1569,7 @@ namespace Mineman.WorldParsing.Blocks
 
         private byte _data;
 
-        public Block(int id, int y, int z, int x, byte biomeId, byte data, byte blockLight, byte skyLight)
+        public Block(int id, int y, int z, int x, byte biomeId, byte data, byte blockLight, byte skyLight, BlockEntity blockEntity)
         {
             BaseId = id;
             WorldX = x;

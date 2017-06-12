@@ -1,4 +1,5 @@
 ﻿using Mineman.WorldParsing;
+using Mineman.WorldParsing.Blocks;
 using Mineman.WorldParsing.MapTools;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace Mineman.Service.Tests
 
             //var region = parser.Regions.First();
             //var column = region.Columns.First();
+            //var blockEnties = region.Columns.SelectMany(c => c.BlockEntities).ToList();
+            //var entities = region.Columns.SelectMany(c => c.Entities).ToList();
             //var chunk = column.Chunks.First();
             //var blocks = chunk.Blocks.ToList();
 
@@ -27,6 +30,20 @@ namespace Mineman.Service.Tests
             //                           .ToList();
 
 
+            var chests = new List<Sign>();
+            foreach(var region in parser.Regions)
+            {
+                foreach(var column in region.Columns)
+                {
+                    foreach(var chunk in column.Chunks)
+                    {
+                        chests.AddRange(chunk.Blocks.OfType<Sign>());
+                    }
+                }
+            }
+
+
+            return;
 
             var renderer = new MapRenderer2D(parser, new TextureProvider(""));
             //var bitmap = renderer.GenerateBiomeBitmap();
