@@ -204,7 +204,7 @@ namespace Mineman.Service.Managers
                 return false;
             }
         }
-
+            
         private async Task DestroyContainerInternal(string containerID)
         {
             _logger.LogInformation($"About to destroy container for server. ContainerID: {containerID}");
@@ -223,7 +223,7 @@ namespace Mineman.Service.Managers
 
         public async Task RemoveUnusedContainers()
         {
-                var containerIdsInDatabase = _context.Servers.Select(s => s.ContainerID).ToList();
+            var containerIdsInDatabase = _context.Servers.Select(s => s.ContainerID).ToList();
             var containersInDocker = await DockerQueryHelper.GetContainers(_dockerClient);
 
             foreach (var container in containersInDocker.Where(c => !containerIdsInDatabase.Any(id => c.ID == id)))
@@ -299,7 +299,7 @@ namespace Mineman.Service.Managers
 
         private void WriteServerProperties(Server server)
         {
-            var serverPropertiesPath = Path.Combine(_environment.ContentRootPath, _configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
+            var serverPropertiesPath = _environment.BuildPath(_configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
             File.WriteAllText(serverPropertiesPath, server.SerializedProperties);
         }
     }
