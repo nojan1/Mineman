@@ -80,7 +80,7 @@ namespace Mineman.WorldParsing
         {
             var level = _nbtDoc.Query<TagCompound>("Level");
 
-            return level.GetList("TileEntities") //Was called TileEntities in earlier minecraft version. Official name now is BlockEntities
+            return level.GetList("TileEntities") //Was called TileEntities in earlier minecraft version. Official name is now BlockEntities
                     .Value
                     .Cast<TagCompound>()
                     .Select(t => new BlockEntity(t))

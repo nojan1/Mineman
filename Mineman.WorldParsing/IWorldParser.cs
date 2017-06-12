@@ -4,6 +4,6 @@ namespace Mineman.WorldParsing
 {
     public interface IWorldParser
     {
-        IEnumerable<Region> Regions { get; }
+        IEnumerable<Region> GetRegions(RegionType regionType);
     }
 }

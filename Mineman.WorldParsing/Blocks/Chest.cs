@@ -31,7 +31,7 @@ namespace Mineman.WorldParsing.Blocks
                 .Cast<TagCompound>()
                 .Select(t => new ChestItem
                     {
-                        Id = t.GetStringValue("id"),
+                        Id = t.GetTag("id").ToValueString(),
                         Count = t.GetByteValue("Count"),
                         Damage = t.GetShortValue("Damage"),
                         Slot = t.GetByteValue("Slot"),

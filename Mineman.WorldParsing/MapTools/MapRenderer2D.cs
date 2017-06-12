@@ -25,9 +25,9 @@ namespace Mineman.WorldParsing.MapTools
             _textureProvider = textureProvider;
         }
 
-        public Image<Rgba32> GenerateBlockBitmap()
+        public Image<Rgba32> GenerateBlockBitmap(RegionType regionType)
         {
-            var regions = _parser.Regions.ToList();
+            var regions = _parser.GetRegions(regionType).ToList();
 
             var minX = regions.Min(r => r.X);
             var maxX = regions.Max(r => r.X);
@@ -43,6 +43,7 @@ namespace Mineman.WorldParsing.MapTools
             var bitmap = new Image<Rgba32>(imageWidth, imageHeight);
 
             int actualMinX = Int32.MaxValue, actualMaxX = 0, actualMinZ = Int32.MaxValue, actualMaxZ = 0;
+            bool blockRendered = false;
 
             //foreach (var region in regions)
             Parallel.ForEach(regions, region =>
@@ -123,6 +124,7 @@ namespace Mineman.WorldParsing.MapTools
                                 populated.Add((x, z));
                             }
 
+                            blockRendered = true;
                             bitmap[x, z] = color;
                         }
 
@@ -133,6 +135,11 @@ namespace Mineman.WorldParsing.MapTools
                     }
                 }
             });
+
+            if (!blockRendered)
+            {
+                return bitmap;
+            }
 
             actualMinX = Math.Max(0, actualMinX - 10);
             actualMinZ = Math.Max(0, actualMinZ - 10);
@@ -149,9 +156,9 @@ namespace Mineman.WorldParsing.MapTools
         }
 
 
-        public Image<Rgba32> GenerateBiomeBitmap()
+        public Image<Rgba32> GenerateBiomeBitmap(RegionType regionType)
         {
-            var regions = _parser.Regions.ToList();
+            var regions = _parser.GetRegions(regionType).ToList();
 
             var minX = regions.Min(r => r.X);
             var maxX = regions.Max(r => r.X);

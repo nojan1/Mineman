@@ -5,35 +5,41 @@ using System.Linq;
 
 namespace Mineman.WorldParsing
 {
+    public enum RegionType
+    {
+        Overworld,
+        Nether,
+        EndWorld
+    }
+
     public class WorldParser : IWorldParser
     {
         private string _worldPath;
 
         private List<string> _regionFiles;
 
-        public IEnumerable<Region> Regions
-        {
-            get
-            {
-                return GetRegions();
-            }
-        }
-
         public WorldParser(string worldPath)
         {
             _worldPath = worldPath;
-
-            var regionDirectory = Path.Combine(worldPath, "region");
-
-            _regionFiles = Directory.Exists(regionDirectory)
-                               ? Directory.EnumerateFiles(regionDirectory, "*.mca")
-                                                    .ToList()
-                               : new List<string>();
         }
 
-        private IEnumerable<Region> GetRegions()
+        public IEnumerable<Region> GetRegions(RegionType regionType)
         {
-            return _regionFiles.Select(s => new Region(s));
+            var regionPaths = new Dictionary<RegionType, string>
+            {
+                { RegionType.Overworld, "region" },
+                { RegionType.EndWorld, "DIM1/region" },
+                { RegionType.Nether, "DIM-1/region" },
+            };
+
+            var regionDirectory = Path.Combine(_worldPath, regionPaths[regionType]);
+            if (!Directory.Exists(regionDirectory))
+            {
+                return new Region[0];
+            }
+
+            return Directory.EnumerateFiles(regionDirectory, "*.mca")
+                    .Select(regionFile => new Region(regionFile));
         }
     }
 }

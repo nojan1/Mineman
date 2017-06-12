@@ -14,7 +14,7 @@ namespace Mineman.Service.Tests
         [Fact]
         public void lsdgj()
         {
-            var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\world");
+            var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\survivial-world");
 
             //var region = parser.Regions.First();
             //var column = region.Columns.First();
@@ -29,26 +29,12 @@ namespace Mineman.Service.Tests
             //                           .SelectMany(c => c.Blocks)
             //                           .ToList();
 
-
-            var chests = new List<Sign>();
-            foreach(var region in parser.Regions)
-            {
-                foreach(var column in region.Columns)
-                {
-                    foreach(var chunk in column.Chunks)
-                    {
-                        chests.AddRange(chunk.Blocks.OfType<Sign>());
-                    }
-                }
-            }
-
-
-            return;
-
             var renderer = new MapRenderer2D(parser, new TextureProvider(""));
             //var bitmap = renderer.GenerateBiomeBitmap();
-            var bitmap = renderer.GenerateBlockBitmap();
-            bitmap.Save(@"C:\Users\hedlundn\Desktop\map.png");
+
+            renderer.GenerateBlockBitmap(RegionType.Overworld).Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
+            renderer.GenerateBlockBitmap(RegionType.Nether).Save(@"C:\Users\hedlundn\Desktop\map-nether.png");
+            renderer.GenerateBlockBitmap(RegionType.EndWorld).Save(@"C:\Users\hedlundn\Desktop\map-endworld.png");
         }
     }
 }
