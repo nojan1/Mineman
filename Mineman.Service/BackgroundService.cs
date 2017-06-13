@@ -82,12 +82,15 @@ namespace Mineman.Service
 
                     if ((_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
                     {
-                        _backgroundTasks = _mapGenerationService.GenerateForAllWorlds()
-                            .ContinueWith((task) => _worldInfoService.GenerateForAllWorlds()
-                                .ContinueWith((task2) =>
+                        _backgroundTasks = Task.Run(() =>
+                        {
+                            _mapGenerationService.GenerateForAllWorlds().Wait();
+                            _worldInfoService.GenerateForAllWorlds().Wait();
+                        })
+                        .ContinueWith((task) =>
                         {
                             _nextBackgroundTaskRun = DateTimeOffset.Now + TimeSpan.FromHours(1);
-                        }));
+                        });
                     }
                 }
                 catch (Exception e)

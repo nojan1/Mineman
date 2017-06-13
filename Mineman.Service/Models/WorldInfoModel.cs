@@ -20,8 +20,26 @@ namespace Mineman.Service.Models
         public IEnumerable<InventoryItemModel> Inventory { get; set; }
     }
 
+    public class ChestInfoModel
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+        public IEnumerable<InventoryItemModel> Items { get; set; }
+    }
+
+    public class SignInfoModel
+    {
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Z { get; set; }
+        public string Text { get; set; }
+    }
+
     public class WorldInfoModel
     {
         public IEnumerable<PlayerInfoModel> Players { get; set; }
+        public IEnumerable<ChestInfoModel> Chests { get; set; }
+        public IEnumerable<SignInfoModel> Signs { get; set; }
     }
 }

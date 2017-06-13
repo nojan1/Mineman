@@ -16,7 +16,7 @@ namespace Mineman.WorldParsing
 
     public class WorldParser : IWorldParser
     {
-        public TagCompound Level { get; private set; }
+        public LevelInfo Level { get; private set; }
         public IEnumerable<Player> Players { get; private set; }
 
         private string _worldPath;
@@ -54,7 +54,9 @@ namespace Mineman.WorldParsing
             if (File.Exists(levelDatPath))
             {
                 var levelDocument = NbtDocument.LoadDocument(levelDatPath);
-                Level = levelDocument.DocumentRoot.GetCompound("Data");
+                var levelTag = levelDocument.DocumentRoot.GetCompound("Data");
+
+                Level = new LevelInfo(levelTag);
             }
         }
 

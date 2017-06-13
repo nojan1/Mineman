@@ -6,7 +6,7 @@ namespace Mineman.WorldParsing
 {
     public interface IWorldParser
     {
-        TagCompound Level { get; }
+        LevelInfo Level { get; }
         IEnumerable<Player> Players { get; }
         IEnumerable<Region> GetRegions(RegionType regionType);
     }
