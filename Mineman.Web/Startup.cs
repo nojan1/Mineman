@@ -91,6 +91,7 @@ namespace WebApplicationBasic
             services.AddTransient<IWorldParserFactory, WorldParserFactory>();
             services.AddTransient<IMapRendererFactory, MapRendererFactory>();
             services.AddTransient<MapGenerationService>();
+            services.AddTransient<WorldInfoService>();
             services.AddTransient<BackgroundService>();
 
             services.Configure<Mineman.Common.Models.Configuration>(Configuration);

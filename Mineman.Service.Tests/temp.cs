@@ -16,18 +16,15 @@ namespace Mineman.Service.Tests
         {
             var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\survivial-world");
 
-            //var region = parser.Regions.First();
+            //var region = parser.GetRegions(RegionType.Overworld).First();
             //var column = region.Columns.First();
             //var blockEnties = region.Columns.SelectMany(c => c.BlockEntities).ToList();
-            //var entities = region.Columns.SelectMany(c => c.Entities).ToList();
             //var chunk = column.Chunks.First();
             //var blocks = chunk.Blocks.ToList();
 
-            //var blocks = parser.Regions.SelectMany(r => r.Columns)
-            //                           .SelectMany(c => c.Chunks)
-            //                           .Where(c => c.YOrder > 2 && c.YOrder < 5)
-            //                           .SelectMany(c => c.Blocks)
-            //                           .ToList();
+            var blocks = parser.GetRegions(RegionType.Overworld).SelectMany(r => r.Columns)
+                                       .SelectMany(c => c.Entities)
+                                       .ToList();
 
             var renderer = new MapRenderer2D(parser, new TextureProvider(""));
             //var bitmap = renderer.GenerateBiomeBitmap();

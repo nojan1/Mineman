@@ -79,7 +79,9 @@ namespace Mineman.WorldParsing
                         ChunkFormat format = (ChunkFormat)reader.ReadByte();
                         var data = reader.ReadBytes(length - 1);
                         
-                        yield return new Column(format, new MemoryStream(data), timestamps[i]);
+                        yield return new Column(format,
+                                                new MemoryStream(data),
+                                                UnixDateTimeHelpers.ToDateTimeOffset(timestamps[i]));
                     }
 
                 }

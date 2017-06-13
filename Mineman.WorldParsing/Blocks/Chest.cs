@@ -7,8 +7,17 @@ using System.Text;
 
 namespace Mineman.WorldParsing.Blocks
 {
-    public class ChestItem
+    public class InventoryItem
     {
+        public InventoryItem(TagCompound tag)
+        {
+            Id = tag.GetTag("id").ToValueString();
+            Count = tag.GetByteValue("Count");
+            Damage = tag.GetShortValue("Damage");
+            Slot = tag.GetByteValue("Slot");
+            Tag = tag.Contains("tag") ? tag.GetCompound("tag") : null;
+        }
+
         public string Id { get; set; }
         public int Count { get; set; }
         public int Slot { get; set; }
@@ -17,26 +26,19 @@ namespace Mineman.WorldParsing.Blocks
 
         public override string ToString()
         {
-            return $"{Count}x {Id}";
+            return $"{Count} x {Id}";
         }
     }
 
     public class Chest : Block
     {
-        public ICollection<ChestItem> Items { get; set; }
+        public ICollection<InventoryItem> Items { get; set; }
 
         public Chest(int id, int y, int z, int x, byte biomeId, byte data, byte blockLight, byte skyLight, BlockEntity blockEntity) : base(id, y, z, x, biomeId, data, blockLight, skyLight, blockEntity)
         {
             Items = blockEntity.Tag.GetList("Items").Value
                 .Cast<TagCompound>()
-                .Select(t => new ChestItem
-                    {
-                        Id = t.GetTag("id").ToValueString(),
-                        Count = t.GetByteValue("Count"),
-                        Damage = t.GetShortValue("Damage"),
-                        Slot = t.GetByteValue("Slot"),
-                        Tag = t.Contains("tag") ? t.GetCompound("tag") : null
-                    })
+                .Select(t => new InventoryItem(t))
                 .ToArray();
         }
 

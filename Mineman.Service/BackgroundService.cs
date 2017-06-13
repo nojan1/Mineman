@@ -20,9 +20,10 @@ namespace Mineman.Service
         private readonly ILogger<BackgroundService> _logger;
         private readonly IConnectionPool _connectionPool;
         private readonly MapGenerationService _mapGenerationService;
+        private readonly WorldInfoService _worldInfoService;
 
-        private Task _mapGenerationTask;
-        private DateTimeOffset _nextMapGeneration;
+        private Task _backgroundTasks;
+        private DateTimeOffset _nextBackgroundTaskRun;
 
         public BackgroundService(IServerManager serverManager,
                                  IImageManager imageManager,
@@ -30,7 +31,8 @@ namespace Mineman.Service
                                  IServerRepository serverRepository,
                                  ILogger<BackgroundService> logger,
                                  IConnectionPool connectionPool,
-                                 MapGenerationService mapGenerationService)
+                                 MapGenerationService mapGenerationService,
+                                 WorldInfoService worldInfoService)
         {
             _serverManager = serverManager;
             _imageManager = imageManager;
@@ -39,8 +41,9 @@ namespace Mineman.Service
             _logger = logger;
             _connectionPool = connectionPool;
             _mapGenerationService = mapGenerationService;
+            _worldInfoService = worldInfoService;
 
-            _nextMapGeneration = DateTimeOffset.Now;
+            _nextBackgroundTaskRun = DateTimeOffset.Now;
         }
 
         public void Start()
@@ -77,12 +80,14 @@ namespace Mineman.Service
 
                     _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
 
-                    if ((_mapGenerationTask == null || _mapGenerationTask.IsCompleted) && _nextMapGeneration <= DateTimeOffset.Now)
+                    if ((_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
                     {
-                        _mapGenerationTask = _mapGenerationService.GenerateForAllWorlds().ContinueWith((task) =>
+                        _backgroundTasks = _mapGenerationService.GenerateForAllWorlds()
+                            .ContinueWith((task) => _worldInfoService.GenerateForAllWorlds()
+                                .ContinueWith((task2) =>
                         {
-                            _nextMapGeneration = DateTimeOffset.Now + TimeSpan.FromHours(2);
-                        });
+                            _nextBackgroundTaskRun = DateTimeOffset.Now + TimeSpan.FromHours(1);
+                        }));
                     }
                 }
                 catch (Exception e)

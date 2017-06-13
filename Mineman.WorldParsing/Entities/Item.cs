@@ -12,7 +12,7 @@ namespace Mineman.WorldParsing.Entities
         {
             var item = tag.GetCompound("Item");
 
-            ItemId = item.GetStringValue("id");
+            ItemId = item.GetTag("id").GetValue().ToString();
             Count = item.GetByteValue("Count");
             Damage = item.GetShortValue("Damage");
         }

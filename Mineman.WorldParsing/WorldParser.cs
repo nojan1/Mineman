@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mineman.WorldParsing.Entities;
+using NBT;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,13 +16,17 @@ namespace Mineman.WorldParsing
 
     public class WorldParser : IWorldParser
     {
-        private string _worldPath;
+        public TagCompound Level { get; private set; }
+        public IEnumerable<Player> Players { get; private set; }
 
-        private List<string> _regionFiles;
+        private string _worldPath;
 
         public WorldParser(string worldPath)
         {
             _worldPath = worldPath;
+
+            LoadLevelDat();
+            LoadPlayerDats();
         }
 
         public IEnumerable<Region> GetRegions(RegionType regionType)
@@ -40,6 +46,36 @@ namespace Mineman.WorldParsing
 
             return Directory.EnumerateFiles(regionDirectory, "*.mca")
                     .Select(regionFile => new Region(regionFile));
+        }
+
+        private void LoadLevelDat()
+        {
+            var levelDatPath = Path.Combine(_worldPath, "level.dat");
+            if (File.Exists(levelDatPath))
+            {
+                var levelDocument = NbtDocument.LoadDocument(levelDatPath);
+                Level = levelDocument.DocumentRoot.GetCompound("Data");
+            }
+        }
+
+        private void LoadPlayerDats()
+        {
+            var playerDir = Path.Combine(_worldPath, "playerdata");
+            if (Directory.Exists(playerDir))
+            {
+                Players = Directory.EnumerateFiles(playerDir, "*.dat")
+                            .Select(path =>
+                            {
+                                var playerDoc = NbtDocument.LoadDocument(path);
+                                var uuid = Path.GetFileNameWithoutExtension(path);
+
+                                return new Player(uuid, playerDoc.DocumentRoot);
+                            });
+            }
+            else
+            {
+                Players = new List<Player>();
+            }
         }
     }
 }
