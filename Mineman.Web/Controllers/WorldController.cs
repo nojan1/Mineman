@@ -4,6 +4,7 @@ using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Repositories;
 using Mineman.Web.Helpers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpGet("")]
-        public  IActionResult Get()
+        public IActionResult Get()
         {
             return Ok(_worldRepository.Get());
         }
@@ -50,5 +51,6 @@ namespace Mineman.Web.Controllers
 
             return Ok(world);
         }
+
     }
 }

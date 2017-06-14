@@ -19,7 +19,7 @@ namespace Mineman.WorldParsing
         public LevelInfo Level { get; private set; }
         public IEnumerable<Player> Players { get; private set; }
 
-        private string _worldPath;
+        private readonly string _worldPath;
 
         public WorldParser(string worldPath)
         {

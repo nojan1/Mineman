@@ -36,7 +36,7 @@ namespace Mineman.Service.Repositories
             return _context.Worlds.ToList();
         }
 
-        public async Task<MapImagePaths> GetMapImages(int worldId)
+        public async Task<MapImagePaths> GetMapImagePaths(int worldId)
         {
             var world = await _context.Worlds.FindAsync(worldId);
 
@@ -48,6 +48,16 @@ namespace Mineman.Service.Repositories
                 MapPath = File.Exists(fullSizePath) ? fullSizePath : null,
                 MapThumbPath = File.Exists(thumbPath) ? thumbPath : null
             };
+        }
+
+        public async Task<string> GetWorldInfoPath(int worldId)
+        {
+            return await GetPathToWorldFile(worldId, "worldinfo.json");
+        }
+
+        public async Task<string> GetWorldMapInfoPath(int worldId)
+        {
+            return await GetPathToWorldFile(worldId, "render-result.json");
         }
 
         public async Task<World> AddEmpty(string displayName)
@@ -77,6 +87,14 @@ namespace Mineman.Service.Repositories
             await _context.SaveChangesAsync();
 
             return world;
+        }
+
+        private async Task<string> GetPathToWorldFile(int worldId, string filename)
+        {
+            var world = await _context.Worlds.FindAsync(worldId);
+            var worldInfoPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path, filename);
+
+            return File.Exists(worldInfoPath) ? worldInfoPath : null;
         }
     }
 }

@@ -23,7 +23,7 @@
 
     <div class="media">
         <div class="pull-left media-object thumbnail">
-            <a href="/api/server/map/{{serverWithInfo.id}}" target="_blank" *ngIf="serverWithInfo.hasMap">
+            <a [routerLink]="['/map', serverWithInfo.id]" target="_blank" *ngIf="serverWithInfo.hasMap">
                 <img src="/api/server/map/{{serverWithInfo.id}}?thumb=true" />
             </a>
             <img src="/images/default.png" *ngIf="!serverWithInfo.hasMap" />

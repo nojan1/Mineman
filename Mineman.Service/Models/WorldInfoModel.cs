@@ -38,6 +38,9 @@ namespace Mineman.Service.Models
 
     public class WorldInfoModel
     {
+        public int SpawnX { get; set; }
+        public int SpawnY { get; set; }
+        public int SpawnZ { get; set; }
         public IEnumerable<PlayerInfoModel> Players { get; set; }
         public IEnumerable<ChestInfoModel> Chests { get; set; }
         public IEnumerable<SignInfoModel> Signs { get; set; }

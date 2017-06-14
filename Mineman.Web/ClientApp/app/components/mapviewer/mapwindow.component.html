@@ -1,0 +1,31 @@
+﻿<div class="row">
+    <div class="col-xs-2">
+        <div class="entity-content-viewer well">
+            <div *ngIf="selectedEntity">
+                <span class="coordinates-text">
+                    Y: {{selectedEntity.y}} Z:{{selectedEntity.z}} X: {{selectedEntity.x}}
+                </span>
+
+                <div *ngIf="selectedEntity.type == 2" class="sign-display">
+                    <p [innerHtml]="selectedEntity.data | nl2br">
+                    </p>
+                </div>
+                <div *ngIf="selectedEntity.type == 1" class="chest-display">
+
+                </div>
+            </div>
+        </div>
+
+        <div class="mapentity-icon" *ngFor="let chest of worldInfo?.Chests">
+            <img src="/images/chest-icon.png" (click)="selectEntity($event, 1, chest)"/>
+        </div>
+        <div class="mapentity-icon" *ngFor="let sign of worldInfo?.Signs">
+            <img src="/images/sign-icon.png" (click)="selectEntity($event, 2, sign)" />
+        </div>
+
+        <div class="clearfix"></div>
+    </div>
+    <div class="col-xs-10">
+        <mapviewer imageSrc="/api/server/map/{{serverId}}" [serverId]="serverId" [entities]="entities"></mapviewer>
+    </div>
+</div>

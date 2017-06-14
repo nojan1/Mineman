@@ -34,4 +34,14 @@ export class WorldService {
 
         return this.http.post("/api/world", data, { headers: headers });
     }
+
+    public GetInfo(serverId: number) {
+        return this.http.get("/api/server/info/" + serverId)
+            .map(r => r.json());
+    }
+
+    public GetMapInfo(serverId: number) {
+        return this.http.get("/api/server/map/info/" + serverId)
+            .map(r => r.json());
+    }
 }

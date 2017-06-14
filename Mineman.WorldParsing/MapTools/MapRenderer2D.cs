@@ -2,6 +2,7 @@
 using ImageSharp.PixelFormats;
 using ImageSharp.PixelFormats.PixelBlenders;
 using Mineman.WorldParsing.Blocks;
+using Mineman.WorldParsing.MapTools.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Mineman.WorldParsing.MapTools
 {
     public class MapRenderer2D : IMapRenderer2D
     {
-        private static int[] transparentBlocks = new int[] { 20, 8, 9 };
+        private static int[] transparentBlocks = new int[] { 20, 8, 9, 95 };
 
         private readonly IWorldParser _parser;
         private readonly ITextureProvider _textureProvider;
@@ -25,7 +26,7 @@ namespace Mineman.WorldParsing.MapTools
             _textureProvider = textureProvider;
         }
 
-        public Image<Rgba32> GenerateBlockBitmap(RegionType regionType)
+        public RenderReturnModel GenerateBlockBitmap(RegionType regionType)
         {
             var regions = _parser.GetRegions(regionType).ToList();
 
@@ -41,6 +42,7 @@ namespace Mineman.WorldParsing.MapTools
             var dZ = minZ * 32 * 16;
 
             var bitmap = new Image<Rgba32>(imageWidth, imageHeight);
+            var unknownBlocks = new Dictionary<string, int>();
 
             int actualMinX = Int32.MaxValue, actualMaxX = 0, actualMinZ = Int32.MaxValue, actualMaxZ = 0;
             bool blockRendered = false;
@@ -79,6 +81,11 @@ namespace Mineman.WorldParsing.MapTools
                                 continue;
 
                             var baseColor = _textureProvider.GetColorForBlock(block, Rgba32.HotPink);
+                            if(baseColor == Rgba32.HotPink)
+                            {
+                                var key = $"{block.Code} ({block.Id})";
+                                unknownBlocks[key] = unknownBlocks.ContainsKey(key) ? unknownBlocks[key] + 1 : 1;
+                            }
 
                             Rgba32 color;
                             if (lastBaseColor.ContainsKey((x, z)))
@@ -138,7 +145,13 @@ namespace Mineman.WorldParsing.MapTools
 
             if (!blockRendered)
             {
-                return bitmap;
+                return new RenderReturnModel
+                {
+                    Bitmap = bitmap,
+                    OffsetX = dX,
+                    OffsetZ = dZ,
+                    UnknownRenderEntites = unknownBlocks
+                };
             }
 
             actualMinX = Math.Max(0, actualMinX - 10);
@@ -147,16 +160,22 @@ namespace Mineman.WorldParsing.MapTools
             var newWidth = Math.Min(bitmap.Width - actualMinX, actualMaxX - actualMinX + 10);
             var newHeight = Math.Min(bitmap.Height - actualMinZ, actualMaxZ - actualMinZ + 10);
 
-            return bitmap.Crop(new Rectangle(
+            return new RenderReturnModel
+            {
+                Bitmap = bitmap.Crop(new Rectangle(
                     actualMinX,
                     actualMinZ,
                     newWidth,
                     newHeight
-                ));
+                )),
+                OffsetX = -dX - actualMinX,
+                OffsetZ = -dZ - actualMinZ,
+                UnknownRenderEntites = unknownBlocks
+            };
         }
 
 
-        public Image<Rgba32> GenerateBiomeBitmap(RegionType regionType)
+        public RenderReturnModel GenerateBiomeBitmap(RegionType regionType)
         {
             var regions = _parser.GetRegions(regionType).ToList();
 
@@ -167,6 +186,8 @@ namespace Mineman.WorldParsing.MapTools
 
             var imageWidth = (maxX - minX + 1) * 32 * 16;
             var imageHeight = (maxZ - minZ + 1) * 32 * 16;
+            var dX = minX * 32 * 16;
+            var dZ = minZ * 32 * 16;
 
             var bitmap = new Image<Rgba32>(imageWidth, imageHeight);
 
@@ -180,16 +201,19 @@ namespace Mineman.WorldParsing.MapTools
                         {
                             var color = _textureProvider.GetColorForBiome(block.Biome, Rgba32.Aquamarine);
 
-                            var dX = minX * 32 * 16;
-                            var dZ = minZ * 32 * 16;
-
                             bitmap[block.WorldX - dX, block.WorldZ - dZ] = color;
                         }
                     }
                 }
             }
 
-            return bitmap;
+            return new RenderReturnModel
+            {
+                Bitmap = bitmap,
+                OffsetX = dX,
+                OffsetZ = dZ,
+                UnknownRenderEntites = new Dictionary<string, int>()
+            };
         }
 
         private Rgba32 Screen(Rgba32 colorA, Rgba32 colorB, int alpha)

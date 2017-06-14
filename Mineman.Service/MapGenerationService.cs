@@ -9,6 +9,7 @@ using Mineman.Common.Models;
 using Mineman.Service.Helpers;
 using Mineman.WorldParsing;
 using Mineman.WorldParsing.MapTools;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +21,8 @@ namespace Mineman.Service
 {
     public class MapGenerationService
     {
+        private const RegionType TARGET_REGION = RegionType.Overworld;
+
         private readonly DatabaseContext _context;
         private readonly IWorldParserFactory _worldParserFactory;
         private readonly IHostingEnvironment _environment;
@@ -60,7 +63,7 @@ namespace Mineman.Service
                         var worldPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
                         var parser = _worldParserFactory.Create(worldPath);
 
-                        if (!parser.GetRegions(RegionType.Overworld).Any())
+                        if (!parser.GetRegions(TARGET_REGION).Any())
                         {
                             _logger.LogInformation($"World has no region files. Skipping. ID: {world.ID} Path: '{world.Path}'");
                             continue;
@@ -68,10 +71,19 @@ namespace Mineman.Service
 
                         var renderer = _mapRendererFactory.Create2DRender(parser);
 
-                        renderer.GenerateBlockBitmap(RegionType.Overworld)
-                            .Save(Path.Combine(worldPath, "map.png"))
-                            .Resize(new Size(200, 200))
-                            .Save(Path.Combine(worldPath, "map_thumb.png"));
+                        var renderResult = renderer.GenerateBlockBitmap(TARGET_REGION);
+
+                        renderResult.Bitmap.Save(Path.Combine(worldPath, "map.png"))
+                                           .Resize(new Size(200, 200))
+                                           .Save(Path.Combine(worldPath, "map_thumb.png"));
+
+                        var mapRenderResultDataFilePath = Path.Combine(worldPath, "render-result.json");
+                        File.WriteAllText(mapRenderResultDataFilePath, JsonConvert.SerializeObject(new
+                        {
+                            OffsetX = renderResult.OffsetX,
+                            OffsetZ = renderResult.OffsetZ,
+                            UnknownBlocks = renderResult.UnknownRenderEntites.OrderByDescending(x => x.Value)
+                        }));
 
                         _logger.LogInformation($"Finished generating map for world. ID: {world.ID} Path: '{world.Path}'");
                     }

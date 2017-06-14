@@ -7,6 +7,7 @@ using Mineman.Service.Managers;
 using Mineman.Service.MinecraftQuery;
 using Mineman.Service.Repositories;
 using Mineman.Web.Models.Client;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace Mineman.Web.Controllers
             var servers = (await _serverRepository.GetServers())
                                    .Select(x =>
                                    {
-                                       var mapPaths = _worldRepository.GetMapImages(x.Server.ID).Result;
+                                       var mapPaths = _worldRepository.GetMapImagePaths(x.Server.ID).Result;
                                        return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath));
                                    })
                                    .OrderByDescending(c => c.IsAlive)
@@ -52,7 +53,7 @@ namespace Mineman.Web.Controllers
         {
             var serverWithDockerInfo = await _serverRepository.GetWithDockerInfo(serverId);
             var properties = ServerPropertiesSerializer.GetUserChangableProperties();
-            var mapPaths = serverWithDockerInfo.Server.World != null ? await _worldRepository.GetMapImages(serverWithDockerInfo.Server.World.ID)
+            var mapPaths = serverWithDockerInfo.Server.World != null ? await _worldRepository.GetMapImagePaths(serverWithDockerInfo.Server.World.ID)
                                                                      : new Service.Models.MapImagePaths { MapPath = null };
 
             return Ok(new
@@ -155,7 +156,7 @@ namespace Mineman.Web.Controllers
             if (server.World == null)
                 return BadRequest();
 
-            var paths = await _worldRepository.GetMapImages(server.World.ID);
+            var paths = await _worldRepository.GetMapImagePaths(server.World.ID);
             var pathToUse = thumb ? paths.MapThumbPath : paths.MapPath;
 
             if (string.IsNullOrEmpty(pathToUse))
@@ -166,6 +167,42 @@ namespace Mineman.Web.Controllers
             {
                 return File(System.IO.File.OpenRead(pathToUse), "image/png");
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("map/info/{serverId:int}")]
+        public async Task<IActionResult> GetMapInfo(int serverId)
+        {
+            var server = await _serverRepository.Get(serverId);
+            if (server.World == null)
+                return BadRequest();
+
+            var path = await _worldRepository.GetWorldMapInfoPath(server.World.ID);
+            if (path == null)
+            {
+                return NoContent();
+            }
+
+            var jsonData = JsonConvert.DeserializeObject(System.IO.File.ReadAllText(path));
+            return Ok(jsonData);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("info/{serverId:int}")]
+        public async Task<IActionResult> GetInfo(int serverId)
+        {
+            var server = await _serverRepository.Get(serverId);
+            if (server.World == null)
+                return BadRequest();
+
+            var path = await _worldRepository.GetWorldInfoPath(server.World.ID);
+            if (path == null)
+            {
+                return NoContent();
+            }
+            
+            var jsonData = JsonConvert.DeserializeObject(System.IO.File.ReadAllText(path));
+            return Ok(jsonData);
         }
     }
 }

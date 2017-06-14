@@ -2,6 +2,7 @@ import { NgModule, LOCALE_ID } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { UniversalModule } from 'angular2-universal';
 import { FormsModule } from '@angular/forms';
+
 import { AppComponent } from './components/app/app.component'
 import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { ServerListComponent } from './components/serverlist/serverlist.component';
@@ -21,10 +22,12 @@ import { RconComponent } from './components/servers/rcon.component';
 import { ModSelector } from './components/mods/modselector.component';
 import { ModList } from './components/mods/modlist.component';
 import { AddMod } from './components/mods/addmod.component';
+import { MapViewerComponent } from './components/mapviewer/mapviewer.component';
+import { MapWindowComponent } from './components/mapviewer/mapwindow.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
-import { LogFormattingPipe } from './components/pipes/logformatting.pipe';
+import { Nl2br } from './components/pipes/logformatting.pipe';
 import { TruncatePipe } from './components/pipes/truncate.pipe';
 
 import { ServerService } from './services/servers.service';
@@ -35,6 +38,7 @@ import { ErrorService } from './services/error.service';
 import { WorldService } from './services/world.service';
 import { LoadingService } from './services/loading.service';
 import { ModsService } from './services/mods.service';
+import { LayoutService } from './services/layout.service';
 
 import { AuthModule } from './auth.module';
 
@@ -51,7 +55,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         ServerComponent,
         JoinPipe,
         NormalizedPropertyNamePipe,
-        LogFormattingPipe,
+        Nl2br,
         TruncatePipe,
         ImageListComponent,
         AddImageComponent,
@@ -67,7 +71,9 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         LoadingInlineComponent,
         ModSelector,
         ModList,
-        AddMod
+        AddMod,
+        MapViewerComponent,
+        MapWindowComponent
     ],
     providers: [
         { provide: LOCALE_ID, useValue: "sv-SE" },
@@ -78,7 +84,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         WorldService,
         LoadingService,
         AuthGuardService,
-        ModsService
+        ModsService,
+        LayoutService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.
@@ -96,6 +103,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
             { path: 'server/rcon/:id', component: RconComponent, canActivate: [AuthGuardService] },
             { path: 'mods', component: ModList, canActivate: [AuthGuardService] },
             { path: 'mods/add', component: AddMod, canActivate: [AuthGuardService] },
+            { path: 'map/:id', component: MapWindowComponent },
             { path: 'login', component: LoginComponent },
             { path: '**', redirectTo: 'serverlist' }
         ]),

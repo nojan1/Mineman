@@ -1,6 +1,6 @@
-<nav-menu></nav-menu>
+<nav-menu *ngIf="!layoutService.fullscreen"></nav-menu>
 
-<div class="container">
+<div [class.container]="!layoutService.wideMode" [class.container-fluid]="layoutService.wideMode">
     <router-outlet></router-outlet>
 </div>
 

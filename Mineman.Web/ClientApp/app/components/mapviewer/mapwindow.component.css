@@ -1,0 +1,31 @@
+﻿.entity-content-viewer  {
+    height:200px;
+    margin:5px;
+}
+
+.entity-content-viewer .coordinates-text {
+    font-size:0.8em;
+    color:darkgray;
+}
+
+.entity-content-viewer .sign-display {
+    background-image:url(/images/sign-background.png);
+    width:192px;
+    height:96px;
+    margin:10px auto 0 auto;
+}
+
+.entity-content-viewer .sign-display p {
+    font-size:17px;
+    color:black;
+    text-align:center;
+}
+
+.mapentity-icon {
+    float: left;
+}
+
+.mapentity-icon img {
+    width: 16px;
+    height: 16px;
+}

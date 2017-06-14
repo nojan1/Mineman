@@ -63,6 +63,10 @@ namespace Mineman.Service
                         PopulatePlayers(parser, worldInfo);
                         PopulateBlockEntities(parser, worldInfo);
 
+                        worldInfo.SpawnX = parser.Level.SpawnX;
+                        worldInfo.SpawnY = parser.Level.SpawnY;
+                        worldInfo.SpawnZ = parser.Level.SpawnZ;
+
                         var worldInfoFilePath = _environment.BuildPath(_configuration.WorldDirectory, world.Path, "worldinfo.json");
                         File.WriteAllText(worldInfoFilePath, JsonConvert.SerializeObject(worldInfo));
 

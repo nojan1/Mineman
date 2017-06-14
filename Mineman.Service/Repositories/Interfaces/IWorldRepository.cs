@@ -11,6 +11,8 @@ namespace Mineman.Service.Repositories
         Task<World> AddEmpty(string displayName);
         Task<World> AddFromZip(string displayName, ZipArchive zipArchive);
         ICollection<World> Get();
-        Task<MapImagePaths> GetMapImages(int worldId);
+        Task<MapImagePaths> GetMapImagePaths(int worldId);
+        Task<string> GetWorldInfoPath(int worldId);
+        Task<string> GetWorldMapInfoPath(int worldId);
     }
 }
