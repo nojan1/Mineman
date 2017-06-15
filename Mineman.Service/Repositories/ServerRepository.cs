@@ -71,7 +71,7 @@ namespace Mineman.Service.Repositories
         {
             var server = await Get(id);
             var isAlive = string.IsNullOrEmpty(server.ContainerID) ? false  
-                                                                   : (await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID)).State == "running";
+                                                                   : (await DockerQueryHelper.GetContainer(_dockerClient, server.ContainerID))?.State == "running";
 
             return new ServerWithDockerInfo
             {

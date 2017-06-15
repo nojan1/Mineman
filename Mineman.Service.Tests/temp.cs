@@ -1,4 +1,7 @@
-﻿using Mineman.WorldParsing;
+﻿using Microsoft.EntityFrameworkCore;
+using Mineman.Common.Database;
+using Mineman.Service.Repositories;
+using Mineman.WorldParsing;
 using Mineman.WorldParsing.Blocks;
 using Mineman.WorldParsing.MapTools;
 using System;
@@ -14,7 +17,7 @@ namespace Mineman.Service.Tests
         [Fact]
         public void lsdgj()
         {
-            var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\world-oldbackup");
+            //var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\world-oldbackup");
 
             //var region = parser.GetRegions(RegionType.Overworld).First();
             //var column = region.Columns.First();
@@ -26,10 +29,20 @@ namespace Mineman.Service.Tests
             //                           .SelectMany(c => c.Entities)
             //                           .ToList();
 
-            var renderer = new MapRenderer2D(parser, new TextureProvider(""));
+            //var renderer = new MapRenderer2D(parser, new TextureProvider(""));
             //var bitmap = renderer.GenerateBiomeBitmap();
 
-            renderer.GenerateBlockBitmap(RegionType.Overworld).Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
+            //renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
+
+            //var options = new DbContextOptionsBuilder<DatabaseContext>()
+            //    .UseInMemoryDatabase()
+            //    .Options;
+
+            //using (var context = new DatabaseContext(options))
+            //{
+            //    var playerRepository = new PlayerRepository(context);
+            //    var profile = playerRepository.Get("f5f9f256a1164ce195e3fc2ca056b75e").Result;
+            //}
         }
     }
 }

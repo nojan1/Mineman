@@ -21,6 +21,18 @@
     text-align:center;
 }
 
+.entity-content-viewer .player-display img {
+    margin: 10px auto 5px auto;
+    clip: rect(8px,8px,16px,16px);
+    width:50px;
+}
+
+.entity-content-viewer .player-display p {
+    font-weight:bold;
+    font-size:1.5em;
+    text-align:center;
+}
+
 .mapentity-icon {
     float: left;
 }

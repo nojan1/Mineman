@@ -19,6 +19,7 @@ namespace Mineman.Common.Database
         public DbSet<Mod> Mods { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<ImageBuildStatus> BuildStatuses { get; set; }
+        public DbSet<PlayerProfile> PlayerProfiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

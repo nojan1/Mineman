@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Mineman.Service.Helpers;
 using Mineman.Service.Managers;
 using Mineman.Service.Rcon;
@@ -13,31 +14,30 @@ namespace Mineman.Service
 {
     public class BackgroundService
     {
-        private readonly IServerManager _serverManager;
-        private readonly IImageManager _imageManager;
-        private readonly IImageRepository _imageRepository;
-        private readonly IServerRepository _serverRepository;
+        //private readonly IServerManager _serverManager;
+        //private readonly IImageManager _imageManager;
+        //private readonly IImageRepository _imageRepository;
+        //private readonly IServerRepository _serverRepository;
         private readonly ILogger<BackgroundService> _logger;
         private readonly IConnectionPool _connectionPool;
         private readonly MapGenerationService _mapGenerationService;
         private readonly WorldInfoService _worldInfoService;
+        private readonly IServiceScopeFactory _serviceFactory;
 
         private Task _backgroundTasks;
         private DateTimeOffset _nextBackgroundTaskRun;
 
-        public BackgroundService(IServerManager serverManager,
-                                 IImageManager imageManager,
-                                 IImageRepository imageRepository,
-                                 IServerRepository serverRepository,
-                                 ILogger<BackgroundService> logger,
+        public BackgroundService(ILogger<BackgroundService> logger,
                                  IConnectionPool connectionPool,
                                  MapGenerationService mapGenerationService,
-                                 WorldInfoService worldInfoService)
+                                 WorldInfoService worldInfoService,
+                                 IServiceScopeFactory serviceFactory)
         {
-            _serverManager = serverManager;
-            _imageManager = imageManager;
-            _imageRepository = imageRepository;
-            _serverRepository = serverRepository;
+            //_serverManager = serverManager;
+            //_imageManager = imageManager;
+            //_imageRepository = imageRepository;
+            //_serverRepository = serverRepository;
+            _serviceFactory = serviceFactory;
             _logger = logger;
             _connectionPool = connectionPool;
             _mapGenerationService = mapGenerationService;
@@ -62,8 +62,12 @@ namespace Mineman.Service
         {
             _logger.LogInformation("Checking docker for containers/images not present in database");
 
-            await _serverManager.RemoveUnusedContainers();
-            await _imageManager.RemoveUnsuedImages();
+            using (var scope = _serviceFactory.CreateScope())
+            {
+                await scope.ServiceProvider.GetService<IServerManager>().RemoveUnusedContainers();
+                await scope.ServiceProvider.GetService<IImageManager>().RemoveUnsuedImages();
+            }
+
         }
 
         private async Task WorkingLoop()
@@ -74,23 +78,26 @@ namespace Mineman.Service
             {
                 try
                 {
-                    await InvalidateMissingImages();
-                    await CreateImages();
-                    await StartIdleContainers();
-
-                    _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
-
-                    if ((_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
+                    using (var scope = _serviceFactory.CreateScope())
                     {
-                        _backgroundTasks = Task.Run(() =>
+                        await InvalidateMissingImages(scope);
+                        await CreateImages(scope);
+                        await StartIdleContainers(scope);
+
+                        _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
+
+                        if ((_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
                         {
-                            _mapGenerationService.GenerateForAllWorlds().Wait();
-                            _worldInfoService.GenerateForAllWorlds().Wait();
-                        })
-                        .ContinueWith((task) =>
-                        {
-                            _nextBackgroundTaskRun = DateTimeOffset.Now + TimeSpan.FromHours(1);
-                        });
+                            _backgroundTasks = Task.Run(() =>
+                            {
+                                _mapGenerationService.GenerateForAllWorlds().Wait();
+                                _worldInfoService.GenerateForAllWorlds().Wait();
+                            })
+                            .ContinueWith((task) =>
+                            {
+                                _nextBackgroundTaskRun = DateTimeOffset.Now + TimeSpan.FromHours(1);
+                            });
+                        }
                     }
                 }
                 catch (Exception e)
@@ -102,11 +109,11 @@ namespace Mineman.Service
             }
         }
 
-        private async Task InvalidateMissingImages()
+        private async Task InvalidateMissingImages(IServiceScope scope)
         {
             try
             {
-                await _imageManager.InvalidateMissingImages();
+                await scope.ServiceProvider.GetService<IImageManager>().InvalidateMissingImages();
             }
             catch (Exception e)
             {
@@ -114,15 +121,18 @@ namespace Mineman.Service
             }
         }
 
-        private async Task CreateImages()
+        private async Task CreateImages(IServiceScope scope)
         {
             _logger.LogDebug("BackgroundService: About to create pending images");
 
-            foreach (var image in _imageRepository.GetImages().Where(i => i.BuildStatus == null || !i.BuildStatus.BuildSucceeded))
+            var imageManager = scope.ServiceProvider.GetService<IImageManager>();
+            var imageRepository = scope.ServiceProvider.GetService<IImageRepository>();
+
+            foreach (var image in imageRepository.GetImages().Where(i => i.BuildStatus == null || !i.BuildStatus.BuildSucceeded))
             {
                 try
                 {
-                    await _imageManager.CreateImage(image);
+                    await imageManager.CreateImage(image);
                 }
                 catch (Exception e)
                 {
@@ -132,15 +142,18 @@ namespace Mineman.Service
 
         }
 
-        private async Task StartIdleContainers()
+        private async Task StartIdleContainers(IServiceScope scope)
         {
             _logger.LogDebug("BackgroundService: About to start idle servers");
 
-            foreach (var server in (await _serverRepository.GetServers()).Where(s => !s.IsAlive && s.Server.ShouldBeRunning))
+            var serverManager = scope.ServiceProvider.GetService<IServerManager>();
+            var serverRepository = scope.ServiceProvider.GetService<IServerRepository>();
+
+            foreach (var server in (await serverRepository.GetServers()).Where(s => !s.IsAlive && s.Server.ShouldBeRunning))
             {
                 try
                 {
-                    await _serverManager.Start(server.Server);
+                    await serverManager.Start(server.Server);
                 }
                 catch (Exception e)
                 {

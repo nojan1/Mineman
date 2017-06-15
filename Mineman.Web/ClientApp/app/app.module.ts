@@ -39,6 +39,7 @@ import { WorldService } from './services/world.service';
 import { LoadingService } from './services/loading.service';
 import { ModsService } from './services/mods.service';
 import { LayoutService } from './services/layout.service';
+import { PlayerService } from './services/player.service';
 
 import { AuthModule } from './auth.module';
 
@@ -85,7 +86,8 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         LoadingService,
         AuthGuardService,
         ModsService,
-        LayoutService
+        LayoutService,
+        PlayerService
     ],
     imports: [
         UniversalModule, // Must be first import. This automatically imports BrowserModule, HttpModule, and JsonpModule too.

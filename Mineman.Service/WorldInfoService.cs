@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
@@ -22,19 +23,19 @@ namespace Mineman.Service
     {
         private const RegionType TARGET_REGION = RegionType.Overworld;
 
-        private readonly DatabaseContext _context;
         private readonly IWorldParserFactory _worldParserFactory;
         private readonly IHostingEnvironment _environment;
         private readonly Common.Models.Configuration _configuration;
         private readonly ILogger<WorldInfoService> _logger;
+        private readonly IServiceScopeFactory _serviceFactory;
 
-        public WorldInfoService(DatabaseContext context,
+        public WorldInfoService(IServiceScopeFactory serviceFactory,
                                     IWorldParserFactory worldParserFactory,
                                     IHostingEnvironment environment,
                                     IOptions<Common.Models.Configuration> configuration,
                                     ILogger<WorldInfoService> logger)
         {
-            _context = context;
+            _serviceFactory = serviceFactory;
             _worldParserFactory = worldParserFactory;
             _environment = environment;
             _configuration = configuration.Value;
@@ -45,36 +46,41 @@ namespace Mineman.Service
         {
             return Task.Run(() =>
             {
-                var worlds = _context.Servers.Include(s => s.World)
-                                        .Where(s => s.World != null)
-                                        .Select(s => s.World)
-                                        .ToList();
-
-                foreach (var world in worlds)
+                using (var scope = _serviceFactory.CreateScope())
                 {
-                    try
+                    var context = scope.ServiceProvider.GetService<DatabaseContext>();
+
+                    var worlds = context.Servers.Include(s => s.World)
+                                            .Where(s => s.World != null)
+                                            .Select(s => s.World)
+                                            .ToList();
+
+                    foreach (var world in worlds)
                     {
-                        _logger.LogInformation($"Parsing info for world. ID: {world.ID} Path: '{world.Path}'");
+                        try
+                        {
+                            _logger.LogInformation($"Parsing info for world. ID: {world.ID} Path: '{world.Path}'");
 
-                        var worldPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
-                        var parser = _worldParserFactory.Create(worldPath);
+                            var worldPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
+                            var parser = _worldParserFactory.Create(worldPath);
 
-                        var worldInfo = new WorldInfoModel();
-                        PopulatePlayers(parser, worldInfo);
-                        PopulateBlockEntities(parser, worldInfo);
+                            var worldInfo = new WorldInfoModel();
+                            PopulatePlayers(parser, worldInfo);
+                            PopulateBlockEntities(parser, worldInfo);
 
-                        worldInfo.SpawnX = parser.Level.SpawnX;
-                        worldInfo.SpawnY = parser.Level.SpawnY;
-                        worldInfo.SpawnZ = parser.Level.SpawnZ;
+                            worldInfo.SpawnX = parser.Level?.SpawnX ?? 0;
+                            worldInfo.SpawnY = parser.Level?.SpawnY ?? 0;
+                            worldInfo.SpawnZ = parser.Level?.SpawnZ ?? 0;
 
-                        var worldInfoFilePath = _environment.BuildPath(_configuration.WorldDirectory, world.Path, "worldinfo.json");
-                        File.WriteAllText(worldInfoFilePath, JsonConvert.SerializeObject(worldInfo));
+                            var worldInfoFilePath = _environment.BuildPath(_configuration.WorldDirectory, world.Path, "worldinfo.json");
+                            File.WriteAllText(worldInfoFilePath, JsonConvert.SerializeObject(worldInfo));
 
-                        _logger.LogInformation($"Finished parsing info for world. ID: {world.ID} Path: '{world.Path}'");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(new EventId(), e, $"An error ocurred when parsing info for world. ID: {world.ID} Path: '{world.Path}' ");
+                            _logger.LogInformation($"Finished parsing info for world. ID: {world.ID} Path: '{world.Path}'");
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(new EventId(), e, $"An error ocurred when parsing info for world. ID: {world.ID} Path: '{world.Path}' ");
+                        }
                     }
                 }
             });

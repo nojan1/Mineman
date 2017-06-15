@@ -2,6 +2,7 @@
 using ImageSharp.Processing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
@@ -23,21 +24,21 @@ namespace Mineman.Service
     {
         private const RegionType TARGET_REGION = RegionType.Overworld;
 
-        private readonly DatabaseContext _context;
         private readonly IWorldParserFactory _worldParserFactory;
         private readonly IHostingEnvironment _environment;
         private readonly Common.Models.Configuration _configuration;
         private readonly IMapRendererFactory _mapRendererFactory;
         private readonly ILogger<MapGenerationService> _logger;
+        private readonly IServiceScopeFactory _serviceFactory;
 
-        public MapGenerationService(DatabaseContext context,
+        public MapGenerationService(IServiceScopeFactory serviceFactory,
                                     IWorldParserFactory worldParserFactory,
                                     IHostingEnvironment environment,
                                     IOptions<Common.Models.Configuration> configuration,
                                     IMapRendererFactory mapRendererFactory,
                                     ILogger<MapGenerationService> logger)
         {
-            _context = context;
+            _serviceFactory = serviceFactory;
             _worldParserFactory = worldParserFactory;
             _environment = environment;
             _configuration = configuration.Value;
@@ -49,47 +50,52 @@ namespace Mineman.Service
         {
             return Task.Run(() =>
             {
-                var worlds = _context.Servers.Include(s => s.World)
-                                        .Where(s => s.World != null)
-                                        .Select(s => s.World)
-                                        .ToList();
-
-                foreach (var world in worlds)
+                using (var scope = _serviceFactory.CreateScope())
                 {
-                    try
+                    var context = scope.ServiceProvider.GetService<DatabaseContext>();
+
+                    var worlds = context.Servers.Include(s => s.World)
+                                            .Where(s => s.World != null)
+                                            .Select(s => s.World)
+                                            .ToList();
+
+                    foreach (var world in worlds)
                     {
-                        _logger.LogInformation($"Generating map for world. ID: {world.ID} Path: '{world.Path}'");
-
-                        var worldPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
-                        var parser = _worldParserFactory.Create(worldPath);
-
-                        if (!parser.GetRegions(TARGET_REGION).Any())
+                        try
                         {
-                            _logger.LogInformation($"World has no region files. Skipping. ID: {world.ID} Path: '{world.Path}'");
-                            continue;
+                            _logger.LogInformation($"Generating map for world. ID: {world.ID} Path: '{world.Path}'");
+
+                            var worldPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
+                            var parser = _worldParserFactory.Create(worldPath);
+
+                            if (!parser.GetRegions(TARGET_REGION).Any())
+                            {
+                                _logger.LogInformation($"World has no region files. Skipping. ID: {world.ID} Path: '{world.Path}'");
+                                continue;
+                            }
+
+                            var renderer = _mapRendererFactory.Create2DRender(parser);
+
+                            var renderResult = renderer.GenerateBlockBitmap(TARGET_REGION);
+
+                            renderResult.Bitmap.Save(Path.Combine(worldPath, "map.png"))
+                                               .Resize(new Size(200, 200))
+                                               .Save(Path.Combine(worldPath, "map_thumb.png"));
+
+                            var mapRenderResultDataFilePath = Path.Combine(worldPath, "render-result.json");
+                            File.WriteAllText(mapRenderResultDataFilePath, JsonConvert.SerializeObject(new
+                            {
+                                OffsetX = renderResult.OffsetX,
+                                OffsetZ = renderResult.OffsetZ,
+                                UnknownBlocks = renderResult.UnknownRenderEntites.OrderByDescending(x => x.Value)
+                            }));
+
+                            _logger.LogInformation($"Finished generating map for world. ID: {world.ID} Path: '{world.Path}'");
                         }
-
-                        var renderer = _mapRendererFactory.Create2DRender(parser);
-
-                        var renderResult = renderer.GenerateBlockBitmap(TARGET_REGION);
-
-                        renderResult.Bitmap.Save(Path.Combine(worldPath, "map.png"))
-                                           .Resize(new Size(200, 200))
-                                           .Save(Path.Combine(worldPath, "map_thumb.png"));
-
-                        var mapRenderResultDataFilePath = Path.Combine(worldPath, "render-result.json");
-                        File.WriteAllText(mapRenderResultDataFilePath, JsonConvert.SerializeObject(new
+                        catch (Exception e)
                         {
-                            OffsetX = renderResult.OffsetX,
-                            OffsetZ = renderResult.OffsetZ,
-                            UnknownBlocks = renderResult.UnknownRenderEntites.OrderByDescending(x => x.Value)
-                        }));
-
-                        _logger.LogInformation($"Finished generating map for world. ID: {world.ID} Path: '{world.Path}'");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(new EventId(), e, $"An error ocurred when generating map for world. ID: {world.ID} Path: '{world.Path}' ");
+                            _logger.LogError(new EventId(), e, $"An error ocurred when generating map for world. ID: {world.ID} Path: '{world.Path}' ");
+                        }
                     }
                 }
             });

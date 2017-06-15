@@ -1,12 +1,16 @@
-﻿import { Component, OnInit, Input } from '@angular/core';
+﻿import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { Entity, EntityType } from './mapwindow.component';
 import { WorldService } from '../../services/world.service';
 
 interface RenderEntity {
-    rawX: number,
-    rawY: number,
-    image: HTMLImageElement
+    x: number,
+    y: number,
+    offsets: number[],
+    coordinatesIsRaw: boolean,
+    image: HTMLImageElement,
+    original: Entity,
+    size: number
 }
 
 @Component({
@@ -19,6 +23,8 @@ export class MapViewerComponent implements OnInit {
     private gkhead = new Image();
     private ctx;
 
+    private lastDetection;
+
     private lastX: number;
     private lastY: number;
     private scalefactor: number;
@@ -29,6 +35,7 @@ export class MapViewerComponent implements OnInit {
 
     private renderEntities: RenderEntity[];
 
+    @Output() entitySelected: EventEmitter<Entity> = new EventEmitter();
     @Input() serverId: number;
 
     @Input()
@@ -47,17 +54,25 @@ export class MapViewerComponent implements OnInit {
 
         this.renderEntities = entities.map(entity => {
             let entityImage = new Image();
+            let offsets = null;
 
             if (entity.type == EntityType.Sign) {
                 entityImage.src = "/images/sign-icon.png";
-            } else {
+            } else if (entity.type == EntityType.Chest) {
                 entityImage.src = "/images/chest-icon.png";
+            } else if (entity.type == EntityType.Player) {
+                entityImage.src = entity.data.skinUrl;
+                offsets = [8, 8, 8, 8];
             }
 
             return {
-                rawX: entity.x,
-                rawY: entity.z,  //Yes we did just change coordinate plane
-                image: entityImage
+                x: entity.x,
+                y: entity.z,  //Yes we did just change coordinate plane
+                coordinatesIsRaw: true,
+                image: entityImage,
+                original: entity,
+                size: 5,
+                offsets: offsets
             };
         });
 
@@ -81,13 +96,13 @@ export class MapViewerComponent implements OnInit {
 
         this.ctx = this.canvas.getContext('2d') as any;
         this.trackTransforms();
+
+        this.ctx.translate(-(this.gkhead.width / 2), -(this.gkhead.height / 2));
         this.redraw();
 
         this.lastX = this.canvas.width / 2;
         this.lastY = this.canvas.height / 2;
         this.scalefactor = 1.1;
-
-        //this.zoom(1,ctx);
 
         var dragStart, dragged;
 
@@ -105,9 +120,23 @@ export class MapViewerComponent implements OnInit {
         this.canvas.addEventListener('mousemove', (evt) => {
             this.lastX = evt.offsetX || (evt.pageX - this.canvas.offsetLeft);
             this.lastY = evt.offsetY || (evt.pageY - this.canvas.offsetTop);
+            var pt = this.ctx.transformedPoint(this.lastX, this.lastY);
+
+            var searchX = pt.x - 15;
+            var searchY = pt.y - 10;
+            this.getRenderEntitiesAtPosition(searchX, searchY)
+                .forEach(e => {
+                    this.lastDetection = {
+                        x: searchX,
+                        y: searchY
+                    };
+
+                    console.log("Selected entity at x: " + e.x + " y: " + e.y);
+                    this.entitySelected.emit(e.original)
+                });
+
             dragged = true;
             if (dragStart) {
-                var pt = this.ctx.transformedPoint(this.lastX, this.lastY);
                 this.ctx.translate(pt.x - dragStart.x, pt.y - dragStart.y);
                 this.redraw();
             }
@@ -120,7 +149,6 @@ export class MapViewerComponent implements OnInit {
 
         this.canvas.addEventListener('DOMMouseScroll', (e) => this.handleScroll(e), false);
         this.canvas.addEventListener('mousewheel', (e) => this.handleScroll(e), false);
-        //window.addEventListener("resize", (e) => this.init());
     }
 
     private zoom(clicks) {
@@ -170,11 +198,26 @@ export class MapViewerComponent implements OnInit {
                     size *= Math.pow(this.scalefactor, minZoom - this.totalZoomClicks);
                 }
 
-                let x = entity.rawX + this.mapInfo.OffsetX;
-                let y = entity.rawY + this.mapInfo.OffsetZ; //Yes we did just change coordinate plane
+                if (entity.coordinatesIsRaw) {
+                    entity.x += this.mapInfo.OffsetX;
+                    entity.y += this.mapInfo.OffsetZ; //Yes we did just change coordinate plane
 
-                this.ctx.drawImage(entity.image, x - (size / 2), y - (size / 2), size, size);
+                    entity.coordinatesIsRaw = false;
+                }
+
+                entity.size = size;
+
+                if (entity.offsets) {
+                    this.ctx.drawImage(entity.image, entity.offsets[0], entity.offsets[1], entity.offsets[2], entity.offsets[3], entity.x - (size / 2), entity.y - (size / 2), size, size);
+                } else {
+                    this.ctx.drawImage(entity.image, entity.x - (size / 2), entity.y - (size / 2), size, size);
+                }
             });
+        }
+
+        if (this.lastDetection) {
+            this.ctx.fillStyle = "#FF0000";
+            this.ctx.fillRect(this.lastDetection.x - 2, this.lastDetection.y - 2, 4, 4);
         }
     }
 
@@ -255,5 +298,17 @@ export class MapViewerComponent implements OnInit {
     private setCanvasSize() {
         this.canvas.width = this.canvas.parentElement.clientWidth;
         this.canvas.height = this.canvas.parentElement.clientHeight - 30;
+    }
+
+    private getRenderEntitiesAtPosition(x: number, y: number) {
+        if (!this.renderEntities)
+            return [];
+
+        return this.renderEntities.filter(e =>
+                x >= e.x &&
+                x <= e.x + e.size &&
+                y >= e.y &&
+                y <= e.y + e.size &&
+                e.coordinatesIsRaw == false);
     }
 }

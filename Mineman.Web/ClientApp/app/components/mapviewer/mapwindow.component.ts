@@ -1,13 +1,19 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/forkJoin';
+//import 'rxjs/add/observable/filter';
+
 import { ErrorService } from '../../services/error.service';
 import { WorldService } from '../../services/world.service';
 import { LayoutService } from '../../services/layout.service';
+import { PlayerService, PlayerProfile } from '../../services/player.service';
 
 export enum EntityType {
     Chest = 1,
-    Sign = 2
+    Sign = 2,
+    Player = 3
 }
 
 export interface Entity {
@@ -33,7 +39,8 @@ export class MapWindowComponent implements OnInit {
     constructor(private worldService: WorldService,
         private errorService: ErrorService,
         private layoutService: LayoutService,
-        private route: ActivatedRoute) {
+        private route: ActivatedRoute,
+        private playerService: PlayerService) {
 
     }
 
@@ -69,6 +76,32 @@ export class MapWindowComponent implements OnInit {
                             data: x.Text
                         });
                     });
+
+                    Observable.forkJoin(info.Players.map(x =>
+                        this.playerService.getProfile(x.UUID)
+                            .catch(err => Observable.of(null))
+                            .map((profile: PlayerProfile) => {
+                                if (!profile)
+                                    return null;
+
+                                return {
+                                    x: Math.round(x.X),
+                                    y: Math.round(x.Y),
+                                    z: Math.round(x.Z),
+                                    type: EntityType.Player,
+                                    data: {
+                                        health: x.Health,
+                                        name: profile.name,
+                                        id: profile.id,
+                                        skinUrl: profile.skinUrl
+                                    }
+                                };
+                            })
+                        )
+                    )
+                    .subscribe((playerEntities: Entity[]) => {
+                        this.entities = this.entities.concat(playerEntities.filter(x => x != null));
+                    });
                 },
                 () => { },
                 () => {
@@ -93,5 +126,9 @@ export class MapWindowComponent implements OnInit {
         }
 
         this.selectedEntity = newSelection;
+    }
+
+    public onEntitySelected(entity: Entity) {
+        this.selectedEntity = entity;
     }
 }

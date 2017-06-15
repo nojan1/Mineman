@@ -74,15 +74,16 @@ namespace WebApplicationBasic
                         Configuration.GetValue<string>("DockerHost")
                     )).CreateClient(Version.Parse("1.24"));
             });
-            services.AddTransient<IServerRepository, ServerRepository>();
-            services.AddTransient<IImageRepository, ImageRepository>();
-            services.AddTransient<IModRepository, ModRepository>();
-            services.AddTransient<IWorldRepository, WorldRepository>();
+            services.AddScoped<IServerRepository, ServerRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IModRepository, ModRepository>();
+            services.AddScoped<IWorldRepository, WorldRepository>();
+            services.AddScoped<IPlayerRepository, PlayerRepository>();
 
-            services.AddTransient<IServerManager, ServerManager>();
-            services.AddTransient<IImageManager, ImageManager>();
+            services.AddScoped<IServerManager, ServerManager>();
+            services.AddScoped<IImageManager, ImageManager>();
             services.AddTransient<IMinecraftServerQuery, MinecraftServerQuery>();
-            services.AddTransient<IConnectionPool, ConnectionPool>();
+            services.AddSingleton<IConnectionPool, ConnectionPool>();
 
             services.AddTransient<ITextureProvider, TextureProvider>(service =>
             {
@@ -90,9 +91,9 @@ namespace WebApplicationBasic
             });
             services.AddTransient<IWorldParserFactory, WorldParserFactory>();
             services.AddTransient<IMapRendererFactory, MapRendererFactory>();
-            services.AddTransient<MapGenerationService>();
-            services.AddTransient<WorldInfoService>();
-            services.AddTransient<BackgroundService>();
+            services.AddScoped<MapGenerationService>();
+            services.AddScoped<WorldInfoService>();
+            services.AddScoped<BackgroundService>();
 
             services.Configure<Mineman.Common.Models.Configuration>(Configuration);
 
@@ -188,6 +189,7 @@ namespace WebApplicationBasic
             });
 
             context.Database.EnsureCreated();
+            //context.Database.Migrate(); TODO: Support migrations
             EnsureFoldersCreated(env, configuration.Value);
             EnsureAdminUserExists(userManager);
 

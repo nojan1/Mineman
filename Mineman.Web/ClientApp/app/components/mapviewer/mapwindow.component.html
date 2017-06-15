@@ -6,6 +6,12 @@
                     Y: {{selectedEntity.y}} Z:{{selectedEntity.z}} X: {{selectedEntity.x}}
                 </span>
 
+                <div *ngIf="selectedEntity.type == 3" class="player-display">
+                    <img src="{{selectedEntity.data.skinUrl}}" />
+                    <p>
+                        {{selectedEntity.data.name}}
+                    </p>
+                </div>
                 <div *ngIf="selectedEntity.type == 2" class="sign-display">
                     <p [innerHtml]="selectedEntity.data | nl2br">
                     </p>
@@ -16,16 +22,16 @@
             </div>
         </div>
 
-        <div class="mapentity-icon" *ngFor="let chest of worldInfo?.Chests">
+        <!--<div class="mapentity-icon" *ngFor="let chest of worldInfo?.Chests">
             <img src="/images/chest-icon.png" (click)="selectEntity($event, 1, chest)"/>
         </div>
         <div class="mapentity-icon" *ngFor="let sign of worldInfo?.Signs">
             <img src="/images/sign-icon.png" (click)="selectEntity($event, 2, sign)" />
         </div>
 
-        <div class="clearfix"></div>
+        <div class="clearfix"></div>-->
     </div>
     <div class="col-xs-10">
-        <mapviewer imageSrc="/api/server/map/{{serverId}}" [serverId]="serverId" [entities]="entities"></mapviewer>
+        <mapviewer imageSrc="/api/server/map/{{serverId}}" [serverId]="serverId" [entities]="entities" (entitySelected)="onEntitySelected($event)"></mapviewer>
     </div>
 </div>
