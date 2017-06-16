@@ -32,14 +32,17 @@ namespace Mineman.WorldParsing.Blocks
 
     public class Chest : Block
     {
-        public ICollection<InventoryItem> Items { get; set; }
+        public ICollection<InventoryItem> Items { get; set; } = new List<InventoryItem>();
 
         public Chest(int id, int y, int z, int x, byte biomeId, byte data, byte blockLight, byte skyLight, BlockEntity blockEntity) : base(id, y, z, x, biomeId, data, blockLight, skyLight, blockEntity)
         {
-            Items = blockEntity.Tag.GetList("Items").Value
+            if(blockEntity != null)
+            { 
+                Items = blockEntity.Tag.GetList("Items").Value
                 .Cast<TagCompound>()
                 .Select(t => new InventoryItem(t))
                 .ToArray();
+            }
         }
 
         public override string ToString()
