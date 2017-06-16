@@ -30,10 +30,10 @@ namespace Mineman.Service
         private readonly IServiceScopeFactory _serviceFactory;
 
         public WorldInfoService(IServiceScopeFactory serviceFactory,
-                                    IWorldParserFactory worldParserFactory,
-                                    IHostingEnvironment environment,
-                                    IOptions<Common.Models.Configuration> configuration,
-                                    ILogger<WorldInfoService> logger)
+                                IWorldParserFactory worldParserFactory,
+                                IHostingEnvironment environment,
+                                IOptions<Common.Models.Configuration> configuration,
+                                ILogger<WorldInfoService> logger)
         {
             _serviceFactory = serviceFactory;
             _worldParserFactory = worldParserFactory;

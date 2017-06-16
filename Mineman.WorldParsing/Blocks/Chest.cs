@@ -37,11 +37,11 @@ namespace Mineman.WorldParsing.Blocks
         public Chest(int id, int y, int z, int x, byte biomeId, byte data, byte blockLight, byte skyLight, BlockEntity blockEntity) : base(id, y, z, x, biomeId, data, blockLight, skyLight, blockEntity)
         {
             if(blockEntity != null)
-            { 
-                Items = blockEntity.Tag.GetList("Items").Value
+            {
+                Items = blockEntity.Tag.GetList("Items")?.Value
                 .Cast<TagCompound>()
                 .Select(t => new InventoryItem(t))
-                .ToArray();
+                .ToArray() ?? new InventoryItem[0];
             }
         }
 
