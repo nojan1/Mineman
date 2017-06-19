@@ -42,7 +42,14 @@ namespace Mineman.Service
         {
             _logger.LogInformation("Background service starting up");
 
-            RemoveUnusedResourcesFromDocker().Wait();
+            try
+            {
+                RemoveUnusedResourcesFromDocker().Wait();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(new EventId(), ex, "Error during startup. Unable to removed unused docker resources.");
+            }
 
             Task.Run(() =>
             {
