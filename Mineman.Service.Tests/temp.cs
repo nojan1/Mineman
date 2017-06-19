@@ -25,53 +25,52 @@ namespace Mineman.Service.Tests
         {
             var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\worlds\604b2298e89a4733ad54f607ab83948e");
 
-            var databaseOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                .UseInMemoryDatabase()
-                .Options;
+            //var databaseOptions = new DbContextOptionsBuilder<DatabaseContext>()
+            //    .UseInMemoryDatabase()
+            //    .Options;
 
-            var context = new DatabaseContext(databaseOptions);
+            //var context = new DatabaseContext(databaseOptions);
 
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddTransient<DatabaseContext>(services => context);
+            //var serviceCollection = new ServiceCollection();
+            //serviceCollection.AddTransient<DatabaseContext>(services => context);
 
-            var scopeFactory = new Mock<IServiceScopeFactory>();
-            scopeFactory.Setup(x => x.CreateScope())
-                .Returns(() =>
-                {
-                    var scope = new Mock<IServiceScope>();
-                    scope.SetupGet(s => s.ServiceProvider)
-                        .Returns(new DefaultServiceProviderFactory().CreateServiceProvider(serviceCollection));
-                    ;
+            //var scopeFactory = new Mock<IServiceScopeFactory>();
+            //scopeFactory.Setup(x => x.CreateScope())
+            //    .Returns(() =>
+            //    {
+            //        var scope = new Mock<IServiceScope>();
+            //        scope.SetupGet(s => s.ServiceProvider)
+            //            .Returns(new DefaultServiceProviderFactory().CreateServiceProvider(serviceCollection));
 
-                    return scope.Object;
-                });
+            //        return scope.Object;
+            //    });
 
-            var hostingEnvironment = new Mock<IHostingEnvironment>();
-            var options = new Mock<IOptions<Configuration>>();
-            options.SetupGet(x => x.Value)
-                .Returns(new Configuration
-                {
-                    WorldDirectory = @"C:\Users\hedlundn\Desktop\worlds\"
-                });
+            //var hostingEnvironment = new Mock<IHostingEnvironment>();
+            //var options = new Mock<IOptions<Configuration>>();
+            //options.SetupGet(x => x.Value)
+            //    .Returns(new Configuration
+            //    {
+            //        WorldDirectory = @"C:\Users\hedlundn\Desktop\worlds\"
+            //    });
 
-            var logger = new Mock<ILogger<WorldInfoService>>();
+            //var logger = new Mock<ILogger<WorldInfoService>>();
 
-            context.Servers.Add(new Common.Database.Models.Server
-            {
-                World = new Common.Database.Models.World
-                {
-                    Path = "604b2298e89a4733ad54f607ab83948e"
-                }
-            });
-            context.SaveChanges();
+            //context.Servers.Add(new Common.Database.Models.Server
+            //{
+            //    World = new Common.Database.Models.World
+            //    {
+            //        Path = "604b2298e89a4733ad54f607ab83948e"
+            //    }
+            //});
+            //context.SaveChanges();
 
-            var worldInfoService = new WorldInfoService(scopeFactory.Object,
-                                                        new WorldParserFactory(),
-                                                        hostingEnvironment.Object,
-                                                        options.Object,
-                                                        logger.Object);
+            //var worldInfoService = new WorldInfoService(scopeFactory.Object,
+            //                                            new WorldParserFactory(),
+            //                                            hostingEnvironment.Object,
+            //                                            options.Object,
+            //                                            logger.Object);
 
-            worldInfoService.GenerateForAllWorlds().Wait();
+            //worldInfoService.GenerateForAllWorlds().Wait();
 
             //var region = parser.GetRegions(RegionType.Overworld).First();
             //var column = region.Columns.First();
@@ -83,10 +82,10 @@ namespace Mineman.Service.Tests
             //                           .SelectMany(c => c.Entities)
             //                           .ToList();
 
-            //var renderer = new MapRenderer2D(parser, new TextureProvider(""));
+            var renderer = new MapRenderer2D(parser, new TextureProvider(""));
             //var bitmap = renderer.GenerateBiomeBitmap();
 
-            //renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
+            renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
         }
     }
 }

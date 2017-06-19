@@ -14,10 +14,6 @@ namespace Mineman.Service
 {
     public class BackgroundService
     {
-        //private readonly IServerManager _serverManager;
-        //private readonly IImageManager _imageManager;
-        //private readonly IImageRepository _imageRepository;
-        //private readonly IServerRepository _serverRepository;
         private readonly ILogger<BackgroundService> _logger;
         private readonly IConnectionPool _connectionPool;
         private readonly MapGenerationService _mapGenerationService;
@@ -33,10 +29,6 @@ namespace Mineman.Service
                                  WorldInfoService worldInfoService,
                                  IServiceScopeFactory serviceFactory)
         {
-            //_serverManager = serverManager;
-            //_imageManager = imageManager;
-            //_imageRepository = imageRepository;
-            //_serverRepository = serverRepository;
             _serviceFactory = serviceFactory;
             _logger = logger;
             _connectionPool = connectionPool;

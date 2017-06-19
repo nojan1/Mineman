@@ -115,8 +115,7 @@ namespace Mineman.WorldParsing.MapTools
                             //Handle blocklight; ie torches, lava etc
                             if (block.BlockLight > 0)
                             {
-                                //color = Screen(color, _textureProvider.GetBlocklightColor(), block.BlockLight / 512);
-                                color = BlendBlocks(color, _textureProvider.GetBlocklightColor(), block.BlockLight / 2);
+                                color = BlendBlocks(color, _textureProvider.GetBlocklightColor(), (byte)(block.BlockLight / 2));
                             }
 
                             if (transparentBlocks.Contains(block.BaseId))
@@ -216,56 +215,16 @@ namespace Mineman.WorldParsing.MapTools
             };
         }
 
-        private Rgba32 Screen(Rgba32 colorA, Rgba32 colorB, int alpha)
+        private Rgba32 BlendBlocks(Rgba32 colorA, Rgba32 colorB, byte skylight)
         {
-            Func<float, float, float> screenImpl = (a, b) =>
-            {
-                var value = 1 - ((1 - a) * (1 - b));
+            var alpha = (float)skylight;
 
-                return a + (value * (1 - alpha));
-            };
-
-            var afterScreen = new Rgba32(
-                    screenImpl(colorA.R / 255f, colorB.R / 255f) * 255f,
-                    screenImpl(colorA.G / 255f, colorB.G / 255f) * 255f,
-                    screenImpl(colorA.B / 255f, colorB.B / 255f) * 255f
-                );
-
-            return afterScreen;
-        }
-
-
-        private Rgba32 BlendBlocks(Rgba32 colorA, Rgba32 colorB, float skylight)
-        {
-            Func<float, float, float> worker = (a, b) =>
-            {
-                var alpha = skylight > 16 ? 16 : skylight;
-
-                var value = ((a * (16 - alpha - 1)) + (b * (alpha - 1))) / 16f;
-
-                //float value;
-                //if (a < 127)
-                //{
-                //    value = 2 * a * b;
-                //}
-                //else
-                //{
-                //    value = 1 - 2 + 2 * a + 2 * b - 2 * a * b;
-                //}
-
-                //TODO: Alpha merge
-
-                return value;
-
-                //var value =  a + (b * (1 - alpha));
-
-                //return value < 10 ? 10 : value > 230 ? 230 : value;
-            };
+            Func<float, float, float> blendColorComponent = (a, b) => ((a / 255f) * (15 - alpha) + (b / 255f) * alpha) / 15f;
 
             var result = new Rgba32(
-                    worker(colorA.R, colorB.R),
-                    worker(colorA.G, colorB.G),
-                    worker(colorA.B, colorB.B)
+                    blendColorComponent(colorA.R, colorB.R),
+                    blendColorComponent(colorA.G, colorB.G),
+                    blendColorComponent(colorA.B, colorB.B)
                 );
 
             return result;

@@ -7,7 +7,7 @@ url="https://github.com/nojan1/Mineman"
 license=('MIT')
 depends=(dotnet-cli docker)
 makedepends=(dotnet-sdk)
-backup=(opt/mineman/database.db)
+backup=(opt/mineman/database.db opt/mineman/appsettings.json)
 source=($pkgname::git+https://github.com/nojan1/Mineman)
 md5sums=('SKIP')
 
