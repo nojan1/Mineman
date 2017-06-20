@@ -12,6 +12,9 @@
                 Name
             </th>
             <th>
+                Används av x servrar
+            </th>
+            <th>
 
             </th>
         </tr>
@@ -22,7 +25,10 @@
                 {{mod.displayName}}
             </td>
             <td>
-                <button class="btn btn-danger disabled pull-right">
+                {{mod.serversUsingMod?.length}}
+            </td>
+            <td>
+                <button class="btn btn-danger pull-right" [disabled]="mod.serversUsingMod?.length" (click)="delete($event, mod)">
                     Delete
                 </button>
             </td>

@@ -83,7 +83,7 @@ namespace Mineman.Service.Tests
             //                           .ToList();
 
             var renderer = new MapRenderer2D(parser, new TextureProvider(""));
-            //var bitmap = renderer.GenerateBiomeBitmap();
+            renderer.GenerateBiomeBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld-biome.png");
 
             //renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
         }

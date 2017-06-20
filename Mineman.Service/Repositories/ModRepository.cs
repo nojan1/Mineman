@@ -11,9 +11,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Models;
 using System.IO;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mineman.Service.Repositories
 {
+    public class ModInUseException : Exception { }
+
     public class ModRepository : IModRepository
     {
         private readonly IHostingEnvironment _environment;
@@ -31,7 +34,8 @@ namespace Mineman.Service.Repositories
 
         public ICollection<Mod> GetMods()
         {
-            return _context.Mods.ToList();
+            var mods = _context.Mods.ToList();
+            return mods;
         }
 
         public async Task<Mod> Get(int modId)
@@ -61,6 +65,34 @@ namespace Mineman.Service.Repositories
             await _context.SaveChangesAsync();
 
             return mod;
+        }
+
+        public async Task Delete(int modId)
+        {
+            var modInUse = await _context.Servers.Include(s => s.Mods)
+                                                   .SelectMany(s => s.Mods)
+                                                   .Select(m => m.ID)
+                                                   .ContainsAsync(modId);
+
+            if (modInUse)
+            {
+                throw new ModInUseException();
+            }
+
+            var mod = await _context.Mods.FindAsync(modId);
+            _context.Mods.Remove(mod);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public IDictionary<int, int[]> GetModUsage()
+        {
+            var servers = _context.Servers.Include(s => s.Mods).ToList();
+            var mods = _context.Mods.ToList();
+
+            return mods.ToDictionary(m => m.ID,
+                m => servers.Where(s => s.Mods.Any(m2 => m2.ID == m.ID)).Select(s => s.ID).ToArray());
+
         }
     }
 }

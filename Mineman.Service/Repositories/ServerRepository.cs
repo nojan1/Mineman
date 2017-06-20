@@ -104,7 +104,7 @@ namespace Mineman.Service.Repositories
 
             if (server.Image.SupportsMods && configurationModel.ModIDs != null)
             {
-                server.Mods = configurationModel.ModIDs.Select(i => _context.Mods.FirstOrDefault(m => m.ID == i)).ToArray();
+                server.Mods = configurationModel.ModIDs.Select(i => _context.Mods.FirstOrDefault(m => m.ID == i)).ToList();
             }
 
             server.NeedsRecreate = true;

@@ -30,4 +30,8 @@ export class ModsService {
 
         return this.http.post("/api/mod", data, { headers: headers });
     }
+
+    public Delete(modId: number) {
+        return this.authHttp.delete("/api/mod/" + modId);
+    }
 }

@@ -29,4 +29,16 @@ export class ModList implements OnInit {
                 this.loadingService.clearLoading(loadingHandle);
             });
     }
+
+    public delete(event,mod) {
+        var loadingHandle = this.loadingService.setLoading("Deleting mod");
+
+        this.modsService.Delete(mod.id)
+            .subscribe(() => {
+                var index = this.mods.indexOf(mod);
+                this.mods.splice(index, 1);
+            },
+            () => { },
+            () => this.loadingService.clearLoading(loadingHandle));
+    }
 }

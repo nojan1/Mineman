@@ -6,10 +6,12 @@ using Mineman.Common.Models;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Helpers;
 using Mineman.Service.Repositories;
+using Mineman.Web.Models.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Mineman.Web.Controllers
@@ -34,7 +36,10 @@ namespace Mineman.Web.Controllers
         [HttpGet("")]
         public IActionResult Get()
         {
-            return Ok(_modRepository.GetMods());
+            var mods = _modRepository.GetMods();
+            var modUsage = _modRepository.GetModUsage();
+
+            return Ok(mods.Select(m => m.ToClientMod(modUsage.ContainsKey(m.ID) ? modUsage[m.ID] : new int[0])));
         }
 
         [HttpPost("")]
@@ -52,7 +57,7 @@ namespace Mineman.Web.Controllers
             return Ok(mod);
         }
 
-        [HttpGet("download/{modId}")]
+        [HttpGet("download/{modId:int}")]
         [AllowAnonymous]
         public async Task<IActionResult> Download(int modId)
         {
@@ -68,6 +73,21 @@ namespace Mineman.Web.Controllers
             {
                 return File(stream, "application/octect-stream", mod.Path);
             }
+        }
+
+        [HttpDelete("{modId:int}")]
+        public async Task<IActionResult> Delete(int modId)
+        {
+            try
+            {
+                await _modRepository.Delete(modId);
+            }
+            catch (ModInUseException)
+            {
+                return StatusCode((int)HttpStatusCode.Conflict);
+            }
+
+            return NoContent();
         }
     }
 }
