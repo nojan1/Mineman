@@ -26,7 +26,7 @@ namespace Mineman.WorldParsing
 
         public DateTimeOffset Modified { get; private set; }
 
-        private NbtDocument _nbtDoc;
+        private readonly NbtDocument _nbtDoc;
 
         public Column(ChunkFormat format, MemoryStream chunkDataStream, DateTimeOffset timestamp)
         {
