@@ -97,7 +97,7 @@ namespace Mineman.WorldParsing.MapTools
                                     continue;
                                 }
 
-                                if (block.SkyLight == 0 && bitmap[x, z].A > 0)
+                                if (!transparentBlocks.Contains(block.BaseId) && block.SkyLight == 0 && block.BlockLight == 0 && bitmap[x, z].A > 0)
                                 {
                                     populated.Add((x, z));
                                     continue;
