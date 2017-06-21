@@ -32,4 +32,8 @@ export class ImageService {
 
         return this.http.post("/api/image", data, { headers: headers });
     }
+
+    public Delete(imageId: number) {
+        return this.authHttp.delete("/api/image/" + imageId);
+    }
 }

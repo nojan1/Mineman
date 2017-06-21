@@ -44,4 +44,8 @@ export class WorldService {
         return this.http.get("/api/server/map/info/" + serverId)
             .map(r => r.json());
     }
+
+    public Delete(worldId: number) {
+        return this.authHttp.delete("/api/world/" + worldId);
+    }
 }

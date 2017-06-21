@@ -18,6 +18,9 @@
                 Build status
             </th>
             <th>
+                Used by x servers
+            </th>
+            <th>
 
             </th>
         </tr>
@@ -28,13 +31,16 @@
                 {{image.name}}
             </td>
             <td>
-                {{image.modDir}}
+                {{image.modDirectory ? image.modDirectory : "N/A"}}
             </td>
             <td>
-                {{image.buildStatus}}
+                {{image.buildStatus | buildstatus}}
             </td>
             <td>
-                <button class="btn btn-danger disabled pull-right">
+                {{image.serversUsingImage.length}}
+            </td>
+            <td>
+                <button class="btn btn-danger pull-right" (click)="delete($event, image)" [disabled]="image.serversUsingImage.length">
                     Delete
                 </button>
             </td>

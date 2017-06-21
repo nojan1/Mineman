@@ -9,5 +9,8 @@ namespace Mineman.Service.Repositories
     {
         Task<Image> Add(ImageAddModel imageAddModel);
         ICollection<Image> GetImages();
+        Image Get(int imageId);
+        Task Delete(int imageId);
+        IDictionary<int, Server[]> GetImageUsage();
     }
 }

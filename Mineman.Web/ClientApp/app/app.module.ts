@@ -27,8 +27,9 @@ import { MapWindowComponent } from './components/mapviewer/mapwindow.component';
 
 import { JoinPipe } from './components/pipes/join.pipe';
 import { NormalizedPropertyNamePipe } from './components/pipes/normalizedpropertyname.pipe';
-import { Nl2br } from './components/pipes/logformatting.pipe';
+import { Nl2br } from './components/pipes/nl2br.pipe';
 import { TruncatePipe } from './components/pipes/truncate.pipe';
+import { BuildStatusFormatter } from './components/pipes/buildstatusformatter.pipe';
 
 import { ServerService } from './services/servers.service';
 import { AuthService } from './services/auth.service';
@@ -58,6 +59,7 @@ import { ToastModule } from 'ng2-toastr/ng2-toastr';
         NormalizedPropertyNamePipe,
         Nl2br,
         TruncatePipe,
+        BuildStatusFormatter,
         ImageListComponent,
         AddImageComponent,
         WorldListComponent,

@@ -4,6 +4,7 @@ using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Repositories;
 using Mineman.Web.Helpers;
+using Mineman.Web.Models.Client;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,10 @@ namespace Mineman.Web.Controllers
         [HttpGet("")]
         public IActionResult Get()
         {
-            return Ok(_worldRepository.Get());
+            var worlds = _worldRepository.Get();
+            var worldUsage = _worldRepository.GetWorldUsage();
+
+            return Ok(worlds.Select(w => w.ToClientWorld(worldUsage.ContainsKey(w.ID) ? worldUsage[w.ID].Select(s => s.ID).ToArray() : new int[0])));
         }
 
         [HttpPost("")]

@@ -15,6 +15,8 @@ using System.Threading.Tasks;
 
 namespace Mineman.Service.Repositories
 {
+    public class ImageInUseException : Exception { }
+
     public class ImageRepository : IImageRepository
     {
         private readonly DatabaseContext _context;
@@ -29,6 +31,13 @@ namespace Mineman.Service.Repositories
             _configuration = configuration.Value;
             _environment = environment;
         }
+
+        public Image Get(int imageId)
+        {
+            return _context.Images
+                            .Include(x => x.BuildStatus)
+                            .FirstOrDefault(i => i.ID == imageId);
+        } 
 
         public ICollection<Image> GetImages()
         {
@@ -63,6 +72,34 @@ namespace Mineman.Service.Repositories
             await _context.SaveChangesAsync();
 
             return image;
+        }
+
+        public async Task Delete(int imageId)
+        {
+            var imageInUse = await _context.Servers.Include(s => s.Image)
+                                                   .Where(s => s.Image != null)
+                                                   .Select(s => s.Image.ID)
+                                                   .ContainsAsync(imageId);
+
+            if (imageInUse)
+            {
+                throw new ImageInUseException();
+            }
+
+            var image = await _context.Images.FindAsync(imageId);
+            _context.Images.Remove(image);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public IDictionary<int, Server[]> GetImageUsage()
+        {
+            var servers = _context.Servers.Include(s => s.Image).ToList();
+            var images = _context.Images.ToList();
+
+            return images.ToDictionary(i => i.ID,
+                i => servers.Where(s => s.Image?.ID == i.ID).ToArray());
+
         }
     }
 }

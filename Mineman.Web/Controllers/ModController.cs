@@ -39,7 +39,7 @@ namespace Mineman.Web.Controllers
             var mods = _modRepository.GetMods();
             var modUsage = _modRepository.GetModUsage();
 
-            return Ok(mods.Select(m => m.ToClientMod(modUsage.ContainsKey(m.ID) ? modUsage[m.ID] : new int[0])));
+            return Ok(mods.Select(m => m.ToClientMod(modUsage.ContainsKey(m.ID) ? modUsage[m.ID].Select(s => s.ID).ToArray() : new int[0])));
         }
 
         [HttpPost("")]

@@ -85,13 +85,13 @@ namespace Mineman.Service.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public IDictionary<int, int[]> GetModUsage()
+        public IDictionary<int, Server[]> GetModUsage()
         {
             var servers = _context.Servers.Include(s => s.Mods).ToList();
             var mods = _context.Mods.ToList();
 
             return mods.ToDictionary(m => m.ID,
-                m => servers.Where(s => s.Mods.Any(m2 => m2.ID == m.ID)).Select(s => s.ID).ToArray());
+                m => servers.Where(s => s.Mods.Any(m2 => m2.ID == m.ID)).ToArray());
 
         }
     }

@@ -2,6 +2,7 @@
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
+import { LoadingService } from '../../services/loading.service';
 
 @Component({
     selector: 'login',
@@ -10,15 +11,19 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent {
     constructor(private authService: AuthService,
-                private router: Router) { }
+        private router: Router,
+        private loadingService: LoadingService) { }
 
     public login(event: Event, username: string, password: string) {
+        var loadingHandle = this.loadingService.setLoading("Logging in");
+
         this.authService.Login(username, password)
-            .then(() => {
+            .subscribe(() => {
                 this.router.navigateByUrl("/");
-            })
-            .catch(reason => {
+            },
+            (reason) => {
                 alert("Login failed. Reason: " + reason);
-            });
+            },
+            () => { this.loadingService.clearLoading(loadingHandle); });
     }
 }

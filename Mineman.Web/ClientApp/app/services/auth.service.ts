@@ -31,14 +31,17 @@ export class AuthService {
         let headers = new Headers();
         headers.append("Content-Type", "application/x-www-form-urlencoded");
 
-        return this.http.post("/token", body.toString(), {
+        var observable = this.http.post("/token", body.toString(), {
             headers: headers
-        }).toPromise()
-        .then((raw) => {
+        });
+
+        observable.subscribe((raw) => {
             var token = raw.json() as TokenResponse;
             this.WriteToken(token.access_token);
             this.isLoggedIn = true;
         });
+
+        return observable;
     }
 
     public GetToken = () => {

@@ -11,6 +11,6 @@ namespace Mineman.Service.Repositories
         ICollection<Mod> GetMods();
         Task<Mod> Add(ModAddModel modAddModel);
         Task Delete(int modId);
-        IDictionary<int, int[]> GetModUsage();
+        IDictionary<int, Server[]> GetModUsage();
     }
 }

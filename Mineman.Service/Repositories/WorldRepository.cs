@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
 using Mineman.Service.Models;
 using Mineman.Service.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Mineman.Service.Repositories
 {
@@ -96,5 +97,15 @@ namespace Mineman.Service.Repositories
 
             return File.Exists(worldInfoPath) ? worldInfoPath : null;
         }
+
+        public IDictionary<int, Server[]> GetWorldUsage()
+        {
+            var servers = _context.Servers.Include(s => s.World).ToList();
+            var worlds = _context.Worlds.ToList();
+
+            return worlds.ToDictionary(i => i.ID,
+                i => servers.Where(s => s.World?.ID == i.ID).ToArray());
+        }
+        
     }
 }

@@ -15,5 +15,6 @@ namespace Mineman.Common.Models
         public string DockerfilePath { get; set; }
         public string QueryIpAddress { get; set; }
         public string MapGenerationResourcePackPath { get; set; }
+        public bool EnableBackgroundWorldProcessing { get; set; }
     }
 }

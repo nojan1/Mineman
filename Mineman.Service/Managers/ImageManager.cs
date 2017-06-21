@@ -67,12 +67,7 @@ namespace Mineman.Service.Managers
             {
                 _logger.LogInformation($"Found image in docker that was not found in database, removing. ImageID: {image.ID}");
 
-                var result = await _dockerClient.Images.DeleteImageAsync(image.ID, new ImageDeleteParameters
-                {
-                    
-                });
-
-                if(!result.Any(x => x.Keys.Contains("Deleted")))
+                if(await DeleteDockerImage(image.ID) == false)
                 {
                     _logger.LogWarning($"Image may not have been removed correctly");
                 }
@@ -206,6 +201,32 @@ namespace Mineman.Service.Managers
 
                 throw new ImageCreationException("No ID recived from build");
             }
+        }
+
+        public async Task DeleteImage(Image image)
+        {
+            if (image.BuildStatus?.BuildSucceeded == true)
+            {
+                await DeleteDockerImage(image.DockerId);
+            }
+
+            var zipPath = _environment.BuildPath(_configuration.ImageZipFileDirectory, image.ImageContentZipPath);
+            File.Delete(zipPath);
+        }
+
+        private async Task<bool> DeleteDockerImage(string imageName)
+        {
+            var result = await _dockerClient.Images.DeleteImageAsync(imageName, new ImageDeleteParameters
+            {
+
+            });
+
+            if (!result.Any(x => x.Keys.Contains("Deleted")))
+            {
+                _logger.LogWarning($"Image may not have been removed correctly");
+            }
+
+            return result.Any(x => x.Keys.Contains("Deleted"));
         }
     }
 }

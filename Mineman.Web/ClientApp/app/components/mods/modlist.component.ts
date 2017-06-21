@@ -34,6 +34,7 @@ export class ModList implements OnInit {
         var loadingHandle = this.loadingService.setLoading("Deleting mod");
 
         this.modsService.Delete(mod.id)
+            .catch(this.errorService.catchObservable)
             .subscribe(() => {
                 var index = this.mods.indexOf(mod);
                 this.mods.splice(index, 1);

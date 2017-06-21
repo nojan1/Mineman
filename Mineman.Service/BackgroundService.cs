@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Mineman.Service.Helpers;
 using Mineman.Service.Managers;
 using Mineman.Service.Rcon;
@@ -19,6 +20,7 @@ namespace Mineman.Service
         private readonly MapGenerationService _mapGenerationService;
         private readonly WorldInfoService _worldInfoService;
         private readonly IServiceScopeFactory _serviceFactory;
+        private readonly Common.Models.Configuration _configuration;
 
         private Task _backgroundTasks;
         private DateTimeOffset _nextBackgroundTaskRun;
@@ -26,6 +28,7 @@ namespace Mineman.Service
         public BackgroundService(ILogger<BackgroundService> logger,
                                  IConnectionPool connectionPool,
                                  MapGenerationService mapGenerationService,
+                                 IOptions<Common.Models.Configuration> configuration,
                                  WorldInfoService worldInfoService,
                                  IServiceScopeFactory serviceFactory)
         {
@@ -34,6 +37,7 @@ namespace Mineman.Service
             _connectionPool = connectionPool;
             _mapGenerationService = mapGenerationService;
             _worldInfoService = worldInfoService;
+            _configuration = configuration.Value;
 
             _nextBackgroundTaskRun = DateTimeOffset.Now;
         }
@@ -85,7 +89,7 @@ namespace Mineman.Service
 
                         _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
 
-                        if ((_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
+                        if (_configuration.EnableBackgroundWorldProcessing && (_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
                         {
                             _backgroundTasks = Task.Run(() =>
                             {

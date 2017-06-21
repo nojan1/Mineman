@@ -14,5 +14,6 @@ namespace Mineman.Service.Repositories
         Task<MapImagePaths> GetMapImagePaths(int worldId);
         Task<string> GetWorldInfoPath(int worldId);
         Task<string> GetWorldMapInfoPath(int worldId);
+        IDictionary<int, Server[]> GetWorldUsage();
     }
 }

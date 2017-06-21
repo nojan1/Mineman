@@ -12,7 +12,7 @@
                 Display name
             </th>
             <th>
-                Used by (not implemented)
+                Used by x servers
             </th>
             <th></th>
         </tr>
@@ -23,10 +23,10 @@
                 {{world.displayName}}
             </td>
             <td>
-                N/A
+                {{world.serversUsingWorld.length}}
             </td>
             <td>
-                <button class="btn btn-danger disabled pull-right">
+                <button class="btn btn-danger pull-right" [disabled]="world.serversUsingWorld.length" (click)="delete($event, world)">
                     Delete
                 </button>
             </td>

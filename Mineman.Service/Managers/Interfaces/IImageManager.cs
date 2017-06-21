@@ -8,5 +8,6 @@ namespace Mineman.Service.Managers
         Task CreateImage(Image image);
         Task RemoveUnsuedImages();
         Task InvalidateMissingImages();
+        Task DeleteImage(Image image);
     }
 }
