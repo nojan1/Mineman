@@ -17,6 +17,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mineman.Service.Repositories
 {
+    public class WorldInUseException : Exception { }
+
     public class WorldRepository : IWorldRepository
     {
         private readonly DatabaseContext _context;
@@ -69,7 +71,7 @@ namespace Mineman.Service.Repositories
         public async Task<World> AddFromZip(string displayName, ZipArchive zipArchive)
         {
             var folderName = Guid.NewGuid().ToString("N");
-            var worldFolderPath = Path.Combine(_environment.ContentRootPath, _configuration.WorldDirectory, folderName);
+            var worldFolderPath = _environment.BuildPath(_configuration.WorldDirectory, folderName);
 
             Directory.CreateDirectory(worldFolderPath);
 
@@ -106,6 +108,27 @@ namespace Mineman.Service.Repositories
             return worlds.ToDictionary(i => i.ID,
                 i => servers.Where(s => s.World?.ID == i.ID).ToArray());
         }
-        
+
+        public async Task Delete(int worldId)
+        {
+            var worldInUse = await _context.Servers.Include(s => s.World)
+                                                   .Where(s => s.World != null)
+                                                   .Select(s => s.World.ID)
+                                                   .ContainsAsync(worldId);
+
+            if (worldInUse)
+            {
+                throw new WorldInUseException();
+            }
+
+            var world = await _context.Worlds.FindAsync(worldId);
+            _context.Worlds.Remove(world);
+
+            //Remove from filesystem
+            var worldFolderPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
+            Directory.Delete(worldFolderPath, true);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

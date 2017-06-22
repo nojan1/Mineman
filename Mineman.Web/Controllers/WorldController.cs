@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Mineman.Web.Controllers
@@ -56,5 +57,18 @@ namespace Mineman.Web.Controllers
             return Ok(world);
         }
 
+        [HttpDelete("{worldId: int}")]
+        public async Task<IActionResult> Delete(int worldId)
+        {
+            try
+            {
+                await _worldRepository.Delete(worldId);
+                return Ok();
+            }
+            catch (WorldInUseException)
+            {
+                return StatusCode((int)HttpStatusCode.Conflict);
+            }
+        }
     }
 }
