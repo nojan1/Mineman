@@ -8,9 +8,9 @@ namespace Mineman.WorldParsing.Entities
     public class Entity
     {
         public string Id { get; private set; }
-        public double X { get; private set; }
-        public double Y { get; private set; }
-        public double Z { get; private set; }
+        public double X { get; protected set; }
+        public double Y { get; protected set; }
+        public double Z { get; protected set; }
         public TagCompound Tag { get; private set; }
 
         public Entity(string id, TagCompound tag)

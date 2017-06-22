@@ -57,7 +57,7 @@ namespace Mineman.Web.Controllers
             return Ok(world);
         }
 
-        [HttpDelete("{worldId: int}")]
+        [HttpDelete("{worldId:int}")]
         public async Task<IActionResult> Delete(int worldId)
         {
             try

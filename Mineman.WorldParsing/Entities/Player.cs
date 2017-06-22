@@ -21,6 +21,12 @@ namespace Mineman.WorldParsing.Entities
                             .Cast<TagCompound>()
                             .Select(t => new InventoryItem(t))
                             .ToArray();
+
+            //Players have stuff flipped
+            var positions = tag.GetList("Pos");
+            X = Convert.ToDouble(positions.Value[0].GetValue());
+            Y = Convert.ToDouble(positions.Value[1].GetValue());
+            Z = Convert.ToDouble(positions.Value[2].GetValue());
         }
 
         public override string ToString()
