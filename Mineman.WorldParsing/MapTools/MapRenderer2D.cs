@@ -103,7 +103,7 @@ namespace Mineman.WorldParsing.MapTools
                                     continue;
                                 }
 
-                                color = BlendBlocks(bitmap[x, z], baseColor, block.SkyLight);
+                                color = BlendBlocks(bitmap[x, z], baseColor, Math.Max(block.SkyLight, (byte)(block.BlockLight / 2)));
                                 lastBaseColor[(x, z)] = baseColor;
                             }
                             else
@@ -113,10 +113,10 @@ namespace Mineman.WorldParsing.MapTools
                             }
 
                             //Handle blocklight; ie torches, lava etc
-                            if (block.BlockLight > 0)
-                            {
-                                color = BlendBlocks(color, _textureProvider.GetBlocklightColor(), (byte)(block.BlockLight / 2));
-                            }
+                            //if (block.BlockLight > 0)
+                            //{
+                            //    color = BlendBlocks(color, _textureProvider.GetBlocklightColor(), (byte)(block.BlockLight / 2));
+                            //}
 
                             if (transparentBlocks.Contains(block.BaseId))
                             {
