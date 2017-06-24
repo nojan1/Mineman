@@ -20,9 +20,9 @@ namespace Mineman.WorldParsing.Tests
             Assert.Equal(16.76, players.First().Health, 2);
             Assert.Equal("1b785d21-567b-4ef2-be7e-df040c8a1db3", players.First().UUID);
             Assert.Equal("player", players.First().Id);
-            Assert.Equal(510.227, players.First().X, 3);
-            Assert.Equal(-310.665, players.First().Y, 3);
-            Assert.Equal(58, players.First().Z);
+            Assert.Equal(510.227, players.First().Z, 3);
+            Assert.Equal(-310.665, players.First().X, 3);
+            Assert.Equal(58, players.First().Y);
         }
 
         [Fact]
