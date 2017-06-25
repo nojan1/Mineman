@@ -12,6 +12,7 @@ import { ServerService } from '../../services/servers.service';
 export class ServerComponent implements OnInit {
     @Input() serverWithInfo: any;
 
+    public playerNames: string[];
     public queryFailed: boolean;
 
     constructor(public authService: AuthService,
@@ -24,6 +25,7 @@ export class ServerComponent implements OnInit {
                 .catch(this.errorService.catchObservableSilent)
                 .subscribe(query => {
                     this.serverWithInfo.query = query;
+                    this.playerNames = query.players.map(p => p.name);
                 }, () => {
                     this.queryFailed = true;
                 });

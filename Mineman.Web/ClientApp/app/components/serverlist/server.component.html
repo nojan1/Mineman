@@ -65,7 +65,7 @@
                 </div>
 
                 <div *ngIf="serverWithInfo.query.players && serverWithInfo.query.players.length">
-                    <b>Players online: </b> {{serverWithInfo.query.players | join:", "}}
+                    <b>Players online: </b> {{playerNames | join:", "}}
                 </div>
             </div>
 
