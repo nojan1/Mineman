@@ -23,7 +23,7 @@ namespace Mineman.Service.Tests
         [Fact]
         public void lsdgj()
         {
-            var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\worlds\604b2298e89a4733ad54f607ab83948e");
+            //var parser = new WorldParser(@"C:\Users\hedlundn\Desktop\worlds\604b2298e89a4733ad54f607ab83948e");
 
             //var databaseOptions = new DbContextOptionsBuilder<DatabaseContext>()
             //    .UseInMemoryDatabase()
@@ -82,10 +82,14 @@ namespace Mineman.Service.Tests
             //                           .SelectMany(c => c.Entities)
             //                           .ToList();
 
-            var renderer = new MapRenderer2D(parser, new TextureProvider(""));
+            //var renderer = new MapRenderer2D(parser, new TextureProvider(new WorldParsing.MapTools.Models.TextureOptions
+            //{
+            //    BlockColorsFilePath = "../../../../Mineman.WorldParsing/Resources/blockcolors.json",
+            //    BiomeColorsFilePath = "../../../../Mineman.WorldParsing/Resources/biomecolors.json"
+            //}));
             //renderer.GenerateBiomeBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld-biome.png");
 
-            renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
+            //renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
         }
     }
 }

@@ -12,4 +12,13 @@
     <PackageReference Include="System.ValueTuple" Version="4.4.0-preview1-25305-02" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\biomecolors.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\blockcolors.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
