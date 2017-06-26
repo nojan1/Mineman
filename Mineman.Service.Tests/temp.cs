@@ -83,9 +83,9 @@ namespace Mineman.Service.Tests
             //                           .ToList();
 
             var renderer = new MapRenderer2D(parser, new TextureProvider(""));
-            renderer.GenerateBiomeBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld-biome.png");
+            //renderer.GenerateBiomeBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld-biome.png");
 
-            //renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
+            renderer.GenerateBlockBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
         }
     }
 }

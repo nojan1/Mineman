@@ -41,17 +41,19 @@ namespace Mineman.WorldParsing.MapTools
 
         private static readonly Dictionary<string, Rgba32> blockColorTable = new Dictionary<string, Rgba32>()
         {
-            {"1", Rgba32.Gray},
-            {"2", Rgba32.LightGreen },
-            {"3", Rgba32.Sienna },
-            {"4", Rgba32.DarkGray },
-            {"5", Rgba32.SaddleBrown },
-            {"8", Rgba32.Blue },
-            {"9", Rgba32.Blue },
+            {"1", Rgba32.Gray}, //Stone
+            {"2", Rgba32.LightGreen }, //Grass
+            {"3", Rgba32.Sienna }, //Dirt
+            {"4", Rgba32.DarkGray }, //Cobblestone
+            {"5", Rgba32.SaddleBrown }, //Wood plank
+            {"6", Rgba32.DarkGreen }, //Sapling
+            {"8", Rgba32.LightBlue }, //Flowing water
+            {"9", Rgba32.Blue }, //Still water
             {"10", Rgba32.OrangeRed },
             {"11", Rgba32.Orange },
             {"12", Rgba32.Beige },
             {"13", Rgba32.SlateGray },
+            {"15", Rgba32.Gray },
             {"16", Rgba32.DimGray },
             {"17", Rgba32.SaddleBrown },
             {"18", Rgba32.DarkGreen },
@@ -149,6 +151,8 @@ namespace Mineman.WorldParsing.MapTools
             {"190", Rgba32.Brown },
             {"191", Rgba32.Brown },
             {"192", Rgba32.Brown },
+            {"207", Rgba32.MediumPurple },
+            {"208", Rgba32.FromHex("e1ee90") },
             {"212", Rgba32.DarkCyan }
         };
 
