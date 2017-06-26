@@ -156,17 +156,16 @@ namespace Mineman.WorldParsing.MapTools
             {"212", Rgba32.DarkCyan }
         };
 
-        private string _resourcePackPath;
-
-        public TextureProvider(string resourcePackPath)
+        private readonly TextureOptions _textureOptions;
+        public TextureProvider(TextureOptions textureOptions)
         {
-            _resourcePackPath = resourcePackPath;
+            _textureOptions = textureOptions;
         }
 
         public Rgba32 GetColorForBlock(Block block, Rgba32 fallbackColor)
         {
-            if (string.IsNullOrEmpty(_resourcePackPath))
-            {
+            //if (string.IsNullOrEmpty(_resourcePackPath))
+            //{
                 if (blockColorTable.ContainsKey(block.Id))
                 {
                     return blockColorTable[block.Id];
@@ -179,38 +178,36 @@ namespace Mineman.WorldParsing.MapTools
                 {
                     return fallbackColor;
                 }
-            }
-            throw new NotImplementedException();
-            //Parse the resource stuff
-            return ColorFromBlockTexture(block.Code, fallbackColor);
+            //}
+            //throw new NotImplementedException();
+            ////Parse the resource stuff
+            //return ColorFromBlockTexture(block.Code, fallbackColor);
         }
 
         public Rgba32 GetColorForBiome(BiomeType biomeType, Rgba32 fallbackColor)
         {
-            if (string.IsNullOrEmpty(_resourcePackPath))
-            {
+            //if (string.IsNullOrEmpty(_resourcePackPath))
+            //{
                 if (!biomeColorTable.ContainsKey(biomeType))
                     return fallbackColor;
 
                 return biomeColorTable[biomeType];
-            }
+            //}
 
             //Parse the resource stuff
-
-            return Rgba32.Black;
         }
-        private Rgba32 ColorFromBlockTexture(string code, Rgba32 fallbackColor)
-        {
-            var blockStateFilePath = Path.Combine(_resourcePackPath, "assets", "minecraft", "blockstates", $"{code}.json");
-            if (!File.Exists(blockStateFilePath))
-            {
-                return fallbackColor;
-            }
+        //private Rgba32 ColorFromBlockTexture(string code, Rgba32 fallbackColor)
+        //{
+        //    var blockStateFilePath = Path.Combine(_resourcePackPath, "assets", "minecraft", "blockstates", $"{code}.json");
+        //    if (!File.Exists(blockStateFilePath))
+        //    {
+        //        return fallbackColor;
+        //    }
 
-            var blockStateJson = File.ReadAllText(blockStateFilePath);
-            var blockState = ParseBlockstate(blockStateJson);
-            return Rgba32.Aqua;
-        }
+        //    var blockStateJson = File.ReadAllText(blockStateFilePath);
+        //    var blockState = ParseBlockstate(blockStateJson);
+        //    return Rgba32.Aqua;
+        //}
 
         private BlockState ParseBlockstate(string blockStateJson)
         {

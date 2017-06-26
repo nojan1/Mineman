@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
+using Mineman.Common.Models.Configuration;
 using Mineman.Service.Helpers;
 using System;
 using System.Collections.Generic;
@@ -13,15 +14,19 @@ using System.Threading.Tasks;
 
 namespace Mineman.Service.MinecraftQuery
 {
+    public class QueryException : Exception {
+        public QueryException(string message) : base(message) { }
+    }
+    
     public class MinecraftServerQuery : IMinecraftServerQuery
     {
         private const int STATISTIC = 0x00;
         private const int HANDSHAKE = 0x09;
         private readonly string[] knownKeys = new string[] { "hostname", "gametype", "version", "plugins", "map", "numplayers", "maxplayers", "hostport", "hostip", "game_id" };
 
-        private string queryIp;
+        private readonly string queryIp;
 
-        public MinecraftServerQuery(IOptions<Configuration> configuration)
+        public MinecraftServerQuery(IOptions<ServerCommunicationOptions> configuration)
         {
             queryIp = configuration.Value.QueryIpAddress;
         }
@@ -67,13 +72,13 @@ namespace Mineman.Service.MinecraftQuery
 
             if(await udp.SendAsync(data.ToArray(), data.Count, destination) != data.Count)
             {
-                throw new Exception("Failed to send data");
+                throw new QueryException("Failed to send data");
             }
 
             var response = await udp.ReceiveAsync().WithTimeout(TimeSpan.FromSeconds(5));
             if(response.Buffer.Length < 5 || response.Buffer[0] != data[2])
             {
-                throw new Exception($"Recieved data is incorrect. Data: {BitConverter.ToString(response.Buffer)}");
+                throw new QueryException($"Recieved data is incorrect. Data: {BitConverter.ToString(response.Buffer)}");
             }
 
             return response.Buffer.Skip(5).ToArray();

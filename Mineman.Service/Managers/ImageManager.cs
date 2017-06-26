@@ -7,8 +7,10 @@ using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
+using Mineman.Common.Models.Configuration;
 using Mineman.Service.Helpers;
 using Mineman.Service.Models;
+using Mineman.Service.Models.Configuration;
 using Newtonsoft.Json;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
@@ -34,19 +36,22 @@ namespace Mineman.Service.Managers
     {
         private readonly DatabaseContext _context;
         private readonly IDockerClient _dockerClient;
-        private readonly Configuration _configuration;
+        private readonly PathOptions _pathOptions;
+        private readonly DockerOptions _dockerOptions;
         private readonly IHostingEnvironment _environment;
         private readonly ILogger<ImageManager> _logger;
 
         public ImageManager(DatabaseContext context,
                             IDockerClient dockerClient,
-                            IOptions<Configuration> configuration,
+                            IOptions<PathOptions> pathOptions,
+                            IOptions<DockerOptions> dockerOptions,
                             IHostingEnvironment environment,
                             ILogger<ImageManager> logger)
         {
             _context = context;
             _dockerClient = dockerClient;
-            _configuration = configuration.Value;
+            _pathOptions = pathOptions.Value;
+            _dockerOptions = dockerOptions.Value;
             _environment = environment;
             _logger = logger;
         }
@@ -78,9 +83,9 @@ namespace Mineman.Service.Managers
         {
             _logger.LogInformation($"About to create docker image for mineman image. ImageID: {image.ID}");
 
-            var dockerFilePath = _environment.BuildPath(_configuration.DockerfilePath);
-            var workingDir = _environment.BuildPath(_configuration.ImageZipFileDirectory, Guid.NewGuid().ToString("N"));
-            var zipPath = _environment.BuildPath(_configuration.ImageZipFileDirectory, image.ImageContentZipPath);
+            var dockerFilePath = _environment.BuildPath(_dockerOptions.DockerfilePath);
+            var workingDir = _environment.BuildPath(_pathOptions.ImageZipFileDirectory, Guid.NewGuid().ToString("N"));
+            var zipPath = _environment.BuildPath(_pathOptions.ImageZipFileDirectory, image.ImageContentZipPath);
 
             string imageId = null;
             var logBuilder = new StringBuilder();
@@ -210,7 +215,7 @@ namespace Mineman.Service.Managers
                 await DeleteDockerImage(image.DockerId);
             }
 
-            var zipPath = _environment.BuildPath(_configuration.ImageZipFileDirectory, image.ImageContentZipPath);
+            var zipPath = _environment.BuildPath(_pathOptions.ImageZipFileDirectory, image.ImageContentZipPath);
             File.Delete(zipPath);
         }
 

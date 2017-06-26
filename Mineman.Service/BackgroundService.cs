@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mineman.Service.Helpers;
 using Mineman.Service.Managers;
+using Mineman.Service.Models.Configuration;
 using Mineman.Service.Rcon;
 using Mineman.Service.Repositories;
 using System;
@@ -20,7 +21,7 @@ namespace Mineman.Service
         private readonly MapGenerationService _mapGenerationService;
         private readonly WorldInfoService _worldInfoService;
         private readonly IServiceScopeFactory _serviceFactory;
-        private readonly Common.Models.Configuration _configuration;
+        private readonly BackgroundServiceOptions _backgroundServiceOptions;
 
         private Task _backgroundTasks;
         private DateTimeOffset _nextBackgroundTaskRun;
@@ -28,7 +29,7 @@ namespace Mineman.Service
         public BackgroundService(ILogger<BackgroundService> logger,
                                  IConnectionPool connectionPool,
                                  MapGenerationService mapGenerationService,
-                                 IOptions<Common.Models.Configuration> configuration,
+                                 IOptions<BackgroundServiceOptions> options,
                                  WorldInfoService worldInfoService,
                                  IServiceScopeFactory serviceFactory)
         {
@@ -37,7 +38,7 @@ namespace Mineman.Service
             _connectionPool = connectionPool;
             _mapGenerationService = mapGenerationService;
             _worldInfoService = worldInfoService;
-            _configuration = configuration.Value;
+            _backgroundServiceOptions = options.Value;
 
             _nextBackgroundTaskRun = DateTimeOffset.Now;
         }
@@ -89,7 +90,7 @@ namespace Mineman.Service
 
                         _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
 
-                        if (_configuration.EnableBackgroundWorldProcessing && (_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
+                        if (_backgroundServiceOptions.EnableBackgroundWorldProcessing && (_backgroundTasks == null || _backgroundTasks.IsCompleted) && _nextBackgroundTaskRun <= DateTimeOffset.Now)
                         {
                             _backgroundTasks = Task.Run(() =>
                             {
@@ -98,7 +99,7 @@ namespace Mineman.Service
                             })
                             .ContinueWith((task) =>
                             {
-                                _nextBackgroundTaskRun = DateTimeOffset.Now + TimeSpan.FromHours(1);
+                                _nextBackgroundTaskRun = DateTimeOffset.Now + _backgroundServiceOptions.WorldProcessingInterval;
                             });
                         }
                     }
@@ -108,7 +109,7 @@ namespace Mineman.Service
                     _logger.LogError(new EventId(), e, $"BackgroundService: Error in working loop");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(2));
+                await Task.Delay(_backgroundServiceOptions.WorkingLoopSleepInterval);
             }
         }
 

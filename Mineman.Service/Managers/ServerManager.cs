@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
+using Mineman.Common.Models.Configuration;
 using Mineman.Service.Helpers;
 using System;
 using System.Collections.Generic;
@@ -28,19 +29,19 @@ namespace Mineman.Service.Managers
     {
         private readonly DatabaseContext _context;
         private readonly IDockerClient _dockerClient;
-        private readonly Configuration _configuration;
+        private readonly PathOptions _pathOptions;
         private readonly IHostingEnvironment _environment;
         private readonly ILogger<ServerManager> _logger;
 
         public ServerManager(DatabaseContext context,
                              IDockerClient dockerClient,
-                             IOptions<Configuration> configuration,
+                             IOptions<PathOptions> pathOptions,
                              IHostingEnvironment environment,
                              ILogger<ServerManager> logger)
         {
             _context = context;
             _dockerClient = dockerClient;
-            _configuration = configuration.Value;
+            _pathOptions = pathOptions.Value;
             _environment = environment;
             _logger = logger;
         }
@@ -55,7 +56,7 @@ namespace Mineman.Service.Managers
 
                     if (server.Image == null)
                     {
-                        throw new ArgumentNullException("No image has been set on server");
+                        throw new ArgumentNullException("server.Image", "No image has been set on server");
                     }
 
                     if (string.IsNullOrEmpty(server.ContainerID) ||
@@ -237,8 +238,8 @@ namespace Mineman.Service.Managers
         {
             _logger.LogInformation($"About to create container for server. ServerID: {server.ID}, ImageID: {server.Image.ID}");
 
-            var worldPath = _environment.BuildPath(_configuration.WorldDirectory, server.World.Path);
-            var serverPropertiesPath = _environment.BuildPath(_configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
+            var worldPath = _environment.BuildPath(_pathOptions.WorldDirectory, server.World.Path);
+            var serverPropertiesPath = _environment.BuildPath(_pathOptions.ServerPropertiesDirectory, $"{server.ID}-server.properties");
 
             var heapMax = server.MemoryAllocationMB;
             var heapStart = Convert.ToInt32(server.MemoryAllocationMB * 0.6);
@@ -258,7 +259,7 @@ namespace Mineman.Service.Managers
                 foreach (var mod in server.Mods)
                 {
                     var containerPath = $"/server/{server.Image.ModDirectory}/{mod.Path}";
-                    var localPath = _environment.BuildPath(_configuration.ModDirectory, mod.Path);
+                    var localPath = _environment.BuildPath(_pathOptions.ModDirectory, mod.Path);
 
                     binds.Append($"{localPath}:{containerPath}");
                 }
@@ -299,7 +300,7 @@ namespace Mineman.Service.Managers
 
         private void WriteServerProperties(Server server)
         {
-            var serverPropertiesPath = _environment.BuildPath(_configuration.ServerPropertiesDirectory, $"{server.ID}-server.properties");
+            var serverPropertiesPath = _environment.BuildPath(_pathOptions.ServerPropertiesDirectory, $"{server.ID}-server.properties");
             File.WriteAllText(serverPropertiesPath, server.SerializedProperties);
         }
     }

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Mineman.Common.Models;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Mineman.Common.Models.Configuration;
 
 namespace Mineman.Service.Repositories
 {
@@ -20,16 +21,16 @@ namespace Mineman.Service.Repositories
     public class ModRepository : IModRepository
     {
         private readonly IHostingEnvironment _environment;
-        private readonly Configuration _configuration;
+        private readonly PathOptions _pathOptions;
         private readonly DatabaseContext _context;
 
         public ModRepository(DatabaseContext context,
                              IHostingEnvironment environment,
-                             IOptions<Configuration> configuration)
+                             IOptions<PathOptions> pathOptions)
         {
             _context = context;
             _environment = environment;
-            _configuration = configuration.Value;
+            _pathOptions = pathOptions.Value;
         }
 
         public ICollection<Mod> GetMods()
@@ -46,7 +47,7 @@ namespace Mineman.Service.Repositories
         public async Task<Mod> Add(ModAddModel modAddModel)
         {
             string fileName = modAddModel.ModFile.First().FileName;
-            string modFilePath = _environment.BuildPath(_configuration.ModDirectory, fileName);
+            string modFilePath = _environment.BuildPath(_pathOptions.ModDirectory, fileName);
 
             using (var file = File.Create(modFilePath))
             {

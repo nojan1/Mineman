@@ -32,6 +32,9 @@ using Mineman.WorldParsing;
 using Mineman.WorldParsing.MapTools;
 using Mineman.Service.Helpers;
 using Microsoft.AspNetCore.Http.Features;
+using Mineman.Common.Models.Configuration;
+using Mineman.WorldParsing.MapTools.Models;
+using Mineman.Service.Models.Configuration;
 
 namespace WebApplicationBasic
 {
@@ -70,8 +73,11 @@ namespace WebApplicationBasic
 
             services.AddTransient<IDockerClient>(service =>
             {
+                var dockerOptions = service.GetService<IOptions<DockerOptions>>();
+
                 return new DockerClientConfiguration(new Uri(
-                        Configuration.GetValue<string>("DockerHost")
+                        dockerOptions.Value.DockerHost
+                        //Configuration.GetSection("DockerOptions").GetValue<string>("DockerHost")
                     )).CreateClient(Version.Parse("1.24"));
             });
             services.AddScoped<IServerRepository, ServerRepository>();
@@ -87,7 +93,8 @@ namespace WebApplicationBasic
 
             services.AddTransient<ITextureProvider, TextureProvider>(service =>
             {
-                return new TextureProvider(Configuration.GetValue<string>("MapGenerationResourcePackPath"));
+                var mapGenerationOptions = service.GetService<IOptions<TextureOptions>>();
+                return new TextureProvider(mapGenerationOptions.Value);
             });
             services.AddTransient<IWorldParserFactory, WorldParserFactory>();
             services.AddTransient<IMapRendererFactory, MapRendererFactory>();
@@ -95,7 +102,11 @@ namespace WebApplicationBasic
             services.AddScoped<WorldInfoService>();
             services.AddScoped<BackgroundService>();
 
-            services.Configure<Mineman.Common.Models.Configuration>(Configuration);
+            services.Configure<DockerOptions>(Configuration.GetSection("DockerOptions"));
+            services.Configure<PathOptions>(Configuration.GetSection("PathOptions"));
+            services.Configure<BackgroundServiceOptions>(Configuration.GetSection("BackgroundServiceOptions"));
+            services.Configure<ServerCommunicationOptions>(Configuration.GetSection("ServerCommunicationOptions"));
+            services.Configure<TextureOptions>(Configuration.GetSection("TextureOptions"));
 
             // Add framework services.
             services.AddMvc();
@@ -112,7 +123,7 @@ namespace WebApplicationBasic
                               ILoggerFactory loggerFactory,
                               DatabaseContext context,
                               BackgroundService service,
-                              IOptions<Configuration> configuration,
+                              IOptions<PathOptions> pathOptions,
                               UserManager<ApplicationUser> userManager)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -190,7 +201,7 @@ namespace WebApplicationBasic
 
             context.Database.EnsureCreated();
             //context.Database.Migrate(); TODO: Support migrations
-            EnsureFoldersCreated(env, configuration.Value);
+            EnsureFoldersCreated(env, pathOptions.Value);
             EnsureAdminUserExists(userManager);
 
             service.Start();
@@ -210,7 +221,7 @@ namespace WebApplicationBasic
             }
         }
 
-        private void EnsureFoldersCreated(IHostingEnvironment env, Configuration configuration)
+        private void EnsureFoldersCreated(IHostingEnvironment env, PathOptions pathOptions)
         {
             Action<string> createDirectory = (path) =>
             {
@@ -218,10 +229,10 @@ namespace WebApplicationBasic
                 Directory.CreateDirectory(fullPath);
             };
 
-            createDirectory(configuration.WorldDirectory);
-            createDirectory(configuration.ServerPropertiesDirectory);
-            createDirectory(configuration.ModDirectory);
-            createDirectory(configuration.ImageZipFileDirectory);
+            createDirectory(pathOptions.WorldDirectory);
+            createDirectory(pathOptions.ServerPropertiesDirectory);
+            createDirectory(pathOptions.ModDirectory);
+            createDirectory(pathOptions.ImageZipFileDirectory);
         }
     }
 }

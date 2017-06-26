@@ -1,6 +1,7 @@
 ﻿using CoreRCON;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Models;
+using Mineman.Common.Models.Configuration;
 using Mineman.Service.Helpers;
 using Mineman.Service.Repositories;
 using System;
@@ -19,7 +20,7 @@ namespace Mineman.Service.Rcon
         private List<RconConnection> _connections = new List<RconConnection>();
         private IPAddress _rconIP;
 
-        public ConnectionPool(IOptions<Configuration> configuration,
+        public ConnectionPool(IOptions<ServerCommunicationOptions> configuration,
                               IServerRepository serverRepository)
         {
             _rconIP = IPAddress.Parse(configuration.Value.QueryIpAddress);

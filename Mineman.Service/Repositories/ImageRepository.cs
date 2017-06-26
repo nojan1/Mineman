@@ -5,6 +5,7 @@ using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models;
 using Mineman.Common.Models.Client;
+using Mineman.Common.Models.Configuration;
 using Mineman.Service.Helpers;
 using System;
 using System.Collections.Generic;
@@ -20,15 +21,15 @@ namespace Mineman.Service.Repositories
     public class ImageRepository : IImageRepository
     {
         private readonly DatabaseContext _context;
-        private readonly Configuration _configuration;
+        private readonly PathOptions _pathOptions;
         private readonly IHostingEnvironment _environment;
 
         public ImageRepository(DatabaseContext context,
-                               IOptions<Configuration> configuration,
+                               IOptions<PathOptions> pathOptions,
                                IHostingEnvironment environment)
         {
             _context = context;
-            _configuration = configuration.Value;
+            _pathOptions = pathOptions.Value;
             _environment = environment;
         }
 
@@ -49,7 +50,7 @@ namespace Mineman.Service.Repositories
         public async Task<Image> Add(ImageAddModel imageAddModel)
         {
             string zipName = $"{Guid.NewGuid().ToString("N")}.zip";
-            string imageContentZipPath = _environment.BuildPath(_configuration.ImageZipFileDirectory, zipName);
+            string imageContentZipPath = _environment.BuildPath(_pathOptions.ImageZipFileDirectory, zipName);
             
             using(var file = File.Create(imageContentZipPath))
             {

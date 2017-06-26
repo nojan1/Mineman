@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Database;
+using Mineman.Common.Models.Configuration;
 using Mineman.Service.Helpers;
 using Mineman.Service.Models;
 using Mineman.WorldParsing;
@@ -25,20 +26,20 @@ namespace Mineman.Service
 
         private readonly IWorldParserFactory _worldParserFactory;
         private readonly IHostingEnvironment _environment;
-        private readonly Common.Models.Configuration _configuration;
+        private readonly PathOptions _pathOptions;
         private readonly ILogger<WorldInfoService> _logger;
         private readonly IServiceScopeFactory _serviceFactory;
 
         public WorldInfoService(IServiceScopeFactory serviceFactory,
                                 IWorldParserFactory worldParserFactory,
                                 IHostingEnvironment environment,
-                                IOptions<Common.Models.Configuration> configuration,
+                                IOptions<PathOptions> pathOptions,
                                 ILogger<WorldInfoService> logger)
         {
             _serviceFactory = serviceFactory;
             _worldParserFactory = worldParserFactory;
             _environment = environment;
-            _configuration = configuration.Value;
+            _pathOptions = pathOptions.Value;
             _logger = logger;
         }
 
@@ -61,7 +62,7 @@ namespace Mineman.Service
                         {
                             _logger.LogInformation($"Parsing info for world. ID: {world.ID} Path: '{world.Path}'");
 
-                            var worldPath = _environment.BuildPath(_configuration.WorldDirectory, world.Path);
+                            var worldPath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path);
                             var parser = _worldParserFactory.Create(worldPath);
 
                             var worldInfo = new WorldInfoModel();
@@ -72,7 +73,7 @@ namespace Mineman.Service
                             worldInfo.SpawnY = parser.Level?.SpawnY ?? 0;
                             worldInfo.SpawnZ = parser.Level?.SpawnZ ?? 0;
 
-                            var worldInfoFilePath = _environment.BuildPath(_configuration.WorldDirectory, world.Path, "worldinfo.json");
+                            var worldInfoFilePath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path, "worldinfo.json");
                             File.WriteAllText(worldInfoFilePath, JsonConvert.SerializeObject(worldInfo));
 
                             _logger.LogInformation($"Finished parsing info for world. ID: {world.ID} Path: '{world.Path}'");

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Models;
 using Mineman.Common.Models.Client;
+using Mineman.Common.Models.Configuration;
 using Mineman.Service.Helpers;
 using Mineman.Service.Repositories;
 using Mineman.Web.Models.Client;
@@ -21,15 +22,15 @@ namespace Mineman.Web.Controllers
     public class ModController : Controller
     {
         private readonly IModRepository _modRepository;
-        private readonly Configuration _configuration;
+        private readonly PathOptions _pathOptions;
         private readonly IHostingEnvironment _environment;
 
         public ModController(IModRepository modRepository,
-                             IOptions<Configuration> configuration,
+                             IOptions<PathOptions> pathOptions,
                              IHostingEnvironment environment)
         {
             _modRepository = modRepository;
-            _configuration = configuration.Value;
+            _pathOptions = pathOptions.Value;
             _environment = environment;
         }
 
@@ -67,7 +68,7 @@ namespace Mineman.Web.Controllers
                 return BadRequest();
             }
 
-            var modPath = _environment.BuildPath(_configuration.ModDirectory, mod.Path);
+            var modPath = _environment.BuildPath(_pathOptions.ModDirectory, mod.Path);
 
             using (var stream = System.IO.File.OpenRead(modPath))
             {
