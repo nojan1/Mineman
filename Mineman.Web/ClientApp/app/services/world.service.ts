@@ -3,13 +3,16 @@ import { Headers, Http } from '@angular/http';
 import { AuthHttp } from 'angular2-jwt';
 
 import { AuthService } from './auth.service';
+import { UploadingBaseService } from './uploadingservice.base';
 
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
-export class WorldService {
-    constructor(private http: Http, private authHttp: AuthHttp, private authService: AuthService) { }
+export class WorldService extends UploadingBaseService {
+    constructor(private http: Http, private authHttp: AuthHttp, authService: AuthService) {
+        super(authService);
+    }
 
     public Get() {
         return this.authHttp.get("/api/world")
@@ -17,10 +20,6 @@ export class WorldService {
     }
 
     public Add(displayName: string, worldFile: any) {
-        if (!this.authService.isLoggedIn) {
-            return Observable.throw("Not logged in");
-        }
-
         var data = new FormData();
         data.append("DisplayName", displayName);
 
@@ -28,11 +27,7 @@ export class WorldService {
             data.append("WorldFile", worldFile);
         }
 
-        var headers = new Headers({
-            "Authorization": "Bearer " + this.authService.GetToken()
-        });
-
-        return this.http.post("/api/world", data, { headers: headers });
+        return this.makeFileRequest("/api/world", data, true);
     }
 
     public GetInfo(serverId: number) {

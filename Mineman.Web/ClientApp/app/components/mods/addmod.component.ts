@@ -31,6 +31,8 @@ export class AddMod implements OnInit {
         if (this.modFile) {
             var loadingHandle = this.loadingService.setLoading("Adding mod");
 
+            this.modsService.progress.subscribe(progress => this.loadingService.updateProgress(loadingHandle, progress));
+
             this.modsService.Add(this.modAddModel.DisplayName, this.modFile)
                 .catch(this.errorService.catchObservable)
                 .subscribe(mod => {
