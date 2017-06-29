@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Models;
 using Mineman.Common.Models.Client;
@@ -24,14 +25,17 @@ namespace Mineman.Web.Controllers
         private readonly IModRepository _modRepository;
         private readonly PathOptions _pathOptions;
         private readonly IHostingEnvironment _environment;
+        private readonly ILogger<ModController> _logger;
 
         public ModController(IModRepository modRepository,
                              IOptions<PathOptions> pathOptions,
-                             IHostingEnvironment environment)
+                             IHostingEnvironment environment,
+                             ILogger<ModController> logger)
         {
             _modRepository = modRepository;
             _pathOptions = pathOptions.Value;
             _environment = environment;
+            _logger = logger;
         }
 
         [HttpGet("")]
@@ -53,7 +57,11 @@ namespace Mineman.Web.Controllers
                 return BadRequest();
             }
 
+            _logger.LogInformation($"Adding new mod to database. Name: '{inputModel.DisplayName}'");
+
             var mod = await _modRepository.Add(inputModel);
+
+            _logger.LogInformation($"Mod was added. Name: '{inputModel.DisplayName}'");
 
             return Ok(mod);
         }
@@ -81,6 +89,7 @@ namespace Mineman.Web.Controllers
         {
             try
             {
+                _logger.LogInformation($"About to delete mod. ModId: '{modId}'");
                 await _modRepository.Delete(modId);
             }
             catch (ModInUseException)

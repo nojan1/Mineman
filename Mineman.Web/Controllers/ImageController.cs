@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Managers;
 using Mineman.Service.Repositories;
@@ -18,12 +19,15 @@ namespace Mineman.Web.Controllers
     {
         private readonly IImageRepository _imageRepository;
         private readonly IImageManager _imageManager;
+        private readonly ILogger<ImageController> _logger;
 
         public ImageController(IImageRepository imageRepository,
-                               IImageManager imageManager)
+                               IImageManager imageManager,
+                               ILogger<ImageController> logger)
         {
             _imageRepository = imageRepository;
             _imageManager = imageManager;
+            _logger = logger;
         }
 
         [HttpGet("")]
@@ -45,7 +49,11 @@ namespace Mineman.Web.Controllers
                 return BadRequest();
             }
 
+            _logger.LogInformation($"Adding new image to database. Name: '{inputModel.DisplayName}'");
+
             var image = await _imageRepository.Add(inputModel);
+
+            _logger.LogInformation($"Image was added. Name: '{inputModel.DisplayName}'");
 
             return Ok(image);
         }
@@ -57,14 +65,20 @@ namespace Mineman.Web.Controllers
 
             try
             {
+                _logger.LogInformation($"About to delete image from database. ImageID: '{imageId}' Name: '{image.Name}'");
                 await _imageRepository.Delete(imageId);
             }
             catch (ImageInUseException)
             {
+                _logger.LogError($"Unable to delete image, still in use by server. ImageID: '{imageId}' Name: '{image.Name}'");
                 return StatusCode((int)HttpStatusCode.Conflict);
             }
 
-            await _imageManager.DeleteImage(image);
+            if (!string.IsNullOrEmpty(image.DockerId))
+            {
+                _logger.LogInformation($"About to delete image in docker. ImageID: '{imageId}' Name: '{image.Name}' DockerId: '{image.DockerId}'");
+                await _imageManager.DeleteImage(image);
+            }
 
             return NoContent();
         }

@@ -6,7 +6,7 @@
                 {{currentInstance.message}}
             </span>
         </div>
-        <div class="progress" *ngIf="currentInstance.hasProgress">
+        <div class="progress" *ngIf="currentInstance.hasProgress && currentInstance.progress >= 0 && currentInstance.progress < 100">
             <div class="progress-bar"
                  role="progressbar"
                  [attr.aria-valuenow]="currentInstance.progress"
