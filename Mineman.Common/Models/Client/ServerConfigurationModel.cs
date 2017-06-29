@@ -17,6 +17,8 @@ namespace Mineman.Common.Models.Client
         public int MemoryAllocationMB { get; set; }
         [Required]
         public int WorldID { get; set; }
+        [Required]
+        public int ImageID { get; set; }
         public ICollection<int> ModIDs { get; set; }
         [Required]
         public ServerProperties Properties { get; set; }

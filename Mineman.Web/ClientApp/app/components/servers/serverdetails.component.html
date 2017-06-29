@@ -46,8 +46,18 @@
                         <div class="form-group">
                             <label>World</label>
                             <select name="WorldID" class="form-control" [(ngModel)]="serverConfigurationModel.WorldID" required>
-                                <option *ngFor="let world of worlds" [ngValue]="world.id">
+                                <option *ngFor="let world of worlds" 
+                                        [ngValue]="world.id">
                                     {{world.displayName}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Image</label>
+                            <select name="ImageID" class="form-control" [(ngModel)]="serverConfigurationModel.ImageID" required>
+                                <option *ngFor="let image of images"
+                                        [ngValue]="image.id">
+                                    {{image.name}}
                                 </option>
                             </select>
                         </div>

@@ -101,6 +101,7 @@ namespace Mineman.Service.Repositories
             server.MemoryAllocationMB = configurationModel.MemoryAllocationMB;
             server.Description = configurationModel.Description;
             server.World = _context.Worlds.FirstOrDefault(w => w.ID == configurationModel.WorldID);
+            server.Image = _context.Images.FirstOrDefault(i => i.ID == configurationModel.ImageID);
 
             if (server.Image.SupportsMods && configurationModel.ModIDs != null)
             {

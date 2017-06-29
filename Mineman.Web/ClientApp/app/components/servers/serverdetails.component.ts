@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Modal } from 'angular2-modal/plugins/bootstrap';
 
 import { WorldService } from '../../services/world.service';
+import { ImageService } from '../../services/image.service';
 import { ErrorService } from '../../services/error.service';
 import { ServerService } from '../../services/servers.service';
 import { LoadingService } from '../../services/loading.service';
@@ -16,6 +17,7 @@ import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 export class ServerDetailsComponent implements OnInit {
 
     public worlds: any[];
+    public images: any[];
     public serverId: number;
     public serverConfigurationModel;
     public isAlive;
@@ -28,6 +30,7 @@ export class ServerDetailsComponent implements OnInit {
         private errorService: ErrorService,
         private route: ActivatedRoute,
         private worldService: WorldService,
+        private imageService: ImageService,
         private toastr: ToastsManager,
         private loadingService: LoadingService,
         vcRef: ViewContainerRef,
@@ -44,6 +47,9 @@ export class ServerDetailsComponent implements OnInit {
 
         this.worldService.Get()
             .subscribe(x => this.worlds = x);
+
+        this.imageService.Get()
+            .subscribe(x => this.images = x);
     }
 
     private loadServer() {
@@ -61,7 +67,8 @@ export class ServerDetailsComponent implements OnInit {
                 this.serverConfigurationModel = {
                     Description: x.server.description,
                     ServerPort: x.server.mainPort,
-                    WorldID: x.server.worldId,
+                    WorldID: x.server.world.id,
+                    ImageID: x.server.image.id,
                     MemoryAllocationMB: x.server.memoryAllocationMB,
                     ModIds: x.server.mods.map(m => m.id),
                     Properties: this.parseServerProperties(x.server.serializedProperties)
@@ -121,6 +128,7 @@ export class ServerDetailsComponent implements OnInit {
             .catch(this.errorService.catchObservable)
             .subscribe(() => {
                 this.toastr.info("Server configuration saved successfully");
+                this.loadServer();
             },
             () => { },
             () => {
