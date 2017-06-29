@@ -27,6 +27,8 @@ export class AddImageComponent{
         if (this.imageFile) {
             var loadingHandle = this.loadingService.setLoading("Adding image");
 
+            this.imageService.progress.subscribe(progress => this.loadingService.updateProgress(loadingHandle, progress));
+
             this.imageService.Add(this.imageAddModel.DisplayName, this.imageAddModel.ModDir, this.imageFile)
                 .catch(this.errorService.catchObservable)
                 .subscribe(
