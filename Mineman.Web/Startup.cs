@@ -35,6 +35,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Mineman.Common.Models.Configuration;
 using Mineman.WorldParsing.MapTools.Models;
 using Mineman.Service.Models.Configuration;
+using Mineman.Web.Filters;
 
 namespace WebApplicationBasic
 {
@@ -109,7 +110,10 @@ namespace WebApplicationBasic
             services.Configure<TextureOptions>(Configuration.GetSection("TextureOptions"));
 
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc(x =>
+            {
+                x.Filters.Add(typeof(GlobalExceptionLoggerFilter));
+            });
             services.Configure<FormOptions>(x =>
             {
                 x.ValueLengthLimit = int.MaxValue;
