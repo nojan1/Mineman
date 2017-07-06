@@ -20,14 +20,17 @@ namespace Mineman.Web.Controllers
         private readonly IImageRepository _imageRepository;
         private readonly IImageManager _imageManager;
         private readonly ILogger<ImageController> _logger;
+        private readonly IRemoteImageRepository _remoteImageRepository;
 
         public ImageController(IImageRepository imageRepository,
                                IImageManager imageManager,
-                               ILogger<ImageController> logger)
+                               ILogger<ImageController> logger,
+                               IRemoteImageRepository remoteImageRepository)
         {
             _imageRepository = imageRepository;
             _imageManager = imageManager;
             _logger = logger;
+            _remoteImageRepository = remoteImageRepository;
         }
 
         [HttpGet("")]
@@ -81,6 +84,28 @@ namespace Mineman.Web.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpGet("remote/")]
+        public IActionResult GetRemoteImages()
+        {
+            return Ok(_remoteImageRepository.Get());
+        }
+
+        [HttpPost("remote/{hash}")]
+        public async Task<IActionResult> AddRemoteImage(string hash)
+        {
+            var remoteImage = _remoteImageRepository.Get()
+                                .FirstOrDefault(x => x.SHA256Hash == hash);
+
+            if(remoteImage == null)
+            {
+                return BadRequest();
+            }
+
+            var image = await _imageRepository.AddRemote(remoteImage);
+
+            return Ok(image);
         }
     }
 }

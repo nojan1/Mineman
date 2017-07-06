@@ -47,3 +47,37 @@
         </tr>
     </tbody>
 </table>
+
+<h3 style="margin-top:20px;">Remote images</h3>
+<hr/>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                Support mods
+            </th>
+            <th>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let image of remoteImages">
+            <td>
+                {{image.displayName}}
+            </td>
+            <td>
+                {{image.modDirectory ? "Yes" : "No"}}
+            </td>
+            <td>
+                <button class="btn btn-primary pull-right" (click)="addRemote($event, image)" [disabled]="gotLocalImage(image)">
+                    Download
+                </button>
+            </td>
+        </tr>
+    </tbody>
+</table>

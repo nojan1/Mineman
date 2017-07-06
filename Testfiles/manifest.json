@@ -1,0 +1,17 @@
+[
+	{
+		"DisplayName": "Forge 1.10.2-12.18.3.2185",
+		"FileName": "forge-1.10.2-12.18.3.2185.zip",
+		"SHA256Hash": "663394b319a0056aeb3e0a8c50e197a71248413d9520709d06d3ce7ead4c6e9c"
+	},
+	{
+		"DisplayName": "Vanilla 1.11.2",
+		"FileName": "vanilla-1.11.2.zip",
+		"SHA256Hash": "d59c46aa69351e08d6affff7696bcddf7c2337c077288ed15fb1793e40784f62"
+	},
+	{
+		"DisplayName": "Vanilla 1.12",
+		"FileName": "vanilla-1.12.zip",
+		"SHA256Hash": "62961bfef89b413a464c7a2e39c32d5aa66365ccada2c62e2b3c9c9ce5af27e4"
+	}
+]

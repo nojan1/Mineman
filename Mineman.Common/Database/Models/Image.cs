@@ -20,5 +20,6 @@ namespace Mineman.Common.Database.Models
         public string ModDirectory { get; set; }
         public ImageBuildStatus BuildStatus { get; set; }
         public string ImageContentZipPath { get; set; }
+        public string RemoteHash { get; set; }
     }
 }

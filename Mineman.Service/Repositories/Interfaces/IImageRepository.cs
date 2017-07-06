@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Client;
+using Mineman.Common.Models;
 
 namespace Mineman.Service.Repositories
 {
@@ -12,5 +13,6 @@ namespace Mineman.Service.Repositories
         Image Get(int imageId);
         Task Delete(int imageId);
         IDictionary<int, Server[]> GetImageUsage();
+        Task<Image> AddRemote(RemoteImage remoteImage);
     }
 }

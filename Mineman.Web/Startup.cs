@@ -91,6 +91,7 @@ namespace WebApplicationBasic
             services.AddScoped<IImageManager, ImageManager>();
             services.AddTransient<IMinecraftServerQuery, MinecraftServerQuery>();
             services.AddSingleton<IConnectionPool, ConnectionPool>();
+            services.AddSingleton<IRemoteImageRepository, RemoteImageRepository>();
 
             services.AddTransient<ITextureProvider, TextureProvider>(service =>
             {
@@ -108,6 +109,7 @@ namespace WebApplicationBasic
             services.Configure<BackgroundServiceOptions>(Configuration.GetSection("BackgroundServiceOptions"));
             services.Configure<ServerCommunicationOptions>(Configuration.GetSection("ServerCommunicationOptions"));
             services.Configure<TextureOptions>(Configuration.GetSection("TextureOptions"));
+            services.Configure<RemoteImageOptions>(Configuration.GetSection("RemoteImageOptions"));
 
             // Add framework services.
             services.AddMvc(x =>

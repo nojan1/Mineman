@@ -75,6 +75,24 @@ namespace Mineman.Service.Repositories
             return image;
         }
 
+        public async Task<Image> AddRemote(RemoteImage remoteImage)
+        {
+            var image = new Image
+            {
+                Name = remoteImage.DisplayName,
+                RemoteHash = remoteImage.SHA256Hash,
+                Type = ServerType.Vanilla, //TODO: Remove property?
+                SupportsMods = !string.IsNullOrEmpty(remoteImage.ModDirectory),
+                ModDirectory = remoteImage.ModDirectory ?? "",
+                BuildStatus = null
+            };
+
+            await _context.Images.AddAsync(image);
+            await _context.SaveChangesAsync();
+
+            return image;
+        }
+
         public async Task Delete(int imageId)
         {
             var imageInUse = await _context.Servers.Include(s => s.Image)

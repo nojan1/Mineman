@@ -22,6 +22,7 @@ namespace Mineman.Service
         private readonly WorldInfoService _worldInfoService;
         private readonly IServiceScopeFactory _serviceFactory;
         private readonly BackgroundServiceOptions _backgroundServiceOptions;
+        private readonly IRemoteImageRepository _remoteImageRepository;
 
         private Task _backgroundTasks;
         private DateTimeOffset _nextBackgroundTaskRun;
@@ -31,7 +32,8 @@ namespace Mineman.Service
                                  MapGenerationService mapGenerationService,
                                  IOptions<BackgroundServiceOptions> options,
                                  WorldInfoService worldInfoService,
-                                 IServiceScopeFactory serviceFactory)
+                                 IServiceScopeFactory serviceFactory,
+                                 IRemoteImageRepository remoteImageRepository)
         {
             _serviceFactory = serviceFactory;
             _logger = logger;
@@ -39,6 +41,7 @@ namespace Mineman.Service
             _mapGenerationService = mapGenerationService;
             _worldInfoService = worldInfoService;
             _backgroundServiceOptions = options.Value;
+            _remoteImageRepository = remoteImageRepository;
 
             _nextBackgroundTaskRun = DateTimeOffset.Now;
         }
@@ -87,6 +90,7 @@ namespace Mineman.Service
                         await InvalidateMissingImages(scope);
                         await CreateImages(scope);
                         await StartIdleContainers(scope);
+                        await _remoteImageRepository.RefreshIfNeeded();
 
                         _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
 

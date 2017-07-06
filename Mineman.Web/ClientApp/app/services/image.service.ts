@@ -32,4 +32,14 @@ export class ImageService extends UploadingBaseService {
     public Delete(imageId: number) {
         return this.authHttp.delete("/api/image/" + imageId);
     }
+
+    public GetRemote() {
+        return this.authHttp.get("/api/image/remote")
+            .map(r => r.json());
+    }
+
+    public AddRemote(hash: string) {
+        return this.authHttp.post("/api/image/remote/" + hash, null)
+            .map(r => r.json());
+    }
 }
