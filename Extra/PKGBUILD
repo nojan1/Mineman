@@ -11,7 +11,7 @@ backup=(opt/mineman/database.db opt/mineman/appsettings.json)
 source=($pkgname::git+https://github.com/nojan1/Mineman)
 md5sums=('SKIP')
 
-framework=netcoreapp1.1
+framework=netcoreapp2.0
 
 pkgver() {
   cd "$pkgname"
