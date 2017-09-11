@@ -18,22 +18,18 @@ namespace Mineman.Web.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly TokenProviderOptions _options;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
 
         public TokenProviderMiddleware(
             RequestDelegate next,
-            IOptions<TokenProviderOptions> options,
-            SignInManager<ApplicationUser> signInManager,
-            UserManager<ApplicationUser> userManager)
+            IOptions<TokenProviderOptions> options)
         {
             _next = next;
             _options = options.Value;
-            _signInManager = signInManager;
-            _userManager = userManager;
         }
 
-        public Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context,
+                           SignInManager<ApplicationUser> signInManager,
+                           UserManager<ApplicationUser> userManager)
         {
             // If the request path doesn't match, skip
             if (!context.Request.Path.Equals(_options.Path, StringComparison.Ordinal))
@@ -49,15 +45,17 @@ namespace Mineman.Web.Middleware
                 return context.Response.WriteAsync("Bad request.");
             }
 
-            return GenerateToken(context);
+            return GenerateToken(context, signInManager, userManager);
         }
 
-        private async Task GenerateToken(HttpContext context)
+        private async Task GenerateToken(HttpContext context,
+                                         SignInManager<ApplicationUser> signInManager,
+                                         UserManager<ApplicationUser> userManager)
         {
             var username = context.Request.Form["username"];
             var password = context.Request.Form["password"];
 
-            var loginSucceeded = await GetIdentity(username, password);
+            var loginSucceeded = await GetIdentity(username, password, signInManager, userManager);
             if (!loginSucceeded)
             {
                 context.Response.StatusCode = 400;
@@ -97,10 +95,13 @@ namespace Mineman.Web.Middleware
             await context.Response.WriteAsync(JsonConvert.SerializeObject(response, new JsonSerializerSettings { Formatting = Formatting.Indented }));
         }
 
-        private async Task<bool> GetIdentity(string username, string password)
+        private async Task<bool> GetIdentity(string username, 
+                                             string password,
+                                             SignInManager<ApplicationUser> signInManager,
+                                             UserManager<ApplicationUser> userManager)
         {
-            var user = await _userManager.FindByNameAsync(username);
-            var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            var user = await userManager.FindByNameAsync(username);
+            var result = await signInManager.CheckPasswordSignInAsync(user, password, false);
             return result.Succeeded;
         }
     }

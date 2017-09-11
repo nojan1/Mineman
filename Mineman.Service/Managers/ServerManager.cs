@@ -269,11 +269,11 @@ namespace Mineman.Service.Managers
             {
                 Image = server.Image.DockerId,
                 Env = new List<string> { javaOpts },
-                ExposedPorts = new Dictionary<string, object>()
+                ExposedPorts = new Dictionary<string, EmptyStruct>()
                 {
-                    { "25565/tcp", new { } },
-                    { "26565/udp", new { }},
-                    { "27565/tcp", new { }}
+                    { "25565/tcp", new EmptyStruct() },
+                    { "26565/udp", new EmptyStruct() },
+                    { "27565/tcp", new EmptyStruct() }
                 },
                 Labels = new Dictionary<string, string>()
                 {

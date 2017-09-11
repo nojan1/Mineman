@@ -140,8 +140,8 @@ namespace Mineman.Service.Managers
                             writer.WriteAll(workingDir, "*", SearchOption.AllDirectories);
                         }
                     }
-
-                    var responseStream = await _dockerClient.Miscellaneous.BuildImageFromDockerfileAsync(File.OpenRead(dockerArchivePath),
+                    
+                    var responseStream = await _dockerClient.Images.BuildImageFromDockerfileAsync(File.OpenRead(dockerArchivePath),
                                                             new Docker.DotNet.Models.ImageBuildParameters
                                                             {
                                                                 Dockerfile = "Dockerfile",

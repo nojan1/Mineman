@@ -36,11 +36,15 @@ using Mineman.Common.Models.Configuration;
 using Mineman.WorldParsing.MapTools.Models;
 using Mineman.Service.Models.Configuration;
 using Mineman.Web.Filters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebApplicationBasic
 {
     public class Startup
     {
+        private string secretKey = "keykeykeykeykeykeykeykeykeykeykeykeykeykeykey";
+        private SymmetricSecurityKey SigningKey { get => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)); }
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -71,6 +75,39 @@ namespace WebApplicationBasic
             })
             .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders();
+
+            
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                //// The signing key must match!
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = SigningKey,
+
+                // Validate the JWT Issuer (iss) claim
+                ValidateIssuer = true,
+                ValidIssuer = "ExampleIssuer",
+
+                // Validate the JWT Audience (aud) claim
+                ValidateAudience = true,
+                ValidAudience = "ExampleAudience",
+
+                // Validate the token expiry
+                ValidateLifetime = true,
+
+                // If you want to allow a certain amount of clock drift, set that here:
+                ClockSkew = TimeSpan.Zero
+            };
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                   
+                options.TokenValidationParameters = tokenValidationParameters;
+            });
 
             services.AddTransient<IDockerClient>(service =>
             {
@@ -152,45 +189,15 @@ namespace WebApplicationBasic
 
             app.UseStaticFiles();
 
-            var secretKey = "keykeykeykeykeykeykeykeykeykeykeykeykeykeykey";
-            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                //// The signing key must match!
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = signingKey,
-
-                // Validate the JWT Issuer (iss) claim
-                ValidateIssuer = true,
-                ValidIssuer = "ExampleIssuer",
-
-                // Validate the JWT Audience (aud) claim
-                ValidateAudience = true,
-                ValidAudience = "ExampleAudience",
-
-                // Validate the token expiry
-                ValidateLifetime = true,
-
-                // If you want to allow a certain amount of clock drift, set that here:
-                ClockSkew = TimeSpan.Zero
-            };
-
             //Remap "sub" to be name, original is nameidentifier. Needed for default identity unboxing
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["sub"] = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
-
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
-            {
-                AuthenticationScheme = "Identity.Application",
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                TokenValidationParameters = tokenValidationParameters,
-            });
+            app.UseAuthentication();
 
             var options = new TokenProviderOptions
             {
                 Audience = "ExampleAudience",
                 Issuer = "ExampleIssuer",
-                SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
+                SigningCredentials = new SigningCredentials(SigningKey, SecurityAlgorithms.HmacSha256),
                 Expiration = TimeSpan.FromHours(1)
             };
             app.UseMiddleware<TokenProviderMiddleware>(Options.Create(options));
@@ -253,7 +260,7 @@ namespace WebApplicationBasic
 
         private void StartupTest(IDockerClient dockerClient)
         {
-            dockerClient.Miscellaneous.PingAsync().Wait();
+            dockerClient.System.PingAsync().Wait();
         }
     }
 }
