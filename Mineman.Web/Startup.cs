@@ -78,7 +78,7 @@ namespace WebApplicationBasic
 
                 return new DockerClientConfiguration(new Uri(
                         dockerOptions.Value.DockerHost
-                        //Configuration.GetSection("DockerOptions").GetValue<string>("DockerHost")
+                    //Configuration.GetSection("DockerOptions").GetValue<string>("DockerHost")
                     )).CreateClient(Version.Parse("1.24"));
             });
             services.AddScoped<IServerRepository, ServerRepository>();
@@ -130,7 +130,8 @@ namespace WebApplicationBasic
                               DatabaseContext context,
                               BackgroundService service,
                               IOptions<PathOptions> pathOptions,
-                              UserManager<ApplicationUser> userManager)
+                              UserManager<ApplicationUser> userManager,
+                              IDockerClient dockerClient)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -210,7 +211,16 @@ namespace WebApplicationBasic
             EnsureFoldersCreated(env, pathOptions.Value);
             EnsureAdminUserExists(userManager);
 
-            service.Start();
+            try
+            {
+                StartupTest(dockerClient);
+                service.Start();
+            }
+            catch (Exception ex)
+            {
+                loggerFactory.CreateLogger<Startup>()
+                    .LogCritical(new EventId(), ex, "Startup test failed, refusing to start service");
+            }
         }
 
         private void EnsureAdminUserExists(UserManager<ApplicationUser> userManager)
@@ -229,16 +239,21 @@ namespace WebApplicationBasic
 
         private void EnsureFoldersCreated(IHostingEnvironment env, PathOptions pathOptions)
         {
-            Action<string> createDirectory = (path) =>
+            void createDirectory(string path)
             {
                 var fullPath = env.BuildPath(path);
                 Directory.CreateDirectory(fullPath);
-            };
+            }
 
             createDirectory(pathOptions.WorldDirectory);
             createDirectory(pathOptions.ServerPropertiesDirectory);
             createDirectory(pathOptions.ModDirectory);
             createDirectory(pathOptions.ImageZipFileDirectory);
+        }
+
+        private void StartupTest(IDockerClient dockerClient)
+        {
+            dockerClient.Miscellaneous.PingAsync().Wait();
         }
     }
 }

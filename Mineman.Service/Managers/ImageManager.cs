@@ -105,7 +105,7 @@ namespace Mineman.Service.Managers
                     {
                         if (string.IsNullOrEmpty(image.RemoteHash))
                         {
-                            throw new ArgumentException("No imagecontentzippath and no remotehash, unable to create image");
+                            throw new ArgumentException("No ImageContentZipPath and no RemoteHash, unable to create image");
                         }
 
                         var name = $"{Guid.NewGuid().ToString("N")}.zip";
@@ -172,8 +172,8 @@ namespace Mineman.Service.Managers
                 finally
                 {
                     //Cleanup
-                    try { File.Delete(dockerArchivePath); } catch { }
-                    try { Directory.Delete(workingDir, true); } catch { }
+                    try { File.Delete(dockerArchivePath); } catch { /* Don't care about errors here, just hope it got deleted */ }
+                    try { Directory.Delete(workingDir, true); } catch { /* Don't care about errors here, just hope it got deleted */ }
                 }
 
                 image.BuildStatus = new ImageBuildStatus
@@ -260,12 +260,14 @@ namespace Mineman.Service.Managers
 
             });
 
-            if (!result.Any(x => x.Keys.Contains("Deleted")))
+            var wasDeleted = result.Any(x => x.Keys.Contains("Deleted"));
+
+            if (!wasDeleted)
             {
                 _logger.LogWarning($"Image may not have been removed correctly");
             }
 
-            return result.Any(x => x.Keys.Contains("Deleted"));
+            return wasDeleted;
         }
     }
 }
