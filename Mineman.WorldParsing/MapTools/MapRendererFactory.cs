@@ -13,9 +13,9 @@ namespace Mineman.WorldParsing.MapTools
             _textureProvider = textureProvider;
         }
 
-        public IMapRenderer2D Create2DRender(IWorldParser parser)
+        public IMapRenderer2D Create2DRender(IWorldParser parser, IMapColumnCacheProvider cacheProvider)
         {
-            return new MapRenderer2D(parser, _textureProvider);
+            return new MapRenderer2D(parser, _textureProvider, cacheProvider);
         }
     }
 }

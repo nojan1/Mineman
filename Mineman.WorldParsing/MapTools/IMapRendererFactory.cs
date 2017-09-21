@@ -2,6 +2,6 @@
 {
     public interface IMapRendererFactory
     {
-        IMapRenderer2D Create2DRender(IWorldParser parser);
+        IMapRenderer2D Create2DRender(IWorldParser parser, IMapColumnCacheProvider cacheProvider);
     }
 }

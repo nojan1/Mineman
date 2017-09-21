@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /Testfiles/testing
 /Mineman.Web/database.db
+/Testfiles/world/blockcache

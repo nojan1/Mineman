@@ -220,7 +220,7 @@ namespace WebApplicationBasic
 
             try
             {
-                StartupTest(dockerClient);
+                //StartupTest(dockerClient);
                 service.Start();
             }
             catch (Exception ex)

@@ -75,7 +75,8 @@ namespace Mineman.Service
                                 continue;
                             }
 
-                            var renderer = _mapRendererFactory.Create2DRender(parser);
+                            var fileBasedRegionCache = new FileBasedRegionCache(worldPath);
+                            var renderer = _mapRendererFactory.Create2DRender(parser, fileBasedRegionCache);
 
                             var renderResult = renderer.GenerateBlockBitmap(TARGET_REGION);
 

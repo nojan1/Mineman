@@ -18,12 +18,15 @@ namespace Mineman.WorldParsing.MapTools
 
         private readonly IWorldParser _parser;
         private readonly ITextureProvider _textureProvider;
+        private readonly IMapColumnCacheProvider _cacheProvider;
 
         public MapRenderer2D(IWorldParser parser,
-                             ITextureProvider textureProvider)
+                             ITextureProvider textureProvider,
+                             IMapColumnCacheProvider cacheProvider)
         {
             _parser = parser;
             _textureProvider = textureProvider;
+            _cacheProvider = cacheProvider;
         }
 
         public RenderReturnModel GenerateBlockBitmap(RegionType regionType)
@@ -50,96 +53,125 @@ namespace Mineman.WorldParsing.MapTools
             //foreach (var region in regions)
             Parallel.ForEach(regions, region =>
             {
+                var regionCache = _cacheProvider.GetRegionMapCache(region.X, region.Z) ?? new RegionMapCache();
+
                 var populated = new List<(int, int)>(16 * 16);
                 var lastBaseColor = new Dictionary<(int, int), Rgba32>(16 * 16);
 
                 foreach (var column in region.Columns)
                 {
-                    populated.Clear();
-                    lastBaseColor.Clear();
-
-                    foreach (var chunk in column.Chunks.OrderByDescending(c => c.YOrder))
+                    if (regionCache.ColumnCacheIsStale(column.XWorld, column.ZWorld, column.Modified))
                     {
-                        foreach (var block in chunk.Blocks.OrderByDescending(b => b.WorldY))
+                        regionCache.UpdateTimestamp(column.XWorld, column.ZWorld, column.Modified);
+
+                        populated.Clear();
+                        lastBaseColor.Clear();
+
+                        foreach (var chunk in column.Chunks.OrderByDescending(c => c.YOrder))
                         {
-                            //In image coordinates
-                            var x = block.WorldX - dX;
-                            var z = block.WorldZ - dZ;
+                            foreach (var block in chunk.Blocks.OrderByDescending(b => b.WorldY))
+                            {
+                                //In image coordinates
+                                var x = block.WorldX - dX;
+                                var z = block.WorldZ - dZ;
+
+                                //Update image edge extens if neccessary
+                                actualMinX = Math.Min(actualMinX, x);
+                                actualMaxX = Math.Max(actualMaxX, x);
+                                actualMinZ = Math.Min(actualMinZ, z);
+                                actualMaxZ = Math.Max(actualMaxZ, z);
+
+                                //Do not draw air
+                                if (block.BaseId == 0)
+                                    continue;
+
+                                //Coordinates populated and completed, ignore
+                                if (populated.Contains((x, z)))
+                                    continue;
+
+                                var baseColor = _textureProvider.GetColorForBlock(block, Rgba32.HotPink);
+                                if (baseColor == Rgba32.HotPink)
+                                {
+                                    var key = $"{block.Code} ({block.Id})";
+                                    unknownBlocks[key] = unknownBlocks.ContainsKey(key) ? unknownBlocks[key] + 1 : 1;
+                                }
+
+                                Rgba32 color;
+                                if (lastBaseColor.ContainsKey((x, z)))
+                                {
+                                    //Handle non top blocks in transparent stacks
+
+                                    if (baseColor == lastBaseColor[(x, z)])
+                                    {
+                                        continue;
+                                    }
+
+                                    if (!transparentBlocks.Contains(block.BaseId) && block.SkyLight == 0 && block.BlockLight == 0 && bitmap[x, z].A > 0)
+                                    {
+                                        populated.Add((x, z));
+                                        continue;
+                                    }
+
+                                    color = BlendBlocks(bitmap[x, z], baseColor, Math.Max(block.SkyLight, (byte)(block.BlockLight / 2)));
+                                    lastBaseColor[(x, z)] = baseColor;
+                                }
+                                else
+                                {
+                                    //First block in stack, it can either be transparent or not
+                                    color = baseColor;
+                                }
+
+                                //Handle blocklight; ie torches, lava etc
+                                //if (block.BlockLight > 0)
+                                //{
+                                //    color = BlendBlocks(color, _textureProvider.GetBlocklightColor(), (byte)(block.BlockLight / 2));
+                                //}
+
+                                if (transparentBlocks.Contains(block.BaseId))
+                                {
+                                    //This is a transparent block stack, save this color for future (next block in -Y order) reference.
+                                    //This is also the flag that a stack is transparent
+                                    lastBaseColor[(x, z)] = baseColor;
+                                }
+                                else
+                                {
+                                    //Not transparent, mark as populated
+                                    populated.Add((x, z));
+                                }
+
+                                blockRendered = true;
+                                bitmap[x, z] = color;
+
+                                regionCache.SetBlockColor(column.XWorld, column.ZWorld, block.WorldX, block.WorldZ, color);
+                            }
+
+                            if (populated.Count == (16 * 16))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var cachedColumn = regionCache.GetColumn(column.XWorld, column.ZWorld);
+                        foreach(var cachedBlockColor in cachedColumn.BlockColors)
+                        {
+                            int x = cachedBlockColor.Coordinates.Item1 - dX;
+                            int z = cachedBlockColor.Coordinates.Item2 - dZ;
+
+                            blockRendered = true;
+                            bitmap[x, z] = new Rgba32(cachedBlockColor.Argb);
 
                             //Update image edge extens if neccessary
                             actualMinX = Math.Min(actualMinX, x);
                             actualMaxX = Math.Max(actualMaxX, x);
                             actualMinZ = Math.Min(actualMinZ, z);
                             actualMaxZ = Math.Max(actualMaxZ, z);
-
-                            //Do not draw air
-                            if (block.BaseId == 0)
-                                continue;
-
-                            //Coordinates populated and completed, ignore
-                            if (populated.Contains((x, z)))
-                                continue;
-
-                            var baseColor = _textureProvider.GetColorForBlock(block, Rgba32.HotPink);
-                            if(baseColor == Rgba32.HotPink)
-                            {
-                                var key = $"{block.Code} ({block.Id})";
-                                unknownBlocks[key] = unknownBlocks.ContainsKey(key) ? unknownBlocks[key] + 1 : 1;
-                            }
-
-                            Rgba32 color;
-                            if (lastBaseColor.ContainsKey((x, z)))
-                            {
-                                //Handle non top blocks in transparent stacks
-
-                                if (baseColor == lastBaseColor[(x, z)])
-                                {
-                                    continue;
-                                }
-
-                                if (!transparentBlocks.Contains(block.BaseId) && block.SkyLight == 0 && block.BlockLight == 0 && bitmap[x, z].A > 0)
-                                {
-                                    populated.Add((x, z));
-                                    continue;
-                                }
-
-                                color = BlendBlocks(bitmap[x, z], baseColor, Math.Max(block.SkyLight, (byte)(block.BlockLight / 2)));
-                                lastBaseColor[(x, z)] = baseColor;
-                            }
-                            else
-                            {
-                                //First block in stack, it can either be transparent or not
-                                color = baseColor;
-                            }
-
-                            //Handle blocklight; ie torches, lava etc
-                            //if (block.BlockLight > 0)
-                            //{
-                            //    color = BlendBlocks(color, _textureProvider.GetBlocklightColor(), (byte)(block.BlockLight / 2));
-                            //}
-
-                            if (transparentBlocks.Contains(block.BaseId))
-                            {
-                                //This is a transparent block stack, save this color for future (next block in -Y order) reference.
-                                //This is also the flag that a stack is transparent
-                                lastBaseColor[(x, z)] = baseColor;
-                            }
-                            else
-                            {
-                                //Not transparent, mark as populated
-                                populated.Add((x, z));
-                            }
-
-                            blockRendered = true;
-                            bitmap[x, z] = color;
-                        }
-
-                        if (populated.Count == (16 * 16))
-                        {
-                            break;
                         }
                     }
                 }
+
+                _cacheProvider.SaveRegionMapCache(region.X, region.Z, regionCache);
             });
 
             if (!blockRendered)
