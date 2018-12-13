@@ -1,5 +1,5 @@
-﻿using ImageSharp;
-using ImageSharp.Processing;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SixLabors.Primitives;
 
 namespace Mineman.Service
 {
@@ -80,9 +81,10 @@ namespace Mineman.Service
 
                             var renderResult = renderer.GenerateBlockBitmap(TARGET_REGION);
 
-                            renderResult.Bitmap.Save(Path.Combine(worldPath, "map.png"))
-                                               .Resize(new Size(200, 200))
-                                               .Save(Path.Combine(worldPath, "map_thumb.png"));
+                            renderResult.Bitmap.Save(Path.Combine(worldPath, "map.png"));
+
+                            renderResult.Bitmap.Mutate(x => x.Resize(new Size(200, 200)));
+                            renderResult.Bitmap.Save(Path.Combine(worldPath, "map_thumb.png"));
 
                             var mapRenderResultDataFilePath = Path.Combine(worldPath, "render-result.json");
                             File.WriteAllText(mapRenderResultDataFilePath, JsonConvert.SerializeObject(new

@@ -81,7 +81,7 @@ namespace Mineman.WorldParsing
                         
                         yield return new Column(format,
                                                 new MemoryStream(data),
-                                                UnixDateTimeHelpers.ToDateTimeOffset(timestamps[i]));
+                                                UnixDateTimeHelpers.ToDateTime(timestamps[i]));
                     }
 
                 }

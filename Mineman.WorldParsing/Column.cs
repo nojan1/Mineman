@@ -24,11 +24,11 @@ namespace Mineman.WorldParsing
         public int XWorld { get; private set; }
         public int ZWorld { get; private set; }
 
-        public DateTimeOffset Modified { get; private set; }
+        public DateTime Modified { get; private set; }
 
         private readonly NbtDocument _nbtDoc;
 
-        public Column(ChunkFormat format, MemoryStream chunkDataStream, DateTimeOffset timestamp)
+        public Column(ChunkFormat format, MemoryStream chunkDataStream, DateTime timestamp)
         {
             Modified = timestamp;
 

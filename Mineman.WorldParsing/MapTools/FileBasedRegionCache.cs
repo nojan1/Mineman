@@ -4,6 +4,7 @@ using System.Text;
 using Mineman.WorldParsing.MapTools.Models;
 using System.IO;
 using Newtonsoft.Json;
+using ProtoBuf;
 
 namespace Mineman.WorldParsing.MapTools
 {
@@ -25,19 +26,33 @@ namespace Mineman.WorldParsing.MapTools
             if (!File.Exists(path))
                 return null;
 
-            var contents = File.ReadAllText(path);
-            return JsonConvert.DeserializeObject<RegionMapCache>(contents);
+            using (var file = File.OpenRead(path))
+            {
+                try
+                {
+                    var regionMapCache = Serializer.Deserialize<RegionMapCache>(file);
+                    return regionMapCache;
+                }
+                catch (ProtoException)
+                {
+                    //Most likely the cache type format has changed or the file is corrupt. 
+                    //Ignore so that the file will be overwritten with correct data
+                    return null;
+                }
+            }
         }
 
         public void SaveRegionMapCache(int x, int z, RegionMapCache regionMapCache)
         {
-            var contents = JsonConvert.SerializeObject(regionMapCache);
-            File.WriteAllText(buildFileName(x, z), contents);
+            using (var file = File.Create(buildFileName(x, z)))
+            {
+                Serializer.Serialize(file, regionMapCache);
+            }
         }
 
         private string buildFileName(int x, int z)
         {
-            return Path.Combine(cacheFolder, $"{x}-{z}.json");
+            return Path.Combine(cacheFolder, $"{x}-{z}.bin");
         }
 
     }

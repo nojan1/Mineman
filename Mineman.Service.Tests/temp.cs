@@ -10,6 +10,7 @@ using Mineman.WorldParsing;
 using Mineman.WorldParsing.Blocks;
 using Mineman.WorldParsing.MapTools;
 using Moq;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,20 +81,20 @@ namespace Mineman.Service.Tests
             //                           .SelectMany(c => c.Entities)
             //                           .ToList();
 
-            //var worldPath = @"C:\Users\hedlundn\Desktop\worlds\survivial-world";
-            //var parser = new WorldParser(worldPath);
-            //var fileBasedRegionCache = new FileBasedRegionCache(worldPath);
+            var worldPath = @"../../../../Testfiles/world";
+            var parser = new WorldParser(worldPath);
+            var fileBasedRegionCache = new FileBasedRegionCache(worldPath);
 
-            //var renderer = new MapRenderer2D(parser, new TextureProvider(new WorldParsing.MapTools.Models.TextureOptions
-            //{
-            //    BlockColorsFilePath = "../../../../Mineman.WorldParsing/Resources/blockcolors.json",
-            //    BiomeColorsFilePath = "../../../../Mineman.WorldParsing/Resources/biomecolors.json"
-            //}), fileBasedRegionCache);
-            ////renderer.GenerateBiomeBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld-biome.png");
+            var renderer = new MapRenderer2D(parser, new TextureProvider(new WorldParsing.MapTools.Models.TextureOptions
+            {
+                BlockColorsFilePath = "../../../../Mineman.WorldParsing/Resources/blockcolors.json",
+                BiomeColorsFilePath = "../../../../Mineman.WorldParsing/Resources/biomecolors.json"
+            }), fileBasedRegionCache);
 
-            //var result = renderer.GenerateBlockBitmap(RegionType.Overworld);
+            var result = renderer.GenerateBlockBitmap(RegionType.Overworld);
+            result.Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
 
-            //result.Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld.png");
+            renderer.GenerateBiomeBitmap(RegionType.Overworld).Bitmap.Save(@"C:\Users\hedlundn\Desktop\map-overworld-biome.png");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using ImageSharp;
+﻿using SixLabors.ImageSharp;
 using Mineman.WorldParsing.Blocks;
 
 namespace Mineman.WorldParsing.MapTools

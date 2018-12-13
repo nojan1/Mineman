@@ -1,4 +1,4 @@
-﻿using ImageSharp;
+﻿using SixLabors.ImageSharp;
 using Mineman.WorldParsing.Blocks;
 using Mineman.WorldParsing.MapTools.Models;
 using Newtonsoft.Json;

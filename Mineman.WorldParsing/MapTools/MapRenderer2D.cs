@@ -1,6 +1,6 @@
-﻿using ImageSharp;
-using ImageSharp.PixelFormats;
-using ImageSharp.PixelFormats.PixelBlenders;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.PixelFormats.PixelBlenders;
 using Mineman.WorldParsing.Blocks;
 using Mineman.WorldParsing.MapTools.Models;
 using System;
@@ -9,6 +9,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using SixLabors.Primitives;
 
 namespace Mineman.WorldParsing.MapTools
 {
@@ -191,14 +192,16 @@ namespace Mineman.WorldParsing.MapTools
             var newWidth = Math.Min(bitmap.Width - actualMinX, actualMaxX - actualMinX + 10);
             var newHeight = Math.Min(bitmap.Height - actualMinZ, actualMaxZ - actualMinZ + 10);
 
-            return new RenderReturnModel
-            {
-                Bitmap = bitmap.Crop(new Rectangle(
+            bitmap.Mutate(x => x.Crop(new Rectangle(
                     actualMinX,
                     actualMinZ,
                     newWidth,
                     newHeight
-                )),
+                )));
+
+            return new RenderReturnModel
+            {
+                Bitmap = bitmap,
                 OffsetX = -dX - actualMinX,
                 OffsetZ = -dZ - actualMinZ,
                 UnknownRenderEntites = unknownBlocks
