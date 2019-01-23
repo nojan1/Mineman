@@ -1,5 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using Mineman.WorldParsing.Blocks;
+﻿using Mineman.WorldParsing.Blocks;
 using Mineman.WorldParsing.MapTools.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Mineman.WorldParsing.MapTools
 {

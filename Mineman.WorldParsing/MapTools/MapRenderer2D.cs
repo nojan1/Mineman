@@ -10,6 +10,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using SixLabors.Primitives;
+using SixLabors.ImageSharp.Processing;
 
 namespace Mineman.WorldParsing.MapTools
 {
@@ -76,7 +77,7 @@ namespace Mineman.WorldParsing.MapTools
                                 var x = block.WorldX - dX;
                                 var z = block.WorldZ - dZ;
 
-                                //Update image edge extens if neccessary
+                                //Update image edge extents if neccessary
                                 actualMinX = Math.Min(actualMinX, x);
                                 actualMaxX = Math.Max(actualMaxX, x);
                                 actualMinZ = Math.Min(actualMinZ, z);

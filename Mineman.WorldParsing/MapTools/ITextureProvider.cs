@@ -1,5 +1,5 @@
-﻿using SixLabors.ImageSharp;
-using Mineman.WorldParsing.Blocks;
+﻿using Mineman.WorldParsing.Blocks;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace Mineman.WorldParsing.MapTools
 {
