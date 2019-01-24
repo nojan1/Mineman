@@ -12,6 +12,7 @@ import { LoadingService } from '../../services/loading.service';
 })
 export class RconComponent implements OnInit {
 
+    public command: string;
     public serverId: number;
     public responses = [];
 
@@ -21,15 +22,17 @@ export class RconComponent implements OnInit {
         private loadingService: LoadingService) { }
 
     public ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.serverId = +params["id"];
-        });
+        this.serverId = this.route.snapshot.paramMap.get("id") as any;
     }
 
-    public sendCommand(event: Event, command: string) {
-        this.serverService.rconCommand(this.serverId, command)
+    public sendCommand(event: Event) {
+        this.serverService.rconCommand(this.serverId, this.command)
             .subscribe(response => {
-                this.insertResponse(response);
+                this.insertResponse(this.command);
+                this.command = "";
+
+                if(response)
+                    this.insertResponse(response);
             },
             error => {
                 this.insertResponse("Error! " + error);

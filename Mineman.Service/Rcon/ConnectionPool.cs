@@ -47,7 +47,7 @@ namespace Mineman.Service.Rcon
 
                     var properties = ServerPropertiesSerializer.Deserialize(server.Server.SerializedProperties);
 
-                    connection = new RconConnection(new RCON(_rconIP, (ushort)server.Server.RconPort, properties.Rcon__Password), serverId);
+                    connection = new RconConnection(_rconIP, (ushort)server.Server.RconPort, properties.Rcon__Password, serverId);
                     _connections.Add(connection);
                 }
             }
@@ -60,7 +60,7 @@ namespace Mineman.Service.Rcon
         {
             //lock (_connections)
             //{
-            var oldConnections = _connections.Where(c => c.LastCommand < DateTimeOffset.Now - span);
+            var oldConnections = _connections.Where(c => c.LastCommand < DateTimeOffset.Now - span).ToList();
             foreach (var oldConnection in oldConnections)
             {
                 oldConnection.Dispose();

@@ -1,18 +1,17 @@
 ﻿using CoreRCON;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Mineman.Service.Rcon
 {
-    public class RconConnection : IDisposable
+    public class RconConnection : RCON
     {
-        private readonly RCON _rcon;
-
-        public RconConnection(RCON rcon, int serverId)
+        public RconConnection(IPAddress host, ushort port, string password, int serverId)
+            : base(host, port, password)
         {
-            _rcon = rcon;
             ServerId = serverId;
         }
 
@@ -22,13 +21,7 @@ namespace Mineman.Service.Rcon
         public async Task<string> SendCommandAndGetResponse(string command)
         {
             LastCommand = DateTimeOffset.Now;
-
-            return await _rcon.SendCommandAsync(command);
-        }
-
-        public void Dispose()
-        {
-            _rcon.Dispose();
+            return await SendCommandAsync(command);
         }
     }
 }
