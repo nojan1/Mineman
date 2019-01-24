@@ -1,4 +1,5 @@
 ﻿using CoreRCON;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Mineman.Common.Models;
 using Mineman.Common.Models.Configuration;
@@ -15,16 +16,16 @@ namespace Mineman.Service.Rcon
 {
     public class ConnectionPool : IConnectionPool
     {
-        private readonly IServerRepository _serverRepository;
+        private readonly IServiceScopeFactory _serviceFactory;
 
         private List<RconConnection> _connections = new List<RconConnection>();
         private IPAddress _rconIP;
 
         public ConnectionPool(IOptions<ServerCommunicationOptions> configuration,
-                              IServerRepository serverRepository)
+                              IServiceScopeFactory serviceFactory)
         {
             _rconIP = IPAddress.Parse(configuration.Value.QueryIpAddress);
-            _serverRepository = serverRepository;
+            _serviceFactory = serviceFactory;
         }
 
         public RconConnection GetConnectionForServer(int serverId)
@@ -33,10 +34,12 @@ namespace Mineman.Service.Rcon
 
             //lock (_connections)
             //{
-                connection = _connections.FirstOrDefault(c => c.ServerId == serverId);
-                if(connection == null)
+            connection = _connections.FirstOrDefault(c => c.ServerId == serverId);
+            if (connection == null)
+            {
+                using (var scope = _serviceFactory.CreateScope())
                 {
-                    var server = _serverRepository.GetWithDockerInfo(serverId).Result;
+                    var server = scope.ServiceProvider.GetService<IServerRepository>().GetWithDockerInfo(serverId).Result;
                     if (!server.IsAlive)
                     {
                         throw new Exception("Server not alive");
@@ -46,8 +49,9 @@ namespace Mineman.Service.Rcon
 
                     connection = new RconConnection(new RCON(_rconIP, (ushort)server.Server.RconPort, properties.Rcon__Password), serverId);
                     _connections.Add(connection);
-                //}
+                }
             }
+            //}
 
             return connection;
         }
@@ -56,13 +60,13 @@ namespace Mineman.Service.Rcon
         {
             //lock (_connections)
             //{
-                var oldConnections = _connections.Where(c => c.LastCommand < DateTimeOffset.Now - span);
-                foreach (var oldConnection in oldConnections)
-                {
-                    oldConnection.Dispose();
-                    _connections.Remove(oldConnection);
-                }
-          //  }
+            var oldConnections = _connections.Where(c => c.LastCommand < DateTimeOffset.Now - span);
+            foreach (var oldConnection in oldConnections)
+            {
+                oldConnection.Dispose();
+                _connections.Remove(oldConnection);
+            }
+            //  }
         }
     }
 }

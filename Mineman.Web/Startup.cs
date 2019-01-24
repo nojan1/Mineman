@@ -39,6 +39,8 @@ using Mineman.Web.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Swashbuckle.AspNetCore.Swagger;
 using Mineman.Web;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 
 namespace WebApplicationBasic
 {
@@ -47,17 +49,22 @@ namespace WebApplicationBasic
         private string secretKey = "keykeykeykeykeykeykeykeykeykeykeykeykeykeykey";
         private SymmetricSecurityKey SigningKey { get => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)); }
 
-        public Startup(IHostingEnvironment env)
-        {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            Configuration = builder.Build();
-        }
+        //public Startup(IHostingEnvironment env)
+        //{
+        //    var builder = new ConfigurationBuilder()
+        //        .SetBasePath(env.ContentRootPath)
+        //        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+        //        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+        //        .AddEnvironmentVariables();
+        //    Configuration = builder.Build();
+        //}
 
-        public IConfigurationRoot Configuration { get; }
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -154,7 +161,14 @@ namespace WebApplicationBasic
             services.AddMvc(x =>
             {
                 x.Filters.Add(typeof(GlobalExceptionLoggerFilter));
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            // In production, the Angular files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
             });
+
             services.Configure<FormOptions>(x =>
             {
                 x.ValueLengthLimit = int.MaxValue;
@@ -198,10 +212,6 @@ namespace WebApplicationBasic
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseWebpackDevMiddleware(new WebpackDevMiddlewareOptions
-                {
-                    HotModuleReplacement = true
-                });
             }
             else
             {
@@ -210,6 +220,7 @@ namespace WebApplicationBasic
             }
 
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             //Remap "sub" to be name, original is nameidentifier. Needed for default identity unboxing
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap["sub"] = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name";
@@ -235,10 +246,19 @@ namespace WebApplicationBasic
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
 
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });
+            app.UseSpa(spa =>
+            {
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                spa.Options.SourcePath = "ClientApp";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularCliServer(npmScript: "start");
+                }
             });
 
             context.Database.EnsureCreated();
