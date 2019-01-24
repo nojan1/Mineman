@@ -22,10 +22,8 @@ export class LogViewerComponent implements OnInit {
         private loadingService: LoadingService) { }
 
     public ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.serverId = +params["id"];
-            this.loadLogData();
-        });
+        this.serverId = this.route.snapshot.paramMap.get("id") as any;
+        this.loadLogData();
     }
 
     private loadLogData() {

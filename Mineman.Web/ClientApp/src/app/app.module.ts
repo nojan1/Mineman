@@ -46,6 +46,10 @@ import { PlayerService } from './services/player.service';
 import { ModalModule } from 'ngx-modialog';
 import { BootstrapModalModule } from 'ngx-modialog/plugins/bootstrap';
 
+import { registerLocaleData } from '@angular/common';
+import localeSv from '@angular/common/locales/sv';
+registerLocaleData(localeSv);
+
 @NgModule({
     bootstrap: [ AppComponent ],
     declarations: [

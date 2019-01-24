@@ -11,32 +11,28 @@ export class ServerService {
 
     public getServers() {
         return this.http.get<any[]>("/api/server");
-            //.map(r => r.json());
     }
 
     public getSingle(id: number) {
-        return this.authHttp.get<any>("/api/server/" + id)
-            //.map(r => r.json());
+        return this.authHttp.get<any>("/api/server/" + id);
     }
 
     public queryInfo(serverId: number) {
         return this.http.get<any>("/api/server/query/" + serverId)
-            //.map(r => r.json().data);
+            .pipe(map(r => r.data));
     }
 
     public getLog(serverId: number) {
-        return this.authHttp.get<any>("/api/server/log/" + serverId)
-            //.map(r => r.json());
+        return this.authHttp.get<any>("/api/server/log/" + serverId);
     }
 
     public add(serverAddModel: any) {
-        return this.authHttp.post("/api/server", serverAddModel)
-            //.map(r => r.json());
+        return this.authHttp.post("/api/server", serverAddModel);
     }
 
     public start(serverId: number): Observable<number> {
-        return this.authHttp.post<number>("/api/server/start/" + serverId, {})
-            //.map(r => r.json().result);
+        return this.authHttp.post<any>("/api/server/start/" + serverId, {})
+            .pipe(map(r => r.result));
     }
 
     public stop(serverId: number): Observable<number> {
@@ -46,7 +42,6 @@ export class ServerService {
 
     public updateConfiguration(serverId: number, serverConfigurationModel: any) {
         return this.authHttp.post<any>("/api/server/" + serverId, serverConfigurationModel);
-            //.map(r => r.json());
     }
 
     public rconCommand(serverId: number, command: string): Observable<string> {

@@ -37,10 +37,8 @@ export class ServerDetailsComponent implements OnInit {
     }
 
     public ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.serverId = +params["id"];
-            this.loadServer();
-        });
+        this.serverId = this.route.snapshot.paramMap.get("id") as any;
+        this.loadServer();
 
         this.worldService.Get()
             .subscribe(x => this.worlds = x);
