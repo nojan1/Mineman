@@ -126,5 +126,23 @@ namespace Mineman.Service.Repositories
 
             return server;
         }
+
+        public async Task<IEnumerable<Server>> GetServerStartQueue()
+        {
+            return await _context.StartupQueue
+                .Include(x => x.Server)
+                .Select(x => x.Server)
+                .ToListAsync();
+        }
+
+        public async Task MarkServerStarted(Server server)
+        {
+            var queueItem = await _context.StartupQueue
+                .FirstAsync(x => x.ServerId == server.ID);
+
+            _context.StartupQueue.Remove(queueItem);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

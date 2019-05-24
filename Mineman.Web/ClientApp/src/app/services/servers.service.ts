@@ -46,7 +46,7 @@ export class ServerService {
 
     public rconCommand(serverId: number, command: string): Observable<string> {
         return this.authHttp.post<any>("/api/server/rcon/" + serverId, { Command: command })
-            .pipe(map(r => r.Response));
+            .pipe(map(r => r.response));
     }
 
     public destroyContainer(serverId: number) {

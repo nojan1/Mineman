@@ -14,5 +14,7 @@ namespace Mineman.Service.Repositories
         Task<Server> Get(int id);
         Task<Server> UpdateConfiguration(int id, ServerConfigurationModel configurationModel);
         Task<Server> ChangeImage(int serverId, int newImageId);
+        Task<IEnumerable<Server>> GetServerStartQueue();
+        Task MarkServerStarted(Server server);
     }
 }

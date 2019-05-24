@@ -34,8 +34,8 @@ namespace Mineman.Service.Rcon
 
             //lock (_connections)
             //{
-            connection = _connections.FirstOrDefault(c => c.ServerId == serverId);
-            if (connection == null)
+            //connection = _connections.FirstOrDefault(c => c.ServerId == serverId);
+            if (connection == null)    
             {
                 using (var scope = _serviceFactory.CreateScope())
                 {
@@ -48,7 +48,7 @@ namespace Mineman.Service.Rcon
                     var properties = ServerPropertiesSerializer.Deserialize(server.Server.SerializedProperties);
 
                     connection = new RconConnection(_rconIP, (ushort)server.Server.RconPort, properties.Rcon__Password, serverId);
-                    _connections.Add(connection);
+                    //_connections.Add(connection);
                 }
             }
             //}
@@ -58,14 +58,14 @@ namespace Mineman.Service.Rcon
 
         public void DisposeConnectionsOlderThen(TimeSpan span)
         {
-            //lock (_connections)
-            //{
-            var oldConnections = _connections.Where(c => c.LastCommand < DateTimeOffset.Now - span).ToList();
-            foreach (var oldConnection in oldConnections)
-            {
-                oldConnection.Dispose();
-                _connections.Remove(oldConnection);
-            }
+            // //lock (_connections)
+            // //{
+            // var oldConnections = _connections.Where(c => c.LastCommand < DateTimeOffset.Now - span).ToList();
+            // foreach (var oldConnection in oldConnections)
+            // {
+            //     oldConnection.Dispose();
+            //     _connections.Remove(oldConnection);
+            // }
             //  }
         }
     }

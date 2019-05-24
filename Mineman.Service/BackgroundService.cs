@@ -89,7 +89,7 @@ namespace Mineman.Service
                     {
                         await InvalidateMissingImages(scope);
                         await CreateImages(scope);
-                        await StartIdleContainers(scope);
+                        await StartPendingServers(scope);
                         await _remoteImageRepository.RefreshIfNeeded();
 
                         _connectionPool.DisposeConnectionsOlderThen(TimeSpan.FromMinutes(1));
@@ -150,22 +150,23 @@ namespace Mineman.Service
 
         }
 
-        private async Task StartIdleContainers(IServiceScope scope)
+        private async Task StartPendingServers(IServiceScope scope)
         {
-            _logger.LogDebug("BackgroundService: About to start idle servers");
+            _logger.LogDebug("BackgroundService: About to start pending servers");
 
             var serverManager = scope.ServiceProvider.GetService<IServerManager>();
             var serverRepository = scope.ServiceProvider.GetService<IServerRepository>();
 
-            foreach (var server in (await serverRepository.GetServers()).Where(s => !s.IsAlive && s.Server.ShouldBeRunning))
+            foreach (var server in (await serverRepository.GetServerStartQueue()))
             {
                 try
                 {
-                    await serverManager.Start(server.Server);
+                    await serverManager.Start(server);
+                    await serverRepository.MarkServerStarted(server);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(new EventId(), e, $"BackgroundService: Error when starting idle server");
+                    _logger.LogError(new EventId(), e, $"BackgroundService: Error when starting pending server");
                 }
             }
         }

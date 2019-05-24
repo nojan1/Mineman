@@ -74,10 +74,15 @@ namespace Mineman.Service.Managers
                         {
                             _logger.LogInformation($"Unable to create container underlying image not yet built. Marking server for later start. ServerID: {server.ID}");
 
-                            server.ShouldBeRunning = true;
+                            if (!_context.StartupQueue.Any(x => x.ServerId == server.ID))
+                            {
+                                _context.StartupQueue.Add(new ServerStartupQueue
+                                {
+                                    ServerId = server.ID
+                                });
 
-                            _context.Update(server);
-                            await _context.SaveChangesAsync();
+                                await _context.SaveChangesAsync();
+                            }
 
                             return ServerStartResult.LaterStart;
                         }
@@ -104,8 +109,6 @@ namespace Mineman.Service.Managers
 
                     _logger.LogInformation($"Server started. ServerID: {server.ID}");
 
-                    server.ShouldBeRunning = true;
-
                     _context.Update(server);
                     await _context.SaveChangesAsync();
 
@@ -129,8 +132,6 @@ namespace Mineman.Service.Managers
                     _logger.LogInformation($"About to stop server. ServerID: {server.ID}");
 
                     await Stop(server.ContainerID);
-
-                    server.ShouldBeRunning = false;
 
                     if (server.NeedsRecreate)
                     {
@@ -205,7 +206,7 @@ namespace Mineman.Service.Managers
                 return false;
             }
         }
-            
+
         private async Task DestroyContainerInternal(string containerID)
         {
             _logger.LogInformation($"About to destroy container for server. ContainerID: {containerID}");
@@ -287,7 +288,8 @@ namespace Mineman.Service.Managers
                         {"25565/tcp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = server.MainPort.ToString() } } },
                         {"26565/udp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = server.QueryPort.ToString() } } },
                         {"27565/tcp", new List<PortBinding> { new PortBinding { HostIP = "0.0.0.0", HostPort = server.RconPort.ToString() } } }
-                    }
+                    },
+                    RestartPolicy = new RestartPolicy { Name = RestartPolicyKind.UnlessStopped }
                 }
             });
 

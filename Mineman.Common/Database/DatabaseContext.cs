@@ -15,6 +15,7 @@ namespace Mineman.Common.Database
         }
 
         public DbSet<Server> Servers { get; set; }
+        public DbSet<ServerStartupQueue> StartupQueue { get; set; }
         public DbSet<World> Worlds { get; set; }
         public DbSet<Mod> Mods { get; set; }
         public DbSet<Image> Images { get; set; }
