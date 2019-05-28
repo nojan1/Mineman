@@ -49,16 +49,6 @@ namespace WebApplicationBasic
         private string secretKey = "keykeykeykeykeykeykeykeykeykeykeykeykeykeykey";
         private SymmetricSecurityKey SigningKey { get => new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)); }
 
-        //public Startup(IHostingEnvironment env)
-        //{
-        //    var builder = new ConfigurationBuilder()
-        //        .SetBasePath(env.ContentRootPath)
-        //        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-        //        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-        //        .AddEnvironmentVariables();
-        //    Configuration = builder.Build();
-        //}
-
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -261,8 +251,8 @@ namespace WebApplicationBasic
                 }
             });
 
-            context.Database.EnsureCreated();
-            //context.Database.Migrate(); TODO: Support migrations
+            //context.Database.EnsureCreated();
+            context.Database.Migrate();
             EnsureFoldersCreated(env, pathOptions.Value);
             EnsureAdminUserExists(userManager);
 
