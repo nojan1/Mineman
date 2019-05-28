@@ -1,0 +1,14 @@
+bin\
+obj\
+Mineman.Common/bin/
+Mineman.Service/bin/
+Mineman.Service.Tests/bin/
+Mineman.Web/bin/
+Mineman.WorldParsing/bin/
+Mineman.WorldParsing.Tests/bin/
+Mineman.Common/obj/
+Mineman.Service/obj/
+Mineman.Service.Tests/obj/
+Mineman.Web/obj/
+Mineman.WorldParsing/obj/
+Mineman.WorldParsing.Tests/obj/
