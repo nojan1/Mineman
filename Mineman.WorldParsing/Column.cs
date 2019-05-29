@@ -19,7 +19,6 @@ namespace Mineman.WorldParsing
 
     public class Column
     {
-
         public bool TerrainPopulated { get; private set; }
         public int XWorld { get; private set; }
         public int ZWorld { get; private set; }
@@ -38,15 +37,25 @@ namespace Mineman.WorldParsing
             var level = _nbtDoc.Query<TagCompound>("Level");
             XWorld = level.GetIntValue("xPos") * 16;
             ZWorld = level.GetIntValue("zPos") * 16;
-            TerrainPopulated = level.GetByteValue("TerrainPopulated") == 1;
+
+            var terrainPopulated = level.GetByte("TerrainPopulated");
+            if (terrainPopulated != null)
+            {
+                TerrainPopulated = terrainPopulated.Value == 1;
+            }
+            else
+            {
+                TerrainPopulated = level.GetLongValue("LastUpdate") > 0;
+            }
         }
 
         private BlockEntity[] _blockEntities;
+
         public BlockEntity[] BlockEntities
         {
             get
             {
-                if(_blockEntities == null)
+                if (_blockEntities == null)
                 {
                     _blockEntities = GetBlockEntities();
                 }
@@ -57,18 +66,12 @@ namespace Mineman.WorldParsing
 
         public IEnumerable<Chunk> Chunks
         {
-            get
-            {
-                return GetChunks();
-            }
+            get { return GetChunks(); }
         }
 
         public IEnumerable<Entity> Entities
         {
-            get
-            {
-                return GetEntities();
-            }
+            get { return GetEntities(); }
         }
 
         public override string ToString()
@@ -80,11 +83,12 @@ namespace Mineman.WorldParsing
         {
             var level = _nbtDoc.Query<TagCompound>("Level");
 
-            return level.GetList("TileEntities") //Was called TileEntities in earlier minecraft version. Official name is now BlockEntities
-                    .Value
-                    .Cast<TagCompound>()
-                    .Select(t => new BlockEntity(t))
-                    .ToArray();
+            return level
+                .GetList("TileEntities") //Was called TileEntities in earlier minecraft version. Official name is now BlockEntities
+                .Value
+                .Cast<TagCompound>()
+                .Select(t => new BlockEntity(t))
+                .ToArray();
         }
 
         private IEnumerable<Entity> GetEntities()
@@ -93,27 +97,42 @@ namespace Mineman.WorldParsing
 
             return level.GetList("Entities").Value
                 .Cast<TagCompound>()
-                .Select(entity =>
-                {
-                    return EntityFactory.CreateFromTag(entity);
-                });
+                .Select(entity => { return EntityFactory.CreateFromTag(entity); });
         }
 
         private IEnumerable<Chunk> GetChunks()
         {
             var level = _nbtDoc.Query<TagCompound>("Level");
-            var biomeIds = level.GetByteArrayValue("Biomes");
+
+            var biomeIds = level.GetTag("Biomes").Type == TagType.ByteArray
+                ? level.GetByteArrayValue("Biomes")
+                : level.GetIntArrayValue("Biomes").Select(Convert.ToByte).ToArray();
 
             foreach (TagCompound section in level.GetList("Sections").Value)
             {
                 int y = section.GetByteValue("Y");
-                var blockIds = section.GetByteArrayValue("Blocks");
                 var blockLight = To4BitValues(section.GetByteArrayValue("BlockLight"));
-                var skyLight = To4BitValues(section.GetByteArrayValue("SkyLight"));
-                var blockData = To4BitValues(section.GetByteArrayValue("Data"));
-                var addData = To4BitValues(section.GetByteArrayValue("AddBlocks"));
-               
-                yield return new Chunk(y, ZWorld, XWorld, blockLight, blockIds, addData, blockData, skyLight, biomeIds, this);
+
+                var blockStates = section.GetTag<TagLongArray>("BlockStates");
+                var palette = section.GetList("Palette");
+
+                if (blockStates != null && palette != null)
+                {
+                    //New format ( >= 1.13 )
+                    yield return new NewChunk(y, ZWorld, XWorld, blockStates, palette);
+                }
+                else
+                {
+                    //Legacy format ( > 1.9 < 1.13 )
+
+                    var blockIds = section.GetByteArrayValue("Blocks");
+                    var skyLight = To4BitValues(section.GetByteArrayValue("SkyLight"));
+                    var blockData = To4BitValues(section.GetByteArrayValue("Data"));
+                    var addData = To4BitValues(section.GetByteArrayValue("AddBlocks"));
+
+                    yield return new LegacyChunk(y, ZWorld, XWorld, blockLight, blockIds, addData, blockData, skyLight,
+                        biomeIds, this);
+                }
             }
         }
 
@@ -124,7 +143,7 @@ namespace Mineman.WorldParsing
             switch (format)
             {
                 case ChunkFormat.ZLIB_DEFLATE:
-                    if (chunkDataStream.ReadByte() != 0x78 || chunkDataStream.ReadByte() != 0x9C)//zlib header
+                    if (chunkDataStream.ReadByte() != 0x78 || chunkDataStream.ReadByte() != 0x9C) //zlib header
                         throw new Exception("Incorrect zlib header");
 
                     using (var deflateStream = new DeflateStream(chunkDataStream, CompressionMode.Decompress, false))
@@ -158,8 +177,8 @@ namespace Mineman.WorldParsing
             var dataOut = new List<byte>(data.Length * 2);
             for (int i = 0; i < data.Length; i++)
             {
-                dataOut.Add((byte)(data[i] >> 4));
-                dataOut.Add((byte)(data[i] & 0b00001111));
+                dataOut.Add((byte) (data[i] >> 4));
+                dataOut.Add((byte) (data[i] & 0b00001111));
             }
 
             return dataOut.ToArray();

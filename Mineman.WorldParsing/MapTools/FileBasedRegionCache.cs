@@ -31,6 +31,7 @@ namespace Mineman.WorldParsing.MapTools
                 try
                 {
                     var regionMapCache = Serializer.Deserialize<RegionMapCache>(file);
+                    
                     return regionMapCache;
                 }
                 catch (ProtoException)

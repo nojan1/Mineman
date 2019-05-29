@@ -131,6 +131,7 @@ namespace Mineman.Service.Repositories
         {
             return await _context.StartupQueue
                 .Include(x => x.Server)
+                .Include(x => x.Server.World)
                 .Select(x => x.Server)
                 .ToListAsync();
         }

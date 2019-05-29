@@ -16,7 +16,7 @@ namespace Mineman.WorldParsing.MapTools
 {
     public class MapRenderer2D : IMapRenderer2D
     {
-        private static int[] transparentBlocks = new int[] { 20, 8, 9, 95 };
+        private static readonly int[] TransparentBlocks = new int[] { 20, 8, 9, 95 };
 
         private readonly IWorldParser _parser;
         private readonly ITextureProvider _textureProvider;
@@ -108,7 +108,7 @@ namespace Mineman.WorldParsing.MapTools
                                         continue;
                                     }
 
-                                    if (!transparentBlocks.Contains(block.BaseId) && block.SkyLight == 0 && block.BlockLight == 0 && bitmap[x, z].A > 0)
+                                    if (!TransparentBlocks.Contains(block.BaseId) && block.SkyLight == 0 && block.BlockLight == 0 && bitmap[x, z].A > 0)
                                     {
                                         populated.Add((x, z));
                                         continue;
@@ -129,7 +129,7 @@ namespace Mineman.WorldParsing.MapTools
                                 //    color = BlendBlocks(color, _textureProvider.GetBlocklightColor(), (byte)(block.BlockLight / 2));
                                 //}
 
-                                if (transparentBlocks.Contains(block.BaseId))
+                                if (TransparentBlocks.Contains(block.BaseId))
                                 {
                                     //This is a transparent block stack, save this color for future (next block in -Y order) reference.
                                     //This is also the flag that a stack is transparent

@@ -78,10 +78,22 @@ namespace Mineman.WorldParsing
 
                         ChunkFormat format = (ChunkFormat)reader.ReadByte();
                         var data = reader.ReadBytes(length - 1);
+
+                        Column column = null;
                         
-                        yield return new Column(format,
-                                                new MemoryStream(data),
-                                                UnixDateTimeHelpers.ToDateTime(timestamps[i]));
+                        try
+                        {
+                            column = new Column(format,
+                                new MemoryStream(data),
+                                UnixDateTimeHelpers.ToDateTime(timestamps[i]));
+                        }
+                        catch (InvalidDataException)
+                        {
+                            //Ignore
+                        }
+
+                        if (column != null)
+                            yield return column;
                     }
 
                 }

@@ -23,13 +23,16 @@ COPY Mineman.Web/* Mineman.Web/
 COPY Mineman.WorldParsing/* Mineman.WorldParsing/
 COPY Mineman.WorldParsing.Tests/* Mineman.WorldParsing.Tests/
 
-RUN dotnet publish -c Release -o out Mineman.Web/Mineman.Web.csproj
-COPY Extra/appsettings.docker.json ./out/appsettings.json
+RUN cd Mineman.Web && dotnet publish -c Release -o ../out
+COPY Extra/appsettings.docker.json /app/out/appsettings.json
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "Mineman.Web.dll"]
 
+#EXPOSE 5000/tcp
+#EXPOSE 5001/tcp
 EXPOSE 80/tcp
 VOLUME /data
+VOLUME /var/run/docker.sock

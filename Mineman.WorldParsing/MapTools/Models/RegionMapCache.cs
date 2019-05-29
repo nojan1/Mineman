@@ -50,7 +50,7 @@ namespace Mineman.WorldParsing.MapTools.Models
         public bool ColumnCacheIsStale(int columnX, int columnZ, DateTime targetTimestamp)
         {
             var column = GetColumn(columnX, columnZ);
-            return column == null || column.Timestamp < targetTimestamp;
+            return column == null || column.Timestamp < targetTimestamp || column.BlockColors == null;
         }
 
         public void UpdateTimestamp(int columnX, int columnZ, DateTime newTimestamp)
