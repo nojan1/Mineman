@@ -23,6 +23,16 @@ namespace Mineman.WorldParsing.Entities
             Z = tag.GetIntValue("z");
         }
 
+        public BlockEntity(TagCompound tag, string id, int x, int y, int z)
+        {
+            Tag = tag;
+
+            Id = id;
+            X = x;
+            Y = y;
+            Z = z;
+        }
+        
         public override string ToString()
         {
             return $"Entity: {Id}";

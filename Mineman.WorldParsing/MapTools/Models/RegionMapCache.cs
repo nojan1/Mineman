@@ -24,8 +24,9 @@ namespace Mineman.WorldParsing.MapTools.Models
         public (int, int) Coordinates { get; set; }
         [ProtoMember(3)]
         public long TimestampRaw { get; set; }
-        [ProtoMember(2)]
-        public List<BlockColor> BlockColors { get; set; }
+
+        [ProtoMember(2)] 
+        public List<BlockColor> BlockColors { get; set; } = new List<BlockColor>();
 
         public DateTime Timestamp
         {

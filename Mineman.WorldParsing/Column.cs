@@ -119,7 +119,7 @@ namespace Mineman.WorldParsing
                 if (blockStates != null && palette != null)
                 {
                     //New format ( >= 1.13 )
-                    yield return new NewChunk(y, ZWorld, XWorld, blockStates, palette);
+                    yield return new NewChunk(y, ZWorld, XWorld, blockStates, palette, biomeIds);
                 }
                 else
                 {
