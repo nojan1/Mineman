@@ -1,10 +1,11 @@
 import React from 'react';
+import Edit from '../global/edit';
 
 const Images: React.FunctionComponent = () => {
 
     return (
         <>
-            Images
+            <Edit data={[]} columnMapping={{}} />
         </>
     );
 };

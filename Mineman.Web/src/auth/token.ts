@@ -1,6 +1,6 @@
 import Axios from "axios";
 import jwt_decode from "jwt-decode";
-import { User } from ".";
+import { User } from "../models/user";
 import { clear, load, store } from "../actions/persist";
 
 const TOKEN_STORAGE_KEY = "token";
@@ -13,7 +13,7 @@ export const getToken = async () => {
 
     const decodedToken = jwt_decode<User>(token);
     if (hasExpired(decodedToken)) {
-        //Get refresh token here
+        //TODO: Get refresh token here
 
         return null;
     }

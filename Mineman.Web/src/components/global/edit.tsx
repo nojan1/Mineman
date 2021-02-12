@@ -1,17 +1,7 @@
-import { createStyles, makeStyles, Theme, Fab, Table, TableHead, TableBody, TableRow, TableCell, IconButton } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import EditIcon from '@material-ui/icons/Edit';
 import React, { PropsWithChildren } from 'react';
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        fab: {
-            position: 'absolute',
-            bottom: theme.spacing(2),
-            right: theme.spacing(2),
-        }
-    }),
-);
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+import {AiFillEdit} from 'react-icons/all';
 
 export interface EditProps<T> {
     columnMapping: { [key: string]: string }
@@ -22,41 +12,39 @@ const Edit = <T,>({
     data,
     columnMapping
 }: PropsWithChildren<EditProps<T>>) => {
-    const classes = useStyles();
-
     return (
         <>
             <Table>
-                <TableHead>
-                    <TableRow>
+                <thead>
+                    <tr>
                         {Object.entries(columnMapping).map(([prop, name]) =>
-                            <TableCell key={prop}>{name}</TableCell>
+                            <td key={prop}>{name}</td>
                         )}
-                        <TableCell />
-                    </TableRow>
-                </TableHead>
-                <TableBody>
+                        <td />
+                    </tr>
+                </thead>
+                <tbody>
                     {data?.map((row:any) => 
-                        <TableRow key={row.id}>
+                        <tr key={row.id}>
                             {Object.keys(columnMapping).map(key => 
-                                <TableCell key={key}>
+                                <td key={key}>
                                     {row[key]}
-                                </TableCell>    
+                                </td>    
                             )}
 
-                            <TableCell>
-                                <IconButton>
-                                    <EditIcon />
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>
+                            <td>
+                                <Button>
+                                    <AiFillEdit />
+                                </Button>
+                            </td>
+                        </tr>
                     )}
-                </TableBody>
+                </tbody>
             </Table>
 
-            <Fab color="secondary" className={classes.fab}>
+            {/* <Fab color="secondary" className={classes.fab}>
                 <AddIcon />
-            </Fab>
+            </Fab> */}
         </>
     );
 };

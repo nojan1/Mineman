@@ -1,89 +1,98 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, makeStyles, Theme } from '@material-ui/core';
-
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import PublicIcon from '@material-ui/icons/Public';
-import WebAssetIcon from '@material-ui/icons/WebAsset';
-import LibraryAddIcon from '@material-ui/icons/LibraryAdd';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
-
+import Nav from 'react-bootstrap/Nav';
+import { MdDashboard, MdLibraryAdd, MdLock, MdLockOpen } from 'react-icons/md';
+import { GrServer, GrStorage } from 'react-icons/gr';
+import { BiWorld } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
-
-const drawerWidth = 240;
-
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    display: 'flex',
-  },
-  appBar: {
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginLeft: drawerWidth,
-  },
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  // necessary for content to be below app bar
-  toolbar: theme.mixins.toolbar,
-  content: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing(3),
-  },
-}));
-
-const ListItemLink = (props: any) =>
-    <ListItem button component={Link} {...props} />
+import { getState } from '../../state';
 
 const Menu: React.FunctionComponent = () => {
-    const classes = useStyles();
+    const { state: { user } } = getState();
 
     return (
-        <Drawer
-            className={classes.drawer}
-            variant="permanent"
-            classes={{
-                paper: classes.drawerPaper,
-            }}
-            anchor="left"
-        >
-            <List>
-                <ListItemLink to='/'>
-                    <ListItemIcon>
-                        <DashboardIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Dashboard' />
-                </ListItemLink>
-                <ListItemLink to='/servers'>
-                    <ListItemIcon>
-                        <PublicIcon /> 
-                    </ListItemIcon>
-                    <ListItemText primary='Servers' />
-                </ListItemLink>
-                <ListItemLink to='/images'>
-                    <ListItemIcon>
-                        <WebAssetIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Images'/>
-                </ListItemLink>
-                <ListItemLink to='/mods'>
-                    <ListItemIcon>
-                        <LibraryAddIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Mods'/>
-                </ListItemLink>
+        <Nav defaultActiveKey="/home" className="flex-column">
+            <Nav.Link as={Link} to="/">
+                <MdDashboard />
+                Dashboard
+            </Nav.Link>
+            <Nav.Link as={Link} to="/servers">
+                <GrServer />
+                Servers
+            </Nav.Link>
+            <Nav.Link as={Link} to="/images">
+                <GrStorage />
+                Images
+            </Nav.Link>
+            <Nav.Link as={Link} to="/worlds">
+                <BiWorld />
+                Worlds
+            </Nav.Link>
+            <Nav.Link as={Link} to="/mods">
+                <MdLibraryAdd />
+                Mods
+            </Nav.Link>
 
-                <ListItemLink to='/login'>
-                    <ListItemIcon>
-                        <LockOpenIcon />
-                    </ListItemIcon>
-                    <ListItemText primary='Log in'/>
-                </ListItemLink>
-            </List>
-        </Drawer>
+            {user ?
+                <Nav.Link>
+                    <MdLock />
+                    Log out
+                </Nav.Link>
+                :
+                <Nav.Link as={Link} to="/logout">
+                    <MdLockOpen />
+                    Log in
+                </Nav.Link>
+            }
+        </Nav>
+
+        // <Drawer
+        //     className={classes.drawer}
+        //     variant="permanent"
+        //     classes={{
+        //         paper: classes.drawerPaper,
+        //     }}
+        //     anchor="left"
+        // >
+        //     <List>
+        //         <ListItemLink to='/'>
+        //             <ListItemIcon>
+        //                 <DashboardIcon />
+        //             </ListItemIcon>
+        //             <ListItemText primary='Dashboard' />
+        //         </ListItemLink>
+        //         {user ?
+        //             <>
+        //                 <ListItemLink to='/servers'>
+        //                     <ListItemIcon>
+        //                         <StorageIcon />
+        //                     </ListItemIcon>
+        //                     <ListItemText primary='Servers' />
+        //                 </ListItemLink>
+        //                 <ListItemLink to='/images'>
+        //                     <ListItemIcon>
+        //                         <WebAssetIcon />
+        //                     </ListItemIcon>
+        //                     <ListItemText primary='Images' />
+        //                 </ListItemLink>
+        //                 <ListItemLink to='/worlds'>
+        //                     <ListItemIcon>
+        //                         <PublicIcon />
+        //                     </ListItemIcon>
+        //                     <ListItemText primary='Worlds' />
+        //                 </ListItemLink>
+        //                 <ListItemLink to='/mods'>
+        //                     <ListItemIcon>
+        //                         <LibraryAddIcon />
+        //                     </ListItemIcon>
+        //                     <ListItemText primary='Mods' />
+        //                 </ListItemLink>
+        //             </>
+        //             : null}
+
+
+
+        //     </List>
+        // </Drawer>
     );
 };
 

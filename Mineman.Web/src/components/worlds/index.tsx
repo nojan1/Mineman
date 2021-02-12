@@ -1,10 +1,11 @@
 import React from 'react';
+import Edit from '../global/edit';
 
 const Worlds: React.FunctionComponent = () => {
 
     return (
         <>
-            Worlds
+            <Edit data={[]} columnMapping={{}} />
         </>
     );
 };

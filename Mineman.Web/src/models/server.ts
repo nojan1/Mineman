@@ -4,13 +4,14 @@ export type ServerModel = {
     mainPort: number;
     isAlive: boolean;
     hasMap: boolean;
-    info?: ServerInfoModel;
+    motd?:string;
+    query?: ServerQueryModel;
 };
 
-export type ServerInfoModel = {
-    motd: string;
-    query: ServerQueryModel;
-};
+// export type ServerInfoModel = {
+//     motd: string;
+//     query: ServerQueryModel;
+// };
 
 export type ServerQueryModel = {
     maxPlayers: number;

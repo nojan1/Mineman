@@ -2,34 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { getState } from '../../state';
 import userStartupActions from '../../actions/user';
 import serverStartupActions from '../../actions/servers';
-import { makeStyles } from '@material-ui/core';
+import styled from '@emotion/styled';
 
-const useStyles = makeStyles({
-    container: {
-        display: 'flex',
-        width: '100vw',
-        height: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    loading: {
-        maxWidth: '550px'
-    },
-    innerContainer: {
-        textAlign: 'center'
-    }
-});
+const OuterContainer = styled.div`
+    display: flex;
+    width: 100vw,;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+`;
+
+const LoadingImage = styled.img`
+    max-width: 550px;
+`;
 
 export const AppLoaderContent = () => {
-    const classes = useStyles();
-
     return (
-        <div className={classes.container}>
-            <div className={classes.innerContainer}>
-                <img src="/images/spinner.gif" className={classes.loading}/>
+        <OuterContainer>
+            <div>
+                <LoadingImage src="/images/spinner.gif" />
                 <h1>Mineman starting...</h1>
             </div>
-        </div>
+        </OuterContainer>
     );
 }
 

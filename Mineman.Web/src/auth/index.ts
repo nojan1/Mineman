@@ -1,16 +1,20 @@
 import axios from 'axios';
 import { getToken } from './token';
 
-export type User = {
-    sub: string;
-    exp: number;
-    role: string[];
-}
+import configureApiMock from '../mocks/api';
 
-export const getAuthedAxios = async () => {
-    const {token} = await getToken();
-
+export const getAuthedAxios = async (anonymousOkey: boolean = false) => {
     const instance = axios.create();
-    instance.defaults.headers.authorization = `Bearer ${token}`;
+
+    if(process.env.REACT_APP_USED_MOCKED_BACKEND === 'true'){
+        configureApiMock(instance);
+        return instance;
+    }
+
+    const result = await getToken();
+    if(!result && !anonymousOkey)
+        throw new Error('No token available and anonymous was not okey');
+
+    instance.defaults.headers.authorization = `Bearer ${result!.token}`;
     return instance;
 }

@@ -1,22 +1,31 @@
-import { Button, Container, FormControl, TextField, Typography } from '@material-ui/core';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 import React from 'react';
 
 const Login: React.FunctionComponent = () => {
 
     return (
-        <Container maxWidth="xs" title='Login'>
-            <Typography variant='h4' align='center'>
+        <Container>
+            <h4>
                 Login to Mineman
-            </Typography>
+            </h4>
 
-            <form onSubmit={() => {window.location.href = '/'}}>
-                <TextField label='Username' required fullWidth autoFocus margin="normal"/>
-                <TextField label='Password' type='password' required fullWidth autoFocus margin="normal"/>
+            <Form>
+                <Form.Group>
+                    <Form.Label>Username</Form.Label>
+                    <Form.Control type="text" />
+                </Form.Group>
 
-                <Button color='primary' variant='contained' type='submit' fullWidth>
+                <Form.Group>
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control type="password" />
+                </Form.Group>
+
+                <Button variant='primary' type='submit'>
                     Login
                 </Button>
-            </form>
+            </Form>
         </Container>
     );
 };
