@@ -1,12 +1,17 @@
+using Docker.DotNet;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Mineman.Common.Database;
+using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Configuration;
 using Mineman.Service;
 using Mineman.Service.Managers;
@@ -19,6 +24,7 @@ using Mineman.WorldParsing.MapTools;
 using Mineman.WorldParsing.MapTools.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -36,7 +42,98 @@ namespace Mineman.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DatabaseContext>(options =>
+            {
+                options.UseSqlite(Configuration.GetConnectionString("MainDatabase"));
+            });
+
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 4;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            })
+            .AddEntityFrameworkStores<DatabaseContext>()
+            .AddDefaultTokenProviders();
+
             services.AddControllers();
+            ConfiureDependencies(services);
+
+            services.AddSwaggerGen();
+            RegisterConfigurationOptionModels(services);
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app,
+                              IWebHostEnvironment env,
+                              ILoggerFactory loggerFactory,
+                              DatabaseContext context,
+                              Service.BackgroundService service,
+                              IOptions<PathOptions> pathOptions,
+                              UserManager<ApplicationUser> userManager,
+                              IDockerClient dockerClient)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseDefaultFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true
+            });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            //context.Database.EnsureCreated();
+            context.Database.Migrate();
+            EnsureFoldersCreated(env, pathOptions.Value);
+            EnsureAdminUserExists(userManager);
+        }
+
+        private void RegisterConfigurationOptionModels(IServiceCollection services)
+        {
+            services.Configure<DockerOptions>(Configuration.GetSection("DockerOptions"));
+            services.Configure<PathOptions>(Configuration.GetSection("PathOptions"));
+            services.Configure<BackgroundServiceOptions>(Configuration.GetSection("BackgroundServiceOptions"));
+            services.Configure<ServerCommunicationOptions>(Configuration.GetSection("ServerCommunicationOptions"));
+            services.Configure<TextureOptions>(Configuration.GetSection("TextureOptions"));
+            services.Configure<RemoteImageOptions>(Configuration.GetSection("RemoteImageOptions"));
+        }
+
+        private static void ConfiureDependencies(IServiceCollection services)
+        {
+            services.AddTransient<IDockerClient>(service =>
+            {
+                var dockerOptions = service.GetService<IOptions<DockerOptions>>();
+
+                if(!string.IsNullOrEmpty(dockerOptions.Value.DockerHost))
+                    return new DockerClientConfiguration(new Uri(
+                            dockerOptions.Value.DockerHost
+                        )).CreateClient(Version.Parse("1.24"));
+
+                return new DockerClientConfiguration().CreateClient(Version.Parse("1.24"));
+            });
 
             services.AddScoped<IServerRepository, ServerRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
@@ -60,37 +157,34 @@ namespace Mineman.Web
             services.AddScoped<MapGenerationService>();
             services.AddScoped<WorldInfoService>();
             services.AddScoped<Service.BackgroundService>();
-
-            services.Configure<DockerOptions>(Configuration.GetSection("DockerOptions"));
-            services.Configure<PathOptions>(Configuration.GetSection("PathOptions"));
-            services.Configure<BackgroundServiceOptions>(Configuration.GetSection("BackgroundServiceOptions"));
-            services.Configure<ServerCommunicationOptions>(Configuration.GetSection("ServerCommunicationOptions"));
-            services.Configure<TextureOptions>(Configuration.GetSection("TextureOptions"));
-            services.Configure<RemoteImageOptions>(Configuration.GetSection("RemoteImageOptions"));
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        private void EnsureAdminUserExists(UserManager<ApplicationUser> userManager)
         {
-            if (env.IsDevelopment())
+            if (userManager.Users.Count() == 0)
             {
-                app.UseDeveloperExceptionPage();
+                var user = new ApplicationUser { UserName = "admin" };
+                var result = userManager.CreateAsync(user, "admin").Result;
+
+                if (!result.Succeeded)
+                {
+                    throw new Exception($"Failed to create initial user! {string.Join(",", result.Errors.Select(e => e.Code))}");
+                }
+            }
+        }
+
+        private void EnsureFoldersCreated(IWebHostEnvironment env, PathOptions pathOptions)
+        {
+            void createDirectory(string path)
+            {
+                var fullPath = Path.Combine(env.ContentRootPath, path);
+                Directory.CreateDirectory(fullPath);
             }
 
-            app.UseDefaultFiles();
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                ServeUnknownFileTypes = true
-            });
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            createDirectory(pathOptions.WorldDirectory);
+            createDirectory(pathOptions.ServerPropertiesDirectory);
+            createDirectory(pathOptions.ModDirectory);
+            createDirectory(pathOptions.ImageZipFileDirectory);
         }
     }
 }

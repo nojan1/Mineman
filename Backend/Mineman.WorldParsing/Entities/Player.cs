@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using NBT;
 using Mineman.WorldParsing.Blocks;
 using System.Linq;
+using Cyotek.Data.Nbt;
 
 namespace Mineman.WorldParsing.Entities
 {

@@ -1,5 +1,4 @@
 ﻿using Mineman.WorldParsing.Blocks;
-using NBT;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Text;
 using System.IO.Compression;
 using Mineman.WorldParsing.Entities;
 using System.Linq;
+using Cyotek.Data.Nbt;
 
 namespace Mineman.WorldParsing
 {

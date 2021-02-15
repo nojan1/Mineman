@@ -1,4 +1,5 @@
-﻿using NBT;
+﻿
+using Cyotek.Data.Nbt;
 
 namespace Mineman.WorldParsing.Entities
 {

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Cyotek.Data.Nbt;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using NBT;
 
 namespace Mineman.WorldParsing.Entities
 {

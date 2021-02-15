@@ -1,5 +1,4 @@
 ﻿using Mineman.WorldParsing.Entities;
-using NBT;
 using System.Collections.Generic;
 
 namespace Mineman.WorldParsing

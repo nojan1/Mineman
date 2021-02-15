@@ -1,5 +1,5 @@
-﻿using Mineman.WorldParsing.Entities;
-using NBT;
+﻿using Cyotek.Data.Nbt;
+using Mineman.WorldParsing.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;

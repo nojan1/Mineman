@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cyotek.Data.Nbt;
 using Mineman.WorldParsing.Blocks;
 using Mineman.WorldParsing.Entities;
-using NBT;
 
 namespace Mineman.WorldParsing
 {
-    //TODO: Remove me and fix NBT lib
-    public class TagLongArray : NBT.Tag
+    //TODO: Remove me when Nbt lib contains support for TagLongArray
+    public class TagLongArray : Tag
     {
         public TagLongArray(string name) : base(name)
         {

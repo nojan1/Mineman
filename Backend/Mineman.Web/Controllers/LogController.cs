@@ -54,7 +54,7 @@ namespace Mineman.Web.Controllers
                 var log = data.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)
                               .Select(l =>
                               {
-                                  if(l.Length > 8)
+                                  if (l.Length > 8)
                                   {
                                       var chars = l.ToCharArray()
                                                    //.Select(c => (byte)Convert.ToInt32(c))
