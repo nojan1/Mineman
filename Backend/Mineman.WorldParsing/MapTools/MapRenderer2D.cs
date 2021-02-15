@@ -9,7 +9,6 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using SixLabors.Primitives;
 using SixLabors.ImageSharp.Processing;
 
 namespace Mineman.WorldParsing.MapTools
@@ -58,7 +57,7 @@ namespace Mineman.WorldParsing.MapTools
                 var regionCache = _cacheProvider.GetRegionMapCache(region.X, region.Z) ?? new RegionMapCache();
 
                 var populated = new List<(int, int)>(16 * 16);
-                var lastBaseColor = new Dictionary<(int, int), Rgba32>(16 * 16);
+                var lastBaseColor = new Dictionary<(int, int), Color>(16 * 16);
 
                 foreach (var column in region.Columns)
                 {
@@ -91,14 +90,14 @@ namespace Mineman.WorldParsing.MapTools
                                 if (populated.Contains((x, z)))
                                     continue;
 
-                                var baseColor = _textureProvider.GetColorForBlock(block, Rgba32.HotPink);
-                                if (baseColor == Rgba32.HotPink)
+                                var baseColor = _textureProvider.GetColorForBlock(block, Color.HotPink);
+                                if (baseColor == Color.HotPink)
                                 {
                                     var key = $"{block.Code} ({block.Id})";
                                     unknownBlocks[key] = unknownBlocks.ContainsKey(key) ? unknownBlocks[key] + 1 : 1;
                                 }
 
-                                Rgba32 color;
+                                Color color;
                                 if (lastBaseColor.ContainsKey((x, z)))
                                 {
                                     //Handle non top blocks in transparent stacks
@@ -234,8 +233,8 @@ namespace Mineman.WorldParsing.MapTools
                     {
                         foreach (var block in chunk.Blocks)
                         {
-                            var color = _textureProvider.GetColorForBiome(block.Biome, Rgba32.Aquamarine);
-
+                            var color = _textureProvider.GetColorForBiome(block.Biome, Color.Aquamarine);
+                            
                             bitmap[block.WorldX - dX, block.WorldZ - dZ] = color;
                         }
                     }

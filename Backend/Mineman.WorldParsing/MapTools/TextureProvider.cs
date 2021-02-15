@@ -8,14 +8,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 
 namespace Mineman.WorldParsing.MapTools
 {
     public class TextureProvider : ITextureProvider
     {
-        private Dictionary<BiomeType, Rgba32> biomeColorTable;
-        private Dictionary<string, Rgba32> blockColorTable;
+        private Dictionary<BiomeType, Color> biomeColorTable;
+        private Dictionary<string, Color> blockColorTable;
 
         private readonly TextureOptions _textureOptions;
         public TextureProvider(TextureOptions textureOptions)
@@ -26,7 +26,7 @@ namespace Mineman.WorldParsing.MapTools
             LoadBiomeColorFile();
         }
 
-        public Rgba32 GetColorForBlock(Block block, Rgba32 fallbackColor)
+        public Color GetColorForBlock(Block block, Color fallbackColor)
         {
             if (blockColorTable.ContainsKey(block.Id))
             {
@@ -48,7 +48,7 @@ namespace Mineman.WorldParsing.MapTools
             }
         }
 
-        public Rgba32 GetColorForBiome(BiomeType biomeType, Rgba32 fallbackColor)
+        public Color GetColorForBiome(BiomeType biomeType, Color fallbackColor)
         {
             if (!biomeColorTable.ContainsKey(biomeType))
                 return fallbackColor;
@@ -56,9 +56,9 @@ namespace Mineman.WorldParsing.MapTools
             return biomeColorTable[biomeType];
         }
 
-        public Rgba32 GetBlocklightColor()
+        public Color GetBlocklightColor()
         {
-            return Rgba32.DarkOrange;
+            return Color.DarkOrange;
         }
 
         private void LoadBlockColorFile()
@@ -76,21 +76,21 @@ namespace Mineman.WorldParsing.MapTools
         }
 
         private static FieldInfo[] rgba32Fields;
-        private static Rgba32 ColorFromString(string colorString)
+        private static Color ColorFromString(string colorString)
         {
             if(rgba32Fields == null)
             {
-                rgba32Fields = typeof(Rgba32).GetFields();
+                rgba32Fields = typeof(Color).GetFields();
             }
 
             if (colorString.StartsWith("#"))
             {
-                return Rgba32.FromHex(colorString);
+                return SixLabors.ImageSharp.PixelFormats.Rgba32.ParseHex(colorString);
             }
             else
             {
                 var field = rgba32Fields.First(p => p.Name.ToLower() == colorString.ToLower());
-                return (Rgba32)field.GetValue(null);
+                return (Color)field.GetValue(null);
             }
         }
 

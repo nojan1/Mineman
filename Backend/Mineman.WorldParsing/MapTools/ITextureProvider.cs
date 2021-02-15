@@ -1,12 +1,12 @@
 ﻿using Mineman.WorldParsing.Blocks;
-using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 
 namespace Mineman.WorldParsing.MapTools
 {
     public interface ITextureProvider
     {
-        Rgba32 GetBlocklightColor();
-        Rgba32 GetColorForBiome(BiomeType biomeType, Rgba32 fallbackColor);
-        Rgba32 GetColorForBlock(Block block, Rgba32 fallbackColor);
+        Color GetBlocklightColor();
+        Color GetColorForBiome(BiomeType biomeType, Color fallbackColor);
+        Color GetColorForBlock(Block block, Color fallbackColor);
     }
 }

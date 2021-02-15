@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -10,9 +10,9 @@
     <IntermediateOutputPath>obj\Debug\netcoreapp2.1</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CoreRCON" Version="3.0.0" />
-    <PackageReference Include="Docker.DotNet" Version="3.125.2" />
-    <PackageReference Include="SharpCompress" Version="0.22.0" />
+    <PackageReference Include="CoreRCON" Version="5.0.0" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.4" />
+    <PackageReference Include="SharpCompress" Version="0.28.0" />
   </ItemGroup>
 
   <ItemGroup>

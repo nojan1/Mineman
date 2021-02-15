@@ -7,6 +7,34 @@ using NBT;
 
 namespace Mineman.WorldParsing
 {
+    //TODO: Remove me and fix NBT lib
+    public class TagLongArray : NBT.Tag
+    {
+        public TagLongArray(string name) : base(name)
+        {
+        }
+
+        public long[] Value { get; set; }
+
+
+        public override TagType Type => throw new NotImplementedException();
+
+        public override object GetValue()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetValue(object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToValueString()
+        {
+            throw new NotImplementedException();
+        }
+    };
+
     public class NewChunk : Chunk
     {
         private readonly Dictionary<string, (int, byte)> _blockTranslationMap = new Dictionary<string, (int, byte)>
@@ -544,7 +572,7 @@ namespace Mineman.WorldParsing
                 if (paletteIndex < 0 || paletteIndex > _palette.Value.Count - 1)
                     continue;
 
-                var paletteItem = (TagCompound) _palette.Value.ElementAt(paletteIndex);
+                var paletteItem = (TagCompound)_palette.Value.ElementAt(paletteIndex);
 
                 var x = XWorld + (i % 16);
                 var y = (YOrder * 16) + (i / 256);
@@ -591,18 +619,18 @@ namespace Mineman.WorldParsing
                 if (lowerIndex == upperIndex)
                 {
                     //Same long
-                    var rightHandAnd = ((ulong) Math.Pow(2, bitsPerValue + 1)) - 1;
+                    var rightHandAnd = ((ulong)Math.Pow(2, bitsPerValue + 1)) - 1;
 
-                    var value = (int) ((((ulong) _blockStates.Value[lowerIndex]) >> normalizedIndex) & rightHandAnd);
+                    var value = (int)((((ulong)_blockStates.Value[lowerIndex]) >> normalizedIndex) & rightHandAnd);
                     yield return value;
                 }
                 else
                 {
                     //Spread over 2 longs
                     var lengthInLowerHalf = 64 - normalizedIndex;
-                    var lowerHalfRightHandAnd = ((ulong) Math.Pow(2, lengthInLowerHalf + 1)) - 1;
+                    var lowerHalfRightHandAnd = ((ulong)Math.Pow(2, lengthInLowerHalf + 1)) - 1;
                     var lowerHalfNumShifts = 64 - lengthInLowerHalf;
-                    var lowerHalf = (((ulong) _blockStates.Value[lowerIndex]) >> lowerHalfNumShifts) &
+                    var lowerHalf = (((ulong)_blockStates.Value[lowerIndex]) >> lowerHalfNumShifts) &
                                     lowerHalfRightHandAnd;
 
                     var upperHalf = 0ul;
@@ -610,11 +638,11 @@ namespace Mineman.WorldParsing
 
                     if (lengthInUpperHalf > 0)
                     {
-                        var upperHalfRightHandAnd = ((ulong) Math.Pow(2, lengthInUpperHalf + 1)) - 1;
-                        upperHalf = ((ulong) _blockStates.Value[upperIndex]) & upperHalfRightHandAnd;
+                        var upperHalfRightHandAnd = ((ulong)Math.Pow(2, lengthInUpperHalf + 1)) - 1;
+                        upperHalf = ((ulong)_blockStates.Value[upperIndex]) & upperHalfRightHandAnd;
                     }
 
-                    var value = (int) (lowerHalf + upperHalf);
+                    var value = (int)(lowerHalf + upperHalf);
                     yield return value;
                 }
             }
