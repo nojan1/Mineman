@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>3789ab7e-0cc0-4952-a736-3e5861e5f55f</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
+    <ProjectReference Include="..\Mineman.Service\Mineman.Service.csproj" />
+    <ProjectReference Include="..\Mineman.WorldParsing\Mineman.WorldParsing.csproj" />
+  </ItemGroup>
+
+
+</Project>
