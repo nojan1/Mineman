@@ -19,6 +19,8 @@ using Mineman.Service.MinecraftQuery;
 using Mineman.Service.Models.Configuration;
 using Mineman.Service.Rcon;
 using Mineman.Service.Repositories;
+using Mineman.Web.Helpers;
+using Mineman.Web.Hubs;
 using Mineman.WorldParsing;
 using Mineman.WorldParsing.MapTools;
 using Mineman.WorldParsing.MapTools.Models;
@@ -86,6 +88,16 @@ namespace Mineman.Web
                 ServeUnknownFileTypes = true
             });
 
+            app.UseCors(builder =>
+            {
+                //TODO: Actually set origin
+                //var origin = Configuration.GetValue<string>("FrontendIntegrationOptions::CorsOrigin");
+                //if (!string.IsNullOrEmpty(origin))
+
+                builder.AllowAnyOrigin();
+                builder.AllowAnyMethod();
+            });
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -93,7 +105,7 @@ namespace Mineman.Web
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mineman API V1");
             });
 
             app.UseRouting();
@@ -103,6 +115,7 @@ namespace Mineman.Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<InfoHub>("/info");
             });
 
             //context.Database.EnsureCreated();
@@ -125,14 +138,15 @@ namespace Mineman.Web
         {
             services.AddTransient<IDockerClient>(service =>
             {
+                var dockerVersion = Version.Parse("1.24");
                 var dockerOptions = service.GetService<IOptions<DockerOptions>>();
 
-                if(!string.IsNullOrEmpty(dockerOptions.Value.DockerHost))
+                if (!string.IsNullOrEmpty(dockerOptions.Value.DockerHost))
                     return new DockerClientConfiguration(new Uri(
                             dockerOptions.Value.DockerHost
-                        )).CreateClient(Version.Parse("1.24"));
+                        )).CreateClient(dockerVersion);
 
-                return new DockerClientConfiguration().CreateClient(Version.Parse("1.24"));
+                return new DockerClientConfiguration().CreateClient(dockerVersion);
             });
 
             services.AddScoped<IServerRepository, ServerRepository>();
@@ -157,6 +171,8 @@ namespace Mineman.Web
             services.AddScoped<MapGenerationService>();
             services.AddScoped<WorldInfoService>();
             services.AddScoped<Service.BackgroundService>();
+
+            services.AddTransient<IInfoClient, InfoHubClient>();
         }
 
         private void EnsureAdminUserExists(UserManager<ApplicationUser> userManager)

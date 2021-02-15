@@ -32,18 +32,21 @@ namespace Mineman.Service.Managers
         private readonly PathOptions _pathOptions;
         private readonly IHostingEnvironment _environment;
         private readonly ILogger<ServerManager> _logger;
+        private readonly IInfoClient _infoClient;
 
         public ServerManager(DatabaseContext context,
                              IDockerClient dockerClient,
                              IOptions<PathOptions> pathOptions,
                              IHostingEnvironment environment,
-                             ILogger<ServerManager> logger)
+                             ILogger<ServerManager> logger,
+                             IInfoClient infoClient)
         {
             _context = context;
             _dockerClient = dockerClient;
             _pathOptions = pathOptions.Value;
             _environment = environment;
             _logger = logger;
+            _infoClient = infoClient;
         }
 
         public async Task<ServerStartResult> Start(Server server)
@@ -111,6 +114,7 @@ namespace Mineman.Service.Managers
 
                     _context.Update(server);
                     await _context.SaveChangesAsync();
+                    await _infoClient.ServerStarted(server.ID);
 
                     return ServerStartResult.Success;
                 }
@@ -140,6 +144,7 @@ namespace Mineman.Service.Managers
 
                     _context.Update(server);
                     await _context.SaveChangesAsync();
+                    await _infoClient.ServerStopped(server.ID);
 
                     return true;
                 }
@@ -298,6 +303,7 @@ namespace Mineman.Service.Managers
 
             _context.Update(server);
             await _context.SaveChangesAsync();
+            await _infoClient.ImageBuildComplete(server.ID);
         }
 
         private void WriteServerProperties(Server server)
