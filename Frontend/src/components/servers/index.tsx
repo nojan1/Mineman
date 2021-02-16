@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { create } from '../../actions/servers';
+import { create, update } from '../../actions/servers';
 import { getState } from '../../state';
 import Edit from '../global/edit';
 import { TabPageSettings } from '../global/edit/types';
@@ -10,8 +10,8 @@ const column = [
         columns:
         {
             'description': { label: 'Description', required: true },
-            'serverPort': { label: 'Port', type: 'number', required: true },
-            'memoryAllocationMB': { label: 'Memory allocation in MB', hideFromTable: true, type: 'number', required: true }
+            'serverPort': { label: 'Port', type: 'number', required: true, default: 25565 },
+            'memoryAllocationMB': { label: 'Memory allocation in MB', hideFromTable: true, type: 'number', required: true, default: 1024 }
         }
     },
     {
@@ -57,8 +57,8 @@ const column = [
 const Servers: React.FunctionComponent = () => {
     const { state: { servers }, dispatch } = getState();
 
-    const onSave = useCallback((server: any) => {
-        return create(dispatch, server);
+    const onSave = useCallback((server: any, isNew: boolean) => {
+        return isNew ? create(dispatch, server) : update(dispatch, server);
     }, [dispatch]);
 
     return (

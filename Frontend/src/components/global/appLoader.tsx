@@ -3,6 +3,9 @@ import { getState } from '../../state';
 import userStartupActions from '../../actions/startup/user';
 import serverStartupActions from '../../actions/startup/servers';
 import styled from '@emotion/styled';
+import imagesStartupActions from '../../actions/startup/images';
+import worldsStartupActions from '../../actions/startup/worlds';
+import modsStartupActions from '../../actions/startup/mods';
 
 const OuterContainer = styled.div`
     display: flex;
@@ -38,7 +41,10 @@ const AppLoader: React.FunctionComponent = ({
         userStartupActions(dispatch)
             .then(() =>
                 Promise.all([
-                    serverStartupActions(dispatch)
+                    serverStartupActions(dispatch),
+                    imagesStartupActions(dispatch),
+                    worldsStartupActions(dispatch),
+                    modsStartupActions(dispatch)
                 ])
             )
             .then(() => setIsCompleted(true));
