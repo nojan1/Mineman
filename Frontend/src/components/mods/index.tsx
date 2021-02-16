@@ -5,7 +5,7 @@ const Mods: React.FunctionComponent = () => {
 
     return (
         <>
-            <Edit data={[]} columnMapping={{}} />
+            {/* <Edit data={[]} columnMapping={{}} /> */}
         </>
     );
 };

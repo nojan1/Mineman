@@ -1,5 +1,5 @@
-import { getToken } from "../auth/token";
-import { Action } from "../reducer";
+import { getToken } from "../../auth/token";
+import { Action } from "../../reducer";
 
 export const populateStateFromProfileIfAvailable = async (dispatch: React.Dispatch<Action>) => {
     if(process.env.REACT_APP_USED_MOCKED_BACKEND === 'true'){

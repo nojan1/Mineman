@@ -2,7 +2,7 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Alert from 'react-bootstrap/Alert';
-import { MdSettings } from 'react-icons/md';
+import { MdSettings, MdPlayArrow, MdStop, MdSpaceBar, MdPages } from 'react-icons/md';
 import { ServerModel } from '../../models/server';
 import { getState } from '../../state';
 
@@ -55,10 +55,29 @@ const ServerCard: React.FunctionComponent<ServerCardProps> = ({
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                            <Dropdown.Item href="#/">{server.isAlive ? 'Stop' : 'Start'}</Dropdown.Item>
-                            <Dropdown.Item href="#/">Configure</Dropdown.Item>
-                            <Dropdown.Item href="#/">Logs</Dropdown.Item>
-                            <Dropdown.Item href="#/">Commands</Dropdown.Item>
+                            <Dropdown.Item href="#/">
+                                {server.isAlive ? 
+                                <>
+                                    <MdStop />
+                                    Stop
+                                </> : 
+                                <>
+                                    <MdPlayArrow />
+                                    Start
+                                </>}
+                            </Dropdown.Item>
+                            <Dropdown.Item href="#/">
+                                <MdSettings />
+                                Configure
+                            </Dropdown.Item>
+                            <Dropdown.Item href="#/">
+                                <MdPages />
+                                Logs
+                            </Dropdown.Item>
+                            <Dropdown.Item href="#/">
+                                <MdSpaceBar />
+                                Commands    
+                            </Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Card.Footer>

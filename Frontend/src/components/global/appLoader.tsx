@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getState } from '../../state';
-import userStartupActions from '../../actions/user';
-import serverStartupActions from '../../actions/servers';
+import userStartupActions from '../../actions/startup/user';
+import serverStartupActions from '../../actions/startup/servers';
 import styled from '@emotion/styled';
 
 const OuterContainer = styled.div`

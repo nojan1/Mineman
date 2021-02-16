@@ -5,7 +5,7 @@ const Worlds: React.FunctionComponent = () => {
 
     return (
         <>
-            <Edit data={[]} columnMapping={{}} />
+            {/* <Edit data={[]} columnMapping={{}} /> */}
         </>
     );
 };

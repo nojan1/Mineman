@@ -5,7 +5,7 @@ const Images: React.FunctionComponent = () => {
 
     return (
         <>
-            <Edit data={[]} columnMapping={{}} />
+            {/* <Edit data={[]} columnMapping={{}} /> */}
         </>
     );
 };

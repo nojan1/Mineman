@@ -18,6 +18,7 @@ const AppContainer = styled.div`
 
 const MainContainer = styled.div`
     padding: 10px 20px;
+    flex-grow: 1;
 `;
 
 const App: React.FunctionComponent = () => {
