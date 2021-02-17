@@ -57,9 +57,9 @@ const Edit = <T,>({
                 <tbody>
                     {data?.map((row: any) =>
                         <tr key={row.id}>
-                            {Object.entries(flattenedColumns).filter(([_, setting]) => !setting.hideFromTable).map(([prop, _]) =>
+                            {Object.entries(flattenedColumns).filter(([_, setting]) => !setting.hideFromTable).map(([prop, setting]) =>
                                 <td key={prop}>
-                                    {row[prop]}
+                                    {setting.valueFormater?.(row[prop]) ?? row[prop]}
                                 </td>
                             )}
 

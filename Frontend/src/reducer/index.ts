@@ -22,6 +22,12 @@ export const mainReducer = (prevState: ApplicationState, action: Action): Applic
                 .map(x => x.id === action.id ? { ...x, query: action.query } : x);
 
             return { ...prevState, servers: newServers };
+        case 'imagesLoaded':
+            return { ...prevState, images: action.images };
+        case 'worldsLoaded':
+            return { ...prevState, worlds: action.worlds };
+        case 'modsLoaded':
+            return { ...prevState, mods: action.mods };
         case 'userLoaded':
             return { ...prevState, user: action.user };
         default:

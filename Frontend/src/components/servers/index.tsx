@@ -2,7 +2,9 @@ import React, { useCallback } from 'react';
 import { create, update } from '../../actions/servers';
 import { getState } from '../../state';
 import Edit from '../global/edit';
-import { TabPageSettings } from '../global/edit/types';
+import { ColumnType, TabPageSettings } from '../global/edit/types';
+import ImageSelector from '../global/imageSelector';
+import WorldSelector from '../global/worldSelector';
 
 const column = [
     {
@@ -10,8 +12,24 @@ const column = [
         columns:
         {
             'description': { label: 'Description', required: true },
-            'serverPort': { label: 'Port', type: 'number', required: true, default: 25565 },
-            'memoryAllocationMB': { label: 'Memory allocation in MB', hideFromTable: true, type: 'number', required: true, default: 1024 }
+            'serverPort': { label: 'Port', type: ColumnType.number, required: true, default: 25565 },
+            'memoryAllocationMB': {
+                label: 'Memory allocation in MB',
+                hideFromTable: true,
+                type: ColumnType.number,
+                required: true,
+                default: 1024
+            },
+            'image': {
+                label: 'Server image',
+                valueFormater: image => image?.name,
+                component: ImageSelector
+            },
+            'world': {
+                label: 'World',
+                valueFormater: world => world?.name,
+                component: WorldSelector
+            }
         }
     },
     {

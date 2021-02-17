@@ -1,6 +1,6 @@
 import React, { FormEvent } from 'react';
 import { Button, Form, Modal, Tab, Tabs } from 'react-bootstrap';
-import { ColumnMapping, ColumnMappingSettings, TabPageSettings } from './types';
+import { ColumnMapping, ColumnMappingSettings, ColumnType, TabPageSettings } from './types';
 
 export interface EditModalProps {
     currentItem?: any;
@@ -22,7 +22,7 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
 
     const onDoSave = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         console.log('submiting');
         onSave(currentItem, currentItem.isNew).then(unsetItem);
     }
@@ -31,24 +31,41 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
         onDelete?.(currentItem).then(unsetItem);
     }
 
-    const renderControls = (columns: { [key: string]: ColumnMappingSettings }) => 
-        Object.entries(columns).map(([prop, setting]) =>
-            <Form.Group key={prop}>
-                <Form.Label>{setting.label}</Form.Label>
+    const renderControl = (prop: string, settings: ColumnMappingSettings) => {
+        const value = (currentItem as any)?.[prop] ?? settings.default ?? '';
+
+        if (settings.component)
+            return React.createElement((settings.component as any), { value: value, onChange: () => { } });
+        else if (settings.type === ColumnType.bool)
+            return (
+                <Form.Check
+                    
+                />
+            );
+        else
+            return (
                 <Form.Control
-                    type={setting.type ?? 'text'}
-                    value={(currentItem as any)?.[prop] ?? setting.default ?? ''}
-                    required={setting.required}
+                    type={settings.type === ColumnType.number ? 'number' : 'text'}
+                    value={value}
+                    required={settings.required}
                     onChange={(e) => onUpdate(prop, e.target.value)} />
+            );
+    }
+
+    const renderControls = (columns: { [key: string]: ColumnMappingSettings }) =>
+        Object.entries(columns).filter(([_, settings]) => !settings.hideFromEditor).map(([prop, settings]) =>
+            <Form.Group key={prop}>
+                <Form.Label>{settings.label}</Form.Label>
+                {renderControl(prop, settings)}
             </Form.Group>
         )
 
-    const renderTabs = (tabs: TabPageSettings[]) => 
+    const renderTabs = (tabs: TabPageSettings[]) =>
         <Tabs>
-            {tabs.map((t,i) => 
+            {tabs.map((t, i) =>
                 <Tab key={i} eventKey={t.title} title={t.title}>
                     {renderControls(t.columns)}
-                </Tab>    
+                </Tab>
             )}
         </Tabs>
 
