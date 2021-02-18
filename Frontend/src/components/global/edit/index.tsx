@@ -6,16 +6,12 @@ import { AiFillEdit } from 'react-icons/all';
 import styled from '@emotion/styled';
 import { ColumnMapping, ColumnMappingSettings, IsNewExtension, TabPageSettings } from './types';
 import EditModal from './editModal';
+import { FittingCell } from '../tableHelpers';
 
 const FloatingButton = styled(Button)`
     position: fixed;
     bottom: 20px;
     right: 20px;
-`;
-
-const FittingCell = styled.td`
-    width:1%;
-    white-space:nowrap;
 `;
 
 const flattenColumns = (columnMapping: ColumnMapping): { [key: string]: ColumnMappingSettings } => {

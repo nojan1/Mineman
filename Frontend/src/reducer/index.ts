@@ -1,5 +1,6 @@
 import { ImageModel } from "../models/image";
 import { ModsModel } from "../models/mods";
+import { RemoteImageModel } from "../models/remoteImage";
 import { ServerQueryModel, ServerModel } from "../models/server";
 import { User } from "../models/user";
 import { WorldModel } from "../models/world";
@@ -9,6 +10,7 @@ export type Action =
     { type: 'serversLoaded', servers: ServerModel[] } |
     { type: 'serverQueryLoaded', id: string, query: ServerQueryModel } |
     { type: 'imagesLoaded', images: ImageModel[] } |
+    { type: 'remoteImagesLoaded', remoteImages: RemoteImageModel[] } |
     { type: 'worldsLoaded', worlds: WorldModel[] } |
     { type: 'modsLoaded', mods: ModsModel[] } |
     { type: 'userLoaded', user: User }
@@ -24,6 +26,8 @@ export const mainReducer = (prevState: ApplicationState, action: Action): Applic
             return { ...prevState, servers: newServers };
         case 'imagesLoaded':
             return { ...prevState, images: action.images };
+        case 'remoteImagesLoaded':
+            return { ...prevState, remoteImages: action.remoteImages };
         case 'worldsLoaded':
             return { ...prevState, worlds: action.worlds };
         case 'modsLoaded':
