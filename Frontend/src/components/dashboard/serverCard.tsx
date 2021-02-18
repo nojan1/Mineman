@@ -5,6 +5,8 @@ import Alert from 'react-bootstrap/Alert';
 import { MdSettings, MdPlayArrow, MdStop, MdSpaceBar, MdPages } from 'react-icons/md';
 import { ServerModel } from '../../models/server';
 import { getState } from '../../state';
+import DropdownItemActionButton from '../global/dropdownItemActionButton';
+import { startServer, stopServer } from '../../actions/servers';
 
 const getImageOrDefault = (server: ServerModel) =>
     server.hasMap ? '' : 'images/map-default.png';
@@ -16,7 +18,7 @@ export interface ServerCardProps {
 const ServerCard: React.FunctionComponent<ServerCardProps> = ({
     server
 }) => {
-    const { state: { user } } = getState();
+    const { state: { user }, dispatch } = getState();
 
     return (
         <Card style={{ width: '350px' }}>
@@ -55,18 +57,13 @@ const ServerCard: React.FunctionComponent<ServerCardProps> = ({
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                            <Dropdown.Item href="#/">
-                                {server.isAlive ? 
-                                <>
-                                    <MdStop />
-                                    Stop
-                                </> : 
-                                <>
-                                    <MdPlayArrow />
-                                    Start
-                                </>}
-                            </Dropdown.Item>
-                            <Dropdown.Item href="#/">
+                            <DropdownItemActionButton
+                                iconComponent={server.isAlive ? MdStop: MdPlayArrow}
+                                action={() => server.isAlive ? stopServer(dispatch, server) : startServer(dispatch, server)}
+                            >
+                                {server.isAlive ? 'Stop' : 'Start'}
+                            </DropdownItemActionButton>
+                            <Dropdown.Item href="#/" >
                                 <MdSettings />
                                 Configure
                             </Dropdown.Item>
