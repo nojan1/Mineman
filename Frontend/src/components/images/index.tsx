@@ -19,7 +19,7 @@ const Images: React.FunctionComponent = () => {
     const { state: { images, remoteImages }, dispatch } = getState();
 
     const hasRemoteImage = (remoteImage: RemoteImageModel) =>
-        images?.some(i => i.name == remoteImage.displayName) ?? false;
+        images?.some(i => i.remoteHash == remoteImage.sHA256Hash) ?? false;
 
     const onSave = useCallback((image: any, isNew: boolean) => {
         return new Promise<void>(resolve => resolve());
@@ -36,6 +36,7 @@ const Images: React.FunctionComponent = () => {
                         <tr>
                             <th>Name</th>
                             <th>Supports mods</th>
+                            <th>Imported</th>
                             <th />
                         </tr>
                     </thead>
@@ -47,6 +48,9 @@ const Images: React.FunctionComponent = () => {
                                 </td>
                                 <td>
                                     {i.modDirectory ? 'Yes' : 'No'}
+                                </td>
+                                <td>
+                                    {hasRemoteImage(i) ? 'Yes' : 'No'}
                                 </td>
                                 <FittingCell>
                                     <ActionButton

@@ -11,6 +11,7 @@ namespace Mineman.Web.Models.Client
         public int ID { get; set; }
         public string Name { get; set; }
         public string ModDirectory { get; set; }
+        public string RemoteHash { get; set; }
         public ImageBuildStatus BuildStatus { get; set; }
         public IEnumerable<int> ServersUsingImage {get; set; }
     }
@@ -24,6 +25,7 @@ namespace Mineman.Web.Models.Client
                 ID = image.ID,
                 Name = image.Name,
                 ModDirectory = image.ModDirectory,
+                RemoteHash = image.RemoteHash,
                 BuildStatus = image.BuildStatus,
                 ServersUsingImage = serversUsingImage
             };

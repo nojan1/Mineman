@@ -10,6 +10,7 @@ export type Action =
     { type: 'serversLoaded', servers: ServerModel[] } |
     { type: 'serverQueryLoaded', id: string, query: ServerQueryModel } |
     { type: 'imagesLoaded', images: ImageModel[] } |
+    { type: 'imageAdded', image: ImageModel } |
     { type: 'remoteImagesLoaded', remoteImages: RemoteImageModel[] } |
     { type: 'worldsLoaded', worlds: WorldModel[] } |
     { type: 'modsLoaded', mods: ModsModel[] } |
@@ -26,6 +27,8 @@ export const mainReducer = (prevState: ApplicationState, action: Action): Applic
             return { ...prevState, servers: newServers };
         case 'imagesLoaded':
             return { ...prevState, images: action.images };
+        case 'imageAdded':
+            return { ...prevState, images: [...prevState.images, action.image]}
         case 'remoteImagesLoaded':
             return { ...prevState, remoteImages: action.remoteImages };
         case 'worldsLoaded':

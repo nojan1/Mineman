@@ -2,6 +2,7 @@ export type ImageModel = {
     id: number;
     name: string;
     modDirectory?: string;
+    remoteHash?: string;
     buildStatus?: ImageBuildStatus;
     serversUsingImage: number[]
 };
