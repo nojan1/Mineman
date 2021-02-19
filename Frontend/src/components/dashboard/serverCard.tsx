@@ -63,10 +63,10 @@ const ServerCard: React.FunctionComponent<ServerCardProps> = ({
                             >
                                 {server.isAlive ? 'Stop' : 'Start'}
                             </DropdownItemActionButton>
-                            <Dropdown.Item href="#/" >
+                            {/* <Dropdown.Item href="#/" >
                                 <MdSettings />
                                 Configure
-                            </Dropdown.Item>
+                            </Dropdown.Item> */}
                             <Dropdown.Item href="#/">
                                 <MdPages />
                                 Logs

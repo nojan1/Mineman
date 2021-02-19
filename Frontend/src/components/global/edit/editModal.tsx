@@ -1,6 +1,25 @@
-import React, { FormEvent } from 'react';
+import styled from '@emotion/styled';
+import React, { FormEvent, useState } from 'react';
 import { Button, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import { ColumnMapping, ColumnMappingSettings, ColumnType, TabPageSettings } from './types';
+
+const LoadingOverlay = styled.div<{ loading: boolean }>`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: ${props => props.loading ? 'flex' : 'none'};
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4) !important;
+
+    img{
+        max-width: 60%;
+    }
+`;
+
 
 export interface EditModalProps {
     currentItem?: any;
@@ -19,16 +38,24 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
     onDelete,
     onUpdate
 }) => {
+    const [loading, setLoading] = useState<boolean>(false);
 
     const onDoSave = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setLoading(true);
 
         console.log('submiting');
-        onSave(currentItem, currentItem.isNew).then(unsetItem);
+        onSave(currentItem, currentItem.isNew)
+            .then(unsetItem)
+            .finally(() => setLoading(false));
     }
 
     const onDoDelete = () => {
-        onDelete?.(currentItem).then(unsetItem);
+        setLoading(true);
+
+        onDelete?.(currentItem)
+            .then(unsetItem)
+            .finally(() => setLoading(false));
     }
 
     const renderControl = (prop: string, settings: ColumnMappingSettings) => {
@@ -39,7 +66,7 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
         else if (settings.type === ColumnType.bool)
             return (
                 <Form.Check
-                    
+
                 />
             );
         else
@@ -73,6 +100,10 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
         <Modal centered
             show={currentItem !== undefined}
             onHide={unsetItem}>
+            <LoadingOverlay loading={loading}>
+                <img src="images/spinner.gif" />
+            </LoadingOverlay>
+
             <Form onSubmit={onDoSave}>
                 <Modal.Header closeButton>
                     <Modal.Title>
@@ -86,8 +117,8 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                    {onDelete && (!(currentItem as any)?.isNew) ? <Button variant="danger" onClick={onDoDelete}>Delete</Button> : null}
-                    <Button variant="primary" type="submit">Save changes</Button>
+                    {onDelete && (!(currentItem as any)?.isNew) ? <Button variant="danger" onClick={onDoDelete} disabled={loading}>Delete</Button> : null}
+                    <Button variant="primary" type="submit" disabled={loading}>Save changes</Button>
                 </Modal.Footer>
             </Form>
         </Modal>
