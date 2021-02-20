@@ -10,11 +10,12 @@ using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Mineman.Web.Models.Client;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Mineman.Web.Controllers
 {
     [Route("api/server/log")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class LogController : Controller
     {
         private const int MAX_LOGLINES = 1000;

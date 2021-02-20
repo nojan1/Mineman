@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Mineman.Common.Models.Client;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/Image")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ImageController : Controller
     {
         private readonly IImageRepository _imageRepository;

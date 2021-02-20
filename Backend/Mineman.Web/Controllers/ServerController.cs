@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/Server")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ServerController : Controller
     {
         private readonly IServerRepository _serverRepository;

@@ -1,4 +1,5 @@
 using Docker.DotNet;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Mineman.Common.Database;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Configuration;
@@ -19,6 +21,7 @@ using Mineman.Service.MinecraftQuery;
 using Mineman.Service.Models.Configuration;
 using Mineman.Service.Rcon;
 using Mineman.Service.Repositories;
+using Mineman.Web.Auth;
 using Mineman.Web.Helpers;
 using Mineman.Web.Hubs;
 using Mineman.WorldParsing;
@@ -29,6 +32,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using TinyTokenIssuer;
+using TinyTokenIssuer.Interfaces;
 
 namespace Mineman.Web
 {
@@ -49,6 +54,25 @@ namespace Mineman.Web
                 options.UseSqlite(Configuration.GetConnectionString("MainDatabase"));
             });
 
+            services.AddScoped<IProfileService<TokenUser>, UserProfileService>();
+            services.AddTinyTokenIssuer(config =>
+            {
+                config.Issuer = AuthProperties.Issuer;
+                config.Audience = AuthProperties.Audience;
+            }).WithConfig(config =>
+            {
+                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                   .AddJwtBearer(options =>
+                   {
+                       options.TokenValidationParameters = new TokenValidationParameters
+                       {
+                           IssuerSigningKey = config.SigningKey,
+                           ValidIssuer = config.Issuer,
+                           ValidAudience = config.Audience
+                       };
+                   });
+            });
+
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -60,6 +84,7 @@ namespace Mineman.Web
             .AddEntityFrameworkStores<DatabaseContext>()
             .AddDefaultTokenProviders();
 
+            services.AddSignalR();
             services.AddControllers();
             ConfiureDependencies(services);
 
@@ -94,6 +119,7 @@ namespace Mineman.Web
                 //var origin = Configuration.GetValue<string>("FrontendIntegrationOptions::CorsOrigin");
                 //if (!string.IsNullOrEmpty(origin))
 
+                builder.AllowAnyHeader();
                 builder.AllowAnyOrigin();
                 builder.AllowAnyMethod();
             });
@@ -110,6 +136,8 @@ namespace Mineman.Web
 
             app.UseRouting();
 
+            app.UseTinyTokenIssuer<TokenUser>();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

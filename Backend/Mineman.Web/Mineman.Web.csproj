@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.12" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
@@ -21,6 +22,7 @@
     <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
     <ProjectReference Include="..\Mineman.Service\Mineman.Service.csproj" />
     <ProjectReference Include="..\Mineman.WorldParsing\Mineman.WorldParsing.csproj" />
+    <ProjectReference Include="..\TinyTokenIssuer\TinyTokenIssuer.csproj" />
   </ItemGroup>
 
 

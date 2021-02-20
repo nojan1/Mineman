@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Mineman.Service.Rcon;
 using Mineman.Web.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Mineman.Web.Controllers
 {
     [Route("api/server/rcon")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class RconController : Controller
     {
         private readonly IConnectionPool _connectionPool;

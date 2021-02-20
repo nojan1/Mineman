@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mineman.Service.MinecraftQuery;
 using Mineman.Service.Repositories;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/server/query")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class QueryController : Controller
     {
         private readonly IServerRepository _serverRepository;

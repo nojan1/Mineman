@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Client;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 namespace Mineman.Web.Controllers
 {
     [Route("api/World")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class WorldController : Controller
     {
         private readonly IWorldRepository _worldRepository;
