@@ -150,6 +150,17 @@ namespace Mineman.Web
             context.Database.Migrate();
             EnsureFoldersCreated(env, pathOptions.Value);
             EnsureAdminUserExists(userManager);
+
+            try
+            {
+                //StartupTest(dockerClient);
+                service.Start();
+            }
+            catch (Exception ex)
+            {
+                loggerFactory.CreateLogger<Startup>()
+                    .LogCritical(new EventId(), ex, "Startup test failed, refusing to start service");
+            }
         }
 
         private void RegisterConfigurationOptionModels(IServiceCollection services)

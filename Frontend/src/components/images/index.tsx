@@ -19,7 +19,7 @@ const Images: React.FunctionComponent = () => {
     const { state: { images, remoteImages }, dispatch } = getState();
 
     const hasRemoteImage = (remoteImage: RemoteImageModel) =>
-        images?.some(i => i.remoteHash == remoteImage.sHA256Hash) ?? false;
+        images?.some(i => i.remoteHash == remoteImage.shA256Hash) ?? false;
 
     const onSave = useCallback((image: any, isNew: boolean) => {
         return new Promise<void>(resolve => resolve());
@@ -42,7 +42,7 @@ const Images: React.FunctionComponent = () => {
                     </thead>
                     <tbody>
                         {remoteImages.map(i =>
-                            <tr key={i.sHA256Hash}>
+                            <tr key={i.shA256Hash}>
                                 <td>
                                     {i.displayName}
                                 </td>

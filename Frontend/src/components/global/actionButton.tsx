@@ -2,12 +2,12 @@ import styled from '@emotion/styled';
 import React, { useState } from 'react';
 import { Button, ButtonProps } from 'react-bootstrap';
 
-const ButtonLoadingOverlay = styled.div<{ loading: boolean }>`
+const ButtonLoadingOverlay = styled.div<{ isLoading: boolean }>`
     position: absolute;
     width: 100%;
     height: 100%;
     z-index: 1;
-    display: ${props => props.loading ? 'flex' : 'none'};
+    display: ${props => props.isLoading ? 'flex' : 'none'};
     align-items: center;
     justify-content: center;
     background: rgba(0,0,0,0.4) !important;
@@ -40,7 +40,7 @@ const ActionButton: React.FunctionComponent<ActionButtonProps> = (props) => {
             {...buttonProps}
             disabled={loading || buttonProps.disabled}
         >
-            <ButtonLoadingOverlay loading={loading}>
+            <ButtonLoadingOverlay isLoading={loading}>
                 <img src="images/spinner.gif" style={{ maxHeight: '30px' }} />
             </ButtonLoadingOverlay>
 

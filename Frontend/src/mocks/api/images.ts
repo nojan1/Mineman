@@ -21,7 +21,7 @@ const setupImagesApiMock = (mock: MockAdapter) => {
         .reply(200, [
             {
                 displayName: 'Some remote image',
-                sHA256Hash: '1234ldjsfhsdf12312312323'
+                shA256Hash: '1234ldjsfhsdf12312312323'
             }
         ] as RemoteImageModel[]);
 

@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { saveToken } from "../auth/token";
 
 export const login = async (username: string, password: string) => {
@@ -6,6 +6,10 @@ export const login = async (username: string, password: string) => {
     formData.append("username", username);
     formData.append("password", password);
 
-    const response = await axios.post<string>(`${process.env.REACT_APP_BACKEND_URL}/token`, formData);
-    saveToken(response.data);
+    try {
+        const response = await axios.post<string>(`${process.env.REACT_APP_BACKEND_URL}/token`, formData);
+        saveToken(response.data);
+    } catch (error: any) {
+        throw error.response.data;
+    }
 }

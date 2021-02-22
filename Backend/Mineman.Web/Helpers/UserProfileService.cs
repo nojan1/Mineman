@@ -21,6 +21,9 @@ namespace Mineman.Web.Helpers
 
         public TokenUser PasswordSignIn(string username, string password)
         {
+            if (username != "admin" || password != "password")
+                return null;
+
             return new TokenUser
             {
                 Subject = "ldfjkhgldfkjgkldfjg"

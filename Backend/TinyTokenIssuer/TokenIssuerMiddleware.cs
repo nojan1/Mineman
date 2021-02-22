@@ -28,7 +28,18 @@ namespace TinyTokenIssuer
         {
             if (context.Request.Path == "/token" && context.Request.Method == "POST")
             {
-                var user = profileService.PasswordSignIn("", "");
+                //TODO: Support additional login types
+                var username = context.Request.Form["username"];
+                var password = context.Request.Form["password"];
+
+                var user = profileService.PasswordSignIn(username, password);
+                if (user == null)
+                {
+                    context.Response.StatusCode = 400;
+                    await context.Response.WriteAsync("Bad login");
+                    return;
+                }
+
                 var claims = user.ToClaims();
 
                 claims.Add(new Claim(JwtRegisteredClaimNames.Aud, _config.Audience));
