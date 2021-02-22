@@ -1,20 +1,12 @@
+import { getAuthedAxios } from "../auth";
 import { ImageModel } from "../models/image";
 import { RemoteImageModel } from "../models/remoteImage";
 import { Action } from "../reducer";
 
-export const importImage = (dispatch: React.Dispatch<Action>, remoteImage: RemoteImageModel) =>
-    new Promise<ImageModel>(resolve => {
-        setTimeout(() => {
-            const newImage: ImageModel = {
-                id: new Date().getSeconds(),
-                name: remoteImage.displayName,
-                modDirectory: remoteImage.modDirectory,
-                remoteHash: remoteImage.sHA256Hash,
-                buildStatus: undefined,
-                serversUsingImage: []
-            };
-
-            dispatch({type: 'imageAdded', image: newImage});
-            resolve(newImage);
-        }, 2000)
-    });
+export const importImage = async (dispatch: React.Dispatch<Action>, remoteImage: RemoteImageModel) => {
+    const axios = await getAuthedAxios(false);
+    const response = await axios.post<ImageModel>(`${process.env.REACT_APP_BACKEND_URL}/api/image/remote/${remoteImage.sHA256Hash}`);
+    
+    dispatch({type: 'imageAdded', image: response.data});
+    return response.data;
+}

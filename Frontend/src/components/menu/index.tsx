@@ -5,9 +5,15 @@ import { FaServer } from 'react-icons/fa';
 import { BiWorld } from 'react-icons/bi';
 import { Link } from 'react-router-dom';
 import { getState } from '../../state';
+import { removedStoredToken } from '../../auth/token';
 
 const Menu: React.FunctionComponent = () => {
     const { state: { user } } = getState();
+
+    const doLogout = () => {
+        removedStoredToken();
+        window.location.href = '/';
+    };
 
     return (
         <Nav defaultActiveKey="/home" className="flex-column">
@@ -15,30 +21,32 @@ const Menu: React.FunctionComponent = () => {
                 <MdDashboard />
                 Dashboard
             </Nav.Link>
-            <Nav.Link as={Link} to="/servers">
-                <FaServer />
+            {user ? <>
+                <Nav.Link as={Link} to="/servers">
+                    <FaServer />
                 Servers
             </Nav.Link>
-            <Nav.Link as={Link} to="/images">
-                <MdStorage />
+                <Nav.Link as={Link} to="/images">
+                    <MdStorage />
                 Images
             </Nav.Link>
-            <Nav.Link as={Link} to="/worlds">
-                <BiWorld />
+                <Nav.Link as={Link} to="/worlds">
+                    <BiWorld />
                 Worlds
             </Nav.Link>
-            <Nav.Link as={Link} to="/mods">
-                <MdLibraryAdd />
+                <Nav.Link as={Link} to="/mods">
+                    <MdLibraryAdd />
                 Mods
             </Nav.Link>
+            </> : null}
 
             {user ?
-                <Nav.Link>
+                <Nav.Link onClick={doLogout}>
                     <MdLock />
                     Log out
                 </Nav.Link>
                 :
-                <Nav.Link as={Link} to="/logout">
+                <Nav.Link as={Link} to="/login">
                     <MdLockOpen />
                     Log in
                 </Nav.Link>

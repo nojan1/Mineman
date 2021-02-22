@@ -15,6 +15,8 @@ export const getAuthedAxios = async (anonymousOkey: boolean = false) => {
     if(!result && !anonymousOkey)
         throw new Error('No token available and anonymous was not okey');
 
-    instance.defaults.headers.authorization = `Bearer ${result!.token}`;
+    if(result?.token)
+        instance.defaults.headers.authorization = `Bearer ${result!.token}`;
+
     return instance;
 }

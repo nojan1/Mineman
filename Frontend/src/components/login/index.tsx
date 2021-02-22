@@ -1,8 +1,9 @@
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import React from 'react';
+import React, { FormEvent } from 'react';
 import styled from '@emotion/styled';
+import { login } from '../../actions/login';
 
 const LoginButton = styled(Button)`
     display: block;
@@ -13,13 +14,20 @@ const LoginButton = styled(Button)`
 
 const Login: React.FunctionComponent = () => {
 
+    const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        login("", "").then(() => {
+            window.location.href = '/';
+        });
+    }
+
     return (
-        <Container style={{maxWidth: '500px'}}>
+        <Container style={{ maxWidth: '500px' }}>
             <h4>
                 Login to Mineman
             </h4>
 
-            <Form>
+            <Form onSubmit={onSubmit}>
                 <Form.Group>
                     <Form.Label>Username</Form.Label>
                     <Form.Control type="text" />

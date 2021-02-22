@@ -6,7 +6,7 @@ import setupServerApiMock from "./server";
 import setupWorldsApiMock from "./worlds";
 
 const configureApiMock = (axios: AxiosInstance) => {
-    const mockAdapter = new MockAdapter(axios, {delayResponse: 10});
+    const mockAdapter = new MockAdapter(axios, {delayResponse: 200});
     setupServerApiMock(mockAdapter);
     setupImagesApiMock(mockAdapter);
     setupWorldsApiMock(mockAdapter);
