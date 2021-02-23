@@ -3,14 +3,14 @@ import React, { FormEvent, useState } from 'react';
 import { Button, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import { ColumnMapping, ColumnMappingSettings, ColumnType, TabPageSettings } from './types';
 
-const LoadingOverlay = styled.div<{ loading: boolean }>`
+const LoadingOverlay = styled.div<{ isLoading: boolean }>`
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 1;
-    display: ${props => props.loading ? 'flex' : 'none'};
+    display: ${props => props.isLoading ? 'flex' : 'none'};
     align-items: center;
     justify-content: center;
     background: rgba(0,0,0,0.4) !important;
@@ -26,7 +26,6 @@ export interface EditModalProps {
     columnMapping: ColumnMapping;
     unsetItem: () => void;
     onSave: (item: any, isNew: boolean) => Promise<any>;
-    onDelete?: (item: any) => Promise<any>;
     onUpdate: (key: string, value: any) => void;
 }
 
@@ -35,8 +34,7 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
     columnMapping,
     unsetItem,
     onSave,
-    onDelete,
-    onUpdate
+    onUpdate,
 }) => {
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -44,16 +42,7 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
         e.preventDefault();
         setLoading(true);
 
-        console.log('submiting');
         onSave(currentItem, currentItem.isNew)
-            .then(unsetItem)
-            .finally(() => setLoading(false));
-    }
-
-    const onDoDelete = () => {
-        setLoading(true);
-
-        onDelete?.(currentItem)
             .then(unsetItem)
             .finally(() => setLoading(false));
     }
@@ -100,7 +89,7 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
         <Modal centered
             show={currentItem !== undefined}
             onHide={unsetItem}>
-            <LoadingOverlay loading={loading}>
+            <LoadingOverlay isLoading={loading}>
                 <img src="images/spinner.gif" />
             </LoadingOverlay>
 
@@ -117,7 +106,6 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
                     }
                 </Modal.Body>
                 <Modal.Footer>
-                    {onDelete && (!(currentItem as any)?.isNew) ? <Button variant="danger" onClick={onDoDelete} disabled={loading}>Delete</Button> : null}
                     <Button variant="primary" type="submit" disabled={loading}>Save changes</Button>
                 </Modal.Footer>
             </Form>

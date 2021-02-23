@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Old.Mineman.Web", "Old.Mineman.Web\Old.Mineman.Web.csproj", "{2F9BEE21-966E-484A-9577-F8E975097273}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mineman.Service", "Mineman.Service\Mineman.Service.csproj", "{37E5B38B-823B-4717-97E6-34639C5460F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mineman.Common", "Mineman.Common\Mineman.Common.csproj", "{9B84DA47-89E7-46ED-880A-831482754490}"
@@ -25,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2F9BEE21-966E-484A-9577-F8E975097273}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F9BEE21-966E-484A-9577-F8E975097273}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F9BEE21-966E-484A-9577-F8E975097273}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F9BEE21-966E-484A-9577-F8E975097273}.Release|Any CPU.Build.0 = Release|Any CPU
 		{37E5B38B-823B-4717-97E6-34639C5460F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37E5B38B-823B-4717-97E6-34639C5460F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37E5B38B-823B-4717-97E6-34639C5460F2}.Release|Any CPU.ActiveCfg = Release|Any CPU

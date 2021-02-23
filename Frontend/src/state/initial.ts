@@ -1,4 +1,5 @@
 import { ImageModel } from '../models/image';
+import { Message } from '../models/message';
 import { ModsModel } from '../models/mods';
 import { RemoteImageModel } from '../models/remoteImage';
 import {ServerModel} from '../models/server';
@@ -12,6 +13,7 @@ export interface ApplicationState {
     worlds: WorldModel[];
     mods: ModsModel[];
     user?: User;
+    messages: Message[];
 }
 
 
@@ -21,6 +23,7 @@ export const getInitialState = () => {
        images: [],
        remoteImages: [],
        worlds: [],
-       mods: []
+       mods: [],
+       messages: []
     };
 }

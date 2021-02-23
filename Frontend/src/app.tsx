@@ -10,6 +10,7 @@ import Worlds from './components/worlds';
 import Mods from './components/mods';
 import styled from '@emotion/styled';
 import AppBar from './components/global/appBar';
+import MessageContainer from './components/global/messageContainer';
 
 const AppContainer = styled.div`
     display: flex;
@@ -36,6 +37,7 @@ const App: React.FunctionComponent = () => {
                         <AppLoader>
                             <AppContainer>
                                 <Menu />
+                                <MessageContainer />
                                 <MainContainer>
                                     <Switch>
                                         <Route path='/servers'>

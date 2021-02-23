@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { Tab, Table, Tabs } from 'react-bootstrap';
 import { MdCloudDownload } from 'react-icons/md';
 import { importImage } from '../../actions/images';
+import { ImageModel } from '../../models/image';
 import { RemoteImageModel } from '../../models/remoteImage';
 import { getState } from '../../state';
 import ActionButton from '../global/actionButton';
@@ -12,7 +13,8 @@ const column = {
     'name': { label: 'Name', required: true },
     'modDirectory': { label: 'Mod directory (leave empty to disable mod support', hideFromTable: true },
     // 'modSupported': { label: 'Mods', hideFromEditor: true, valueFormater: (value: any) => value.modDirectory ? 'Yes' : 'No'},
-    'buildStatus': { label: 'Build', hideFromEditor: true, valueFormater: (value: any) => value?.buildSuccessful ? 'Yes' : 'No' }
+    'buildStatus': { label: 'Build', hideFromEditor: true, valueFormater: (value: any) => value?.buildSuccessful ? 'Yes' : 'No' },
+    'useCount': { label: 'Use count', hideFromEditor: true, valueFormater: (value: ImageModel) => value?.serversUsingImage?.length.toString() ?? "0"}
 };
 
 const Images: React.FunctionComponent = () => {
@@ -28,7 +30,7 @@ const Images: React.FunctionComponent = () => {
     return (
         <Tabs>
             <Tab eventKey='local' title='Installed'>
-                <Edit data={images} columnMapping={column} onSave={onSave} />
+                <Edit data={images} columnMapping={column} onSave={onSave} supportEdit={false}/>
             </Tab>
             <Tab eventKey='remote' title='Available'>
                 <Table>

@@ -81,7 +81,7 @@ const Servers: React.FunctionComponent = () => {
 
     return (
         <>
-            <Edit data={servers} columnMapping={column} onSave={onSave} />
+            <Edit data={servers} columnMapping={column} onSave={onSave} supportEdit={true}/>
         </>
     );
 };

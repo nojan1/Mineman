@@ -3,11 +3,8 @@ import React from 'react';
 import { getState } from '../../state';
 import ServerCard from './serverCard';
 
-const CenterMessage = styled.div`
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const NoServerMessage = styled.div`
+  margin-top: 40px;
   text-align: center;
 `;
 
@@ -26,12 +23,10 @@ const Dashboard: React.FunctionComponent = () => {
 
   if (!servers.length)
     return (
-      <CenterMessage>
-        <div>
+      <NoServerMessage>
           <h1>No servers created yet...</h1>
           <h2>why don't you login and create the first one?</h2>
-        </div>
-      </CenterMessage>
+      </NoServerMessage>
     );
 
   return (

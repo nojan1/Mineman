@@ -3,3 +3,8 @@ export type WorldModel = {
     displayName: string;
     serversUsingWorld: number[];
 };
+
+export type WorldAddModel = {
+    displayName: string;
+    worldFile?: File
+};

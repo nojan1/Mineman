@@ -15,7 +15,7 @@ const Mods: React.FunctionComponent = () => {
 
     return (
         <>
-            <Edit data={mods} columnMapping={column} onSave={onSave} />
+            <Edit data={mods} columnMapping={column} onSave={onSave} supportEdit={false} />
         </>
     );
 };
