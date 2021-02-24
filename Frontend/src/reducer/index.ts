@@ -12,6 +12,7 @@ export type Action =
     { type: 'serverAdded', server: ServerModel } |
     { type: 'serverUpdated', server: ServerModel } |
     { type: 'serverQueryLoaded', id: number, query: ServerQueryModel } |
+
     { type: 'imagesLoaded', images: ImageModel[] } |
     { type: 'imageAdded', image: ImageModel } |
     { type: 'imageDeleted', imageId: number } |
@@ -23,6 +24,9 @@ export type Action =
     { type: 'worldDeleted', worldId: number } |
 
     { type: 'modsLoaded', mods: ModsModel[] } |
+    { type: 'modAdded', mod: ModsModel } |
+    { type: 'modDeleted', modId: number } |
+
     { type: 'userLoaded', user: User } |
     { type: 'messageAdded', message: Message } |
     { type: 'messageCleared', message: Message }
@@ -63,6 +67,11 @@ export const mainReducer = (prevState: ApplicationState, action: Action): Applic
 
         case 'modsLoaded':
             return { ...prevState, mods: action.mods };
+        case 'modAdded':
+            return { ...prevState, mods: [...prevState.mods, action.mod]};
+        case 'modDeleted':
+            return { ...prevState, mods: prevState.mods.filter(w => w.id !== action.modId) }
+
         case 'userLoaded':
             return { ...prevState, user: action.user };
         case 'messageAdded':

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mineman.Common.Models.Client;
 using Mineman.Service;
+using Mineman.Service.Exceptions;
 using Mineman.Service.Helpers;
 using Mineman.Service.Managers;
 using Mineman.Service.MinecraftQuery;
@@ -67,16 +68,22 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Add([FromBody]ServerAddModel inputModel)
+        public async Task<IActionResult> Add([FromBody] ServerAddModel inputModel)
         {
             if (inputModel == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var server = await _serverRepository.Add(inputModel);
-
-            return Ok(server);
+            try
+            {
+                var server = await _serverRepository.Add(inputModel);
+                return Ok(server);
+            }
+            catch (BadInputException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("start/{serverId:int}")]
@@ -129,7 +136,7 @@ namespace Mineman.Web.Controllers
 
         [HttpDelete("destroy/{serverId:int}")]
         public async Task<IActionResult> Destroy(int serverId)
-        { 
+        {
             var server = await _serverRepository.Get(serverId);
             var result = await _serverManager.DestroyContainer(server);
 
@@ -137,9 +144,9 @@ namespace Mineman.Web.Controllers
         }
 
         [HttpPost("{serverId:int}")]
-        public async Task<IActionResult> UpdateConfiguration(int serverId, [FromBody]ServerConfigurationModel configurationModel)
+        public async Task<IActionResult> UpdateConfiguration(int serverId, [FromBody] ServerConfigurationModel configurationModel)
         {
-            if(configurationModel == null || !ModelState.IsValid)
+            if (configurationModel == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -201,7 +208,7 @@ namespace Mineman.Web.Controllers
             {
                 return NoContent();
             }
-            
+
             var jsonData = JsonConvert.DeserializeObject(System.IO.File.ReadAllText(path));
             return Ok(jsonData);
         }

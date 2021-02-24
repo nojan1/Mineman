@@ -52,55 +52,6 @@ const Menu: React.FunctionComponent = () => {
                 </Nav.Link>
             }
         </Nav>
-
-        // <Drawer
-        //     className={classes.drawer}
-        //     variant="permanent"
-        //     classes={{
-        //         paper: classes.drawerPaper,
-        //     }}
-        //     anchor="left"
-        // >
-        //     <List>
-        //         <ListItemLink to='/'>
-        //             <ListItemIcon>
-        //                 <DashboardIcon />
-        //             </ListItemIcon>
-        //             <ListItemText primary='Dashboard' />
-        //         </ListItemLink>
-        //         {user ?
-        //             <>
-        //                 <ListItemLink to='/servers'>
-        //                     <ListItemIcon>
-        //                         <StorageIcon />
-        //                     </ListItemIcon>
-        //                     <ListItemText primary='Servers' />
-        //                 </ListItemLink>
-        //                 <ListItemLink to='/images'>
-        //                     <ListItemIcon>
-        //                         <WebAssetIcon />
-        //                     </ListItemIcon>
-        //                     <ListItemText primary='Images' />
-        //                 </ListItemLink>
-        //                 <ListItemLink to='/worlds'>
-        //                     <ListItemIcon>
-        //                         <PublicIcon />
-        //                     </ListItemIcon>
-        //                     <ListItemText primary='Worlds' />
-        //                 </ListItemLink>
-        //                 <ListItemLink to='/mods'>
-        //                     <ListItemIcon>
-        //                         <LibraryAddIcon />
-        //                     </ListItemIcon>
-        //                     <ListItemText primary='Mods' />
-        //                 </ListItemLink>
-        //             </>
-        //             : null}
-
-
-
-        //     </List>
-        // </Drawer>
     );
 };
 

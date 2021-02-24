@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { createServer, updateServer } from '../../actions/servers';
+import { createServer, deleteServer, updateServer } from '../../actions/servers';
 import { ServerModel } from '../../models/server';
 import { getState } from '../../state';
 import Edit from '../global/edit';
@@ -75,24 +75,81 @@ const column = [
     }
 ] as TabPageSettings[];
 
+const buildServerAddModel = (x: any) => ({
+    description: x.description,
+    worldId: x.world?.id,
+    imageId: x.image?.id,
+    serverPort: x.serverPort,
+    memoryAllocationMB: x.memoryAllocationMB,
+    modIds: x.modIds ?? []
+});
+
+const buildServerUpdateModel = (x: any) => ({
+    description: x.description,
+    worldId: x.world?.id,
+    imageId: x.image?.id,
+    serverPort: x.serverPort,
+    memoryAllocationMB: x.memoryAllocationMB,
+    modIds: x.modIds ?? [],
+    properties: {
+        max_Tick_Time: x.max_Tick_Time,
+        generator_Settings: x.generator_Settings,
+        allow_Nether: x.allow_Nether,
+        force_Gamemode: x.force_Gamemode,
+        gamemode: x.gamemode,
+        player_Idle_Timeout: x.player_Idle_Timeout,
+        difficulty: x.difficulty,
+        spawn_Monsters: x.spawn_Monsters,
+        op_Permission_Level: x.op_Permission_Level,
+        announce_Player_Achievements: x.announce_Player_Achievements,
+        pvp: x.pvp,
+        snooper_Enabled: x.snooper_Enabled,
+        level_Type: x.level_Type,
+        hardcore: x.hardcore,
+        enable_Command_Block: x.enable_Command_Block,
+        max_Players: x.max_Players,
+        network_Compression_Threshold: x.network_Compression_Threshold,
+        resource_Pack_Sha1: x.resource_Pack_Sha1,
+        max_World_Size: x.max_World_Size,
+        server_Ip: x.server_Ip,
+        spawn_Npcs: x.spawn_Npcs,
+        allow_Flight: x.allow_Flight,
+        view_Distance: x.view_Distance,
+        resource_Pack: x.resource_Pack,
+        spawn_Animals: x.spawn_Animals,
+        white_List: x.white_List,
+        generate_Structures: x.generate_Structures,
+        online_Mode: x.online_Mode,
+        max_Build_Height: x.max_Build_Height,
+        level_Seed: x.level_Seed,
+        prevent_Proxy_Connections: x.prevent_Proxy_Connections,
+        motd: x.motd
+    }
+});
+
 const Servers: React.FunctionComponent = () => {
     const { state: { servers }, dispatch } = getState();
 
-    const onSave = useCallback((server: any, isNew: boolean) => {
-        if(isNew){
-            server = {...server, imageId: server.image?.id, worldId: server.world?.id, world: null, image: null};
-            return createServer(dispatch, server);
-        }else{
-            //TODO: Fix properties
-            return updateServer(dispatch, server.id, server);
-        }
-    }, [dispatch]);
+    const onSave = useCallback((server: any, isNew: boolean) =>
+        isNew
+            ? createServer(dispatch, buildServerAddModel(server))
+            : updateServer(dispatch, server.id, buildServerUpdateModel(server))
+    , [dispatch]);
 
-    return (
-        <>
-            <Edit data={servers} columnMapping={column} onSave={onSave} supportEdit={true}/>
-        </>
-    );
+    const onDelete = useCallback((server: ServerModel) => deleteServer(dispatch, server.id), [dispatch]);
+
+return (
+    <>
+        <Edit 
+            data={servers} 
+            columnMapping={column} 
+            onSave={onSave} 
+            supportEdit={true} 
+            onDelete={onDelete}
+            canDelete={() => true}
+        />
+    </>
+);
 };
 
 export default Servers;

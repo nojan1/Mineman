@@ -11,6 +11,7 @@ using Mineman.Common.Database.Models;
 using Mineman.Common.Models.Client;
 using Mineman.Service.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Mineman.Service.Exceptions;
 
 namespace Mineman.Service.Repositories
 {
@@ -42,7 +43,13 @@ namespace Mineman.Service.Repositories
                 RconPort = serverAddModel.ServerPort + 2000
             };
 
-            if(server.Image.SupportsMods && serverAddModel.ModIDs != null)
+            if (server.Image == null)
+                throw new BadInputException("No such image");
+
+            if (server.World == null)
+                throw new BadInputException("No such world");
+
+            if (server.Image.SupportsMods && serverAddModel.ModIDs != null)
             {
                 server.Mods = serverAddModel.ModIDs.Select(id => _context.Mods.FirstOrDefault(m => m.ID == id)).ToArray();
             }
