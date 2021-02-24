@@ -5,14 +5,14 @@ const setupServerApiMock = (mock: MockAdapter) => {
     mock.onGet(`${process.env.REACT_APP_BACKEND_URL}/api/server`)
         .reply(200, [
             {
-                id: '123',
+                id: 123,
                 description: 'This is a mocked test server',
                 hasMap: false,
                 isAlive: false,
                 mainPort: 23
             },
             {
-                id: '124',
+                id: 124,
                 description: 'This is another mocked test server',
                 hasMap: false,
                 isAlive: true,

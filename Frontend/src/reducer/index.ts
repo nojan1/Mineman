@@ -9,9 +9,12 @@ import { ApplicationState } from "../state/initial";
 
 export type Action =
     { type: 'serversLoaded', servers: ServerModel[] } |
-    { type: 'serverQueryLoaded', id: string, query: ServerQueryModel } |
+    { type: 'serverAdded', server: ServerModel } |
+    { type: 'serverUpdated', server: ServerModel } |
+    { type: 'serverQueryLoaded', id: number, query: ServerQueryModel } |
     { type: 'imagesLoaded', images: ImageModel[] } |
     { type: 'imageAdded', image: ImageModel } |
+    { type: 'imageDeleted', imageId: number } |
     { type: 'remoteImagesLoaded', remoteImages: RemoteImageModel[] } |
 
     { type: 'worldsLoaded', worlds: WorldModel[] } |
@@ -28,6 +31,15 @@ export const mainReducer = (prevState: ApplicationState, action: Action): Applic
     switch (action.type) {
         case 'serversLoaded':
             return { ...prevState, servers: action.servers };
+        case 'serverAdded':
+            return { ...prevState, servers: [...prevState.servers, action.server] };
+        case 'serverUpdated':
+            return { ...prevState, servers: prevState.servers.map(s => {
+                if(s.id === action.server.id)
+                    return action.server;
+
+                return s;
+            }) };
         case 'serverQueryLoaded':
             const newServers = prevState.servers
                 .map(x => x.id === action.id ? { ...x, query: action.query } : x);
@@ -37,6 +49,8 @@ export const mainReducer = (prevState: ApplicationState, action: Action): Applic
             return { ...prevState, images: action.images };
         case 'imageAdded':
             return { ...prevState, images: [...prevState.images, action.image] }
+        case 'imageDeleted':
+            return { ...prevState, images: prevState.images.filter(w => w.id !== action.imageId) }
         case 'remoteImagesLoaded':
             return { ...prevState, remoteImages: action.remoteImages };
 

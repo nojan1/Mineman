@@ -1,7 +1,8 @@
 export enum ColumnType {
     text,
     number,
-    bool
+    bool,
+    file
 }
 
 export type ColumnMappingSettings = {

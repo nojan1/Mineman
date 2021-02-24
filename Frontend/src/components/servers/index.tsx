@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { create, update } from '../../actions/servers';
+import { createServer, updateServer } from '../../actions/servers';
+import { ServerModel } from '../../models/server';
 import { getState } from '../../state';
 import Edit from '../global/edit';
 import { ColumnType, TabPageSettings } from '../global/edit/types';
@@ -23,12 +24,14 @@ const column = [
             'image': {
                 label: 'Server image',
                 valueFormater: image => image?.name,
-                component: ImageSelector
+                component: ImageSelector,
+                required: true
             },
             'world': {
                 label: 'World',
                 valueFormater: world => world?.name,
-                component: WorldSelector
+                component: WorldSelector,
+                required: true
             }
         }
     },
@@ -76,7 +79,13 @@ const Servers: React.FunctionComponent = () => {
     const { state: { servers }, dispatch } = getState();
 
     const onSave = useCallback((server: any, isNew: boolean) => {
-        return isNew ? create(dispatch, server) : update(dispatch, server);
+        if(isNew){
+            server = {...server, imageId: server.image?.id, worldId: server.world?.id, world: null, image: null};
+            return createServer(dispatch, server);
+        }else{
+            //TODO: Fix properties
+            return updateServer(dispatch, server.id, server);
+        }
     }, [dispatch]);
 
     return (

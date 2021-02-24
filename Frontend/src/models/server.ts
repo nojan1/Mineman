@@ -1,5 +1,5 @@
 export type ServerModel = {
-    id: string;
+    id: number;
     description: string;
     mainPort: number;
     isAlive: boolean;
@@ -28,4 +28,23 @@ export type PlayerInformationModel = {
 
 export type PluginInformationModel = {
     name: string;
+};
+
+export type ServerAddModel = {
+    description: string;
+    worldId: number;
+    imageId: number;
+    serverPort: number;
+    memoryAllocationMB: number;
+    modIds?: number[];
+};
+
+export type ServerConfigurationModel = {
+    description: string;
+    serverPort: number;
+    worldID: number;
+    imageID: number;
+    memoryAllocationMB: number;
+    modIds: number[];
+    properties: any;
 };

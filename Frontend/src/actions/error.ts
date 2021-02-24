@@ -19,6 +19,8 @@ export const handleAxiosError = (dispatch: React.Dispatch<Action>) => (axiosErro
                 , '')
             , ''
         );
+    }else if(response?.data && typeof(response.data) === 'object'){
+        message = JSON.stringify(response.data);
     }else if(axiosErrorResponse?.message){
         message = axiosErrorResponse?.message;
     }else{

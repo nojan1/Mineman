@@ -55,7 +55,7 @@ namespace Mineman.Web.Controllers
                 !ModelState.IsValid ||
                 inputModel.ModFile.Count != 1)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             _logger.LogInformation($"Adding new mod to database. Name: '{inputModel.DisplayName}'");
@@ -74,7 +74,7 @@ namespace Mineman.Web.Controllers
             var mod = await _modRepository.Get(modId);
             if(mod == null)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var modPath = _environment.BuildPath(_pathOptions.ModDirectory, mod.Path);

@@ -40,7 +40,7 @@ namespace Mineman.Web.Controllers
             var servers = (await _serverRepository.GetServers())
                                    .Select(x =>
                                    {
-                                       var mapPaths = _worldRepository.GetMapImagePaths(x.Server.ID).Result;
+                                       var mapPaths = _worldRepository.GetMapImagePaths(x.Server.World.ID).Result;
                                        return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath));
                                    })
                                    .OrderByDescending(c => c.IsAlive)
@@ -71,7 +71,7 @@ namespace Mineman.Web.Controllers
         {
             if (inputModel == null || !ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var server = await _serverRepository.Add(inputModel);
@@ -141,7 +141,7 @@ namespace Mineman.Web.Controllers
         {
             if(configurationModel == null || !ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             var server = await _serverRepository.UpdateConfiguration(serverId, configurationModel);
@@ -155,7 +155,7 @@ namespace Mineman.Web.Controllers
         {
             var server = await _serverRepository.Get(serverId);
             if (server.World == null)
-                return BadRequest();
+                return BadRequest(ModelState);
 
             var paths = await _worldRepository.GetMapImagePaths(server.World.ID);
             var pathToUse = thumb ? paths.MapThumbPath : paths.MapPath;
@@ -176,7 +176,7 @@ namespace Mineman.Web.Controllers
         {
             var server = await _serverRepository.Get(serverId);
             if (server.World == null)
-                return BadRequest();
+                return BadRequest(ModelState);
 
             var path = await _worldRepository.GetWorldMapInfoPath(server.World.ID);
             if (path == null)
@@ -194,7 +194,7 @@ namespace Mineman.Web.Controllers
         {
             var server = await _serverRepository.Get(serverId);
             if (server.World == null)
-                return BadRequest();
+                return BadRequest(ModelState);
 
             var path = await _worldRepository.GetWorldInfoPath(server.World.ID);
             if (path == null)

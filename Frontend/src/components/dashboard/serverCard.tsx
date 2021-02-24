@@ -59,7 +59,7 @@ const ServerCard: React.FunctionComponent<ServerCardProps> = ({
                         <Dropdown.Menu>
                             <DropdownItemActionButton
                                 iconComponent={server.isAlive ? MdStop: MdPlayArrow}
-                                action={() => server.isAlive ? stopServer(dispatch, server) : startServer(dispatch, server)}
+                                action={() => server.isAlive ? stopServer(dispatch, server.id) : startServer(dispatch, server.id)}
                             >
                                 {server.isAlive ? 'Stop' : 'Start'}
                             </DropdownItemActionButton>

@@ -10,6 +10,9 @@ export const addWorld = async (dispatch: Dispatch<Action>, world: WorldAddModel)
 
         var postData = new FormData();
         postData.append("displayName", world.displayName);
+        
+        if(world.worldFile)
+            postData.append("worldFile", world.worldFile);
 
         const response = await axios.post<WorldModel>(`${process.env.REACT_APP_BACKEND_URL}/api/world`, postData);
 

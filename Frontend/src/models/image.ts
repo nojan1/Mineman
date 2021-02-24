@@ -12,3 +12,9 @@ export type ImageBuildStatus = {
     buildSucceeded: boolean;
     log: string;
 };
+
+export type ImageAddModel = {
+    displayName: string;
+    imageContents: File;
+    modDirectory?: string;
+};

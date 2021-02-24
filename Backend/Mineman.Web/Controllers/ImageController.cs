@@ -50,7 +50,7 @@ namespace Mineman.Web.Controllers
                 !ModelState.IsValid ||
                 inputModel.ImageContents.Count != 1)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             _logger.LogInformation($"Adding new image to database. Name: '{inputModel.DisplayName}'");

@@ -40,7 +40,7 @@ namespace Mineman.Web.Controllers
         {
             if (inputModel == null || !ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
 
             World world;

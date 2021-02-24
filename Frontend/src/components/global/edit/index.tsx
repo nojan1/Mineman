@@ -8,6 +8,7 @@ import { ColumnMapping, ColumnMappingSettings, IsNewExtension, TabPageSettings }
 import EditModal from './editModal';
 import { FittingCell } from '../tableHelpers';
 import ActionButton from '../actionButton';
+import { AnyMxRecord } from 'dns';
 
 const FloatingButton = styled(Button)`
     position: fixed;
@@ -21,6 +22,15 @@ const flattenColumns = (columnMapping: ColumnMapping): { [key: string]: ColumnMa
             .reduce((a, b) => ({ ...a, ...b.columns }), {});
 
     return columnMapping as { [key: string]: ColumnMappingSettings };
+}
+
+const prepareNewItem = (flatMapping: { [key: string]: ColumnMappingSettings }) => {
+    console.log(flatMapping);
+    const defaults = Object.keys(flatMapping)
+        .filter(prop => flatMapping[prop].default)
+        .reduce((acc: any, prop: string) => ({ ...(acc ?? {}), [prop]: flatMapping[prop].default }), {});
+
+    return { ...defaults, isNew: true };
 }
 
 export interface EditProps<T> {
@@ -69,16 +79,16 @@ const Edit = <T,>({
                                     <Button size='sm' onClick={() => setCurrentItem({ ...row })}>
                                         <AiFillEdit />
                                     </Button>
-                                : null}
+                                    : null}
                                 {onDelete ?
-                                    <ActionButton 
+                                    <ActionButton
                                         size='sm'
                                         variant='danger'
-                                        disabled={!canDelete?.(row) ?? false} 
+                                        disabled={!canDelete?.(row) ?? false}
                                         action={() => onDelete(row)}>
                                         <AiFillDelete />
                                     </ActionButton>
-                                : null}
+                                    : null}
                             </FittingCell>
                         </tr>
                     )}
@@ -92,7 +102,7 @@ const Edit = <T,>({
                 unsetItem={() => setCurrentItem(undefined)}
                 onUpdate={(key: string, value: any) => setCurrentItem(item => ({ ...item, [key]: value }))} />
 
-            <FloatingButton onClick={() => setCurrentItem({ isNew: true })}>
+            <FloatingButton onClick={() => setCurrentItem(prepareNewItem(flattenedColumns))}>
                 <MdAdd />
             </FloatingButton>
         </>

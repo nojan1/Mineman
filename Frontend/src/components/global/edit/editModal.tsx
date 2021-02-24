@@ -51,13 +51,17 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
         const value = (currentItem as any)?.[prop] ?? settings.default ?? '';
 
         if (settings.component)
-            return React.createElement((settings.component as any), { value: value, onChange: () => { } });
+            return React.createElement((settings.component as any), { value: value, onChange: (e) => onUpdate(prop, e.target.value) });
         else if (settings.type === ColumnType.bool)
             return (
                 <Form.Check
 
                 />
             );
+        else if (settings.type === ColumnType.file)
+            return <Form.File 
+                        onChange={(e: any) => onUpdate(prop, e.target.files[0])}
+                    />
         else
             return (
                 <Form.Control
