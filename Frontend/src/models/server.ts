@@ -6,6 +6,8 @@ export type ServerModel = {
     hasMap: boolean;
     motd?: string;
     query?: ServerQueryModel;
+    imageId?: number;
+    worldId?: number;
 };
 
 export type ServerQueryModel = {

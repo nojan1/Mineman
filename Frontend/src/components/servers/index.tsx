@@ -13,7 +13,7 @@ const column = [
         columns:
         {
             'description': { label: 'Description', required: true },
-            'serverPort': { label: 'Port', type: ColumnType.number, required: true, default: 25565 },
+            'mainPort': { label: 'Port', type: ColumnType.number, required: true, default: 25565 },
             'memoryAllocationMB': {
                 label: 'Memory allocation in MB',
                 hideFromTable: true,
@@ -23,13 +23,13 @@ const column = [
             },
             'image': {
                 label: 'Server image',
-                valueFormater: image => image?.name,
+                valueFormater: image => image?.name ?? '',
                 component: ImageSelector,
                 required: true
             },
             'world': {
                 label: 'World',
-                valueFormater: world => world?.name,
+                valueFormater: world => world?.displayName ?? '',
                 component: WorldSelector,
                 required: true
             }
@@ -79,7 +79,7 @@ const buildServerAddModel = (x: any) => ({
     description: x.description,
     worldId: x.world?.id,
     imageId: x.image?.id,
-    serverPort: x.serverPort,
+    serverPort: x.mainPort,
     memoryAllocationMB: x.memoryAllocationMB,
     modIds: x.modIds ?? []
 });
@@ -88,7 +88,7 @@ const buildServerUpdateModel = (x: any) => ({
     description: x.description,
     worldId: x.world?.id,
     imageId: x.image?.id,
-    serverPort: x.serverPort,
+    serverPort: x.mainPort,
     memoryAllocationMB: x.memoryAllocationMB,
     modIds: x.modIds ?? [],
     properties: {
@@ -128,28 +128,34 @@ const buildServerUpdateModel = (x: any) => ({
 });
 
 const Servers: React.FunctionComponent = () => {
-    const { state: { servers }, dispatch } = getState();
+    const { state: { servers, images, worlds }, dispatch } = getState();
+
+    const mergedServers = servers.map(s => ({
+        ...s,
+        image: images?.find(i => i.id == s.imageId),
+        world: worlds?.find(w => w.id == s.worldId)
+    }));
 
     const onSave = useCallback((server: any, isNew: boolean) =>
         isNew
             ? createServer(dispatch, buildServerAddModel(server))
             : updateServer(dispatch, server.id, buildServerUpdateModel(server))
-    , [dispatch]);
+        , [dispatch]);
 
     const onDelete = useCallback((server: ServerModel) => deleteServer(dispatch, server.id), [dispatch]);
 
-return (
-    <>
-        <Edit 
-            data={servers} 
-            columnMapping={column} 
-            onSave={onSave} 
-            supportEdit={true} 
-            onDelete={onDelete}
-            canDelete={() => true}
-        />
-    </>
-);
+    return (
+        <>
+            <Edit
+                data={mergedServers}
+                columnMapping={column}
+                onSave={onSave}
+                supportEdit={true}
+                onDelete={onDelete}
+                canDelete={() => true}
+            />
+        </>
+    );
 };
 
 export default Servers;

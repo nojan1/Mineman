@@ -18,36 +18,36 @@ const Menu: React.FunctionComponent = () => {
     return (
         <Nav defaultActiveKey="/home" className="flex-column">
             <Nav.Link as={Link} to="/">
-                <MdDashboard />
+                <MdDashboard /> &nbsp;
                 Dashboard
             </Nav.Link>
             {user ? <>
                 <Nav.Link as={Link} to="/servers">
-                    <FaServer />
+                    <FaServer /> &nbsp;
                 Servers
             </Nav.Link>
                 <Nav.Link as={Link} to="/images">
-                    <MdStorage />
+                    <MdStorage /> &nbsp;
                 Images
             </Nav.Link>
                 <Nav.Link as={Link} to="/worlds">
-                    <BiWorld />
+                    <BiWorld /> &nbsp;
                 Worlds
             </Nav.Link>
                 <Nav.Link as={Link} to="/mods">
-                    <MdLibraryAdd />
+                    <MdLibraryAdd /> &nbsp;
                 Mods
             </Nav.Link>
             </> : null}
 
             {user ?
                 <Nav.Link onClick={doLogout}>
-                    <MdLock />
+                    <MdLock /> &nbsp;
                     Log out
                 </Nav.Link>
                 :
                 <Nav.Link as={Link} to="/login">
-                    <MdLockOpen />
+                    <MdLockOpen /> &nbsp;
                     Log in
                 </Nav.Link>
             }

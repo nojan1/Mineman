@@ -67,7 +67,7 @@ const Images: React.FunctionComponent = () => {
                                         action={() => importImage(dispatch, i)}
                                         disabled={hasRemoteImage(i)}
                                     >
-                                        <MdCloudDownload />
+                                        <MdCloudDownload /> &nbsp;
                                         Import
                                     </ActionButton>
                                 </FittingCell>

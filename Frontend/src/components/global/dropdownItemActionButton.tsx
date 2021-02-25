@@ -26,7 +26,7 @@ const DropdownItemActionButton:React.FunctionComponent<DropdownItemActionButtonP
             {loading 
                 ? <img src="images/spinner.gif" style={{height: '20px', marginLeft: '-5px'}}/> 
                 : React.createElement(iconComponent)
-            }
+            }  &nbsp;
             {children}
         </Dropdown.Item>
     );
