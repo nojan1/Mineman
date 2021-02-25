@@ -38,11 +38,13 @@ namespace Mineman.Web.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Get()
         {
+            var includeRestrictedInfo = User.Identity.IsAuthenticated; //TODO: Implement user roles
+
             var servers = (await _serverRepository.GetServers())
                                    .Select(x =>
                                    {
                                        var mapPaths = _worldRepository.GetMapImagePaths(x.Server.World.ID).Result;
-                                       return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath));
+                                       return x.Server.ToClientServer(x.IsAlive, !string.IsNullOrEmpty(mapPaths.MapPath), includeRestrictedInfo);
                                    })
                                    .OrderByDescending(c => c.IsAlive)
                                    .ToList();
