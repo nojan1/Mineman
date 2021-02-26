@@ -7,34 +7,6 @@ using Mineman.WorldParsing.Entities;
 
 namespace Mineman.WorldParsing
 {
-    //TODO: Remove me when Nbt lib contains support for TagLongArray
-    public class TagLongArray : Tag
-    {
-        public TagLongArray(string name) : base(name)
-        {
-        }
-
-        public long[] Value { get; set; }
-
-
-        public override TagType Type => throw new NotImplementedException();
-
-        public override object GetValue()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void SetValue(object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string ToValueString()
-        {
-            throw new NotImplementedException();
-        }
-    };
-
     public class NewChunk : Chunk
     {
         private readonly Dictionary<string, (int, byte)> _blockTranslationMap = new Dictionary<string, (int, byte)>
