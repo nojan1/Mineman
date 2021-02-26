@@ -54,6 +54,11 @@ const Edit = <T,>({
 
     const flattenedColumns = flattenColumns(columnMapping);
 
+    const onDoDelete = (row: any) => 
+        window.confirm('Are you sure you want to delete?')
+            ? onDelete!(row)
+            : new Promise<void>(resolve => resolve());
+
     return (
         <>
             <Table hover>
@@ -85,7 +90,7 @@ const Edit = <T,>({
                                         size='sm'
                                         variant='danger'
                                         disabled={!canDelete?.(row) ?? false}
-                                        action={() => onDelete(row)}>
+                                        action={() => onDoDelete(row)}>
                                         <AiFillDelete />
                                     </ActionButton>
                                     : null}
