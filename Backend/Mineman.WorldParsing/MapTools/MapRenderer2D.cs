@@ -54,7 +54,7 @@ namespace Mineman.WorldParsing.MapTools
             //foreach (var region in regions)
             Parallel.ForEach(regions, region =>
             {
-                var regionCache = _cacheProvider.GetRegionMapCache(region.X, region.Z) ?? new RegionMapCache();
+                var regionCache = _cacheProvider?.GetRegionMapCache(region.X, region.Z) ?? new RegionMapCache();
 
                 var populated = new List<(int, int)>(16 * 16);
                 var lastBaseColor = new Dictionary<(int, int), Color>(16 * 16);
@@ -172,7 +172,7 @@ namespace Mineman.WorldParsing.MapTools
                     }
                 }
 
-                _cacheProvider.SaveRegionMapCache(region.X, region.Z, regionCache);
+                _cacheProvider?.SaveRegionMapCache(region.X, region.Z, regionCache);
             });
 
             if (!blockRendered)
