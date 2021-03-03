@@ -37,6 +37,7 @@ const column = [
     },
     {
         title: 'Server properties',
+        hideOnAdd: true,
         columns:
         {
             'max_Tick_Time': { label: 'Max Tick Time', hideFromTable: true, default: 60000 },

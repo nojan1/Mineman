@@ -10,6 +10,8 @@ export type ColumnMappingSettings = {
     type?: ColumnType;
     hideFromTable?: boolean;
     hideFromEditor?: boolean;
+    hideOnAdd?: boolean;
+    hideOnEdit?: boolean;
     required?: boolean;
     default?: any;
     valueFormater?: (value: any) => string;
@@ -18,6 +20,8 @@ export type ColumnMappingSettings = {
 
 export type TabPageSettings = {
     title: string;
+    hideOnAdd?: boolean;
+    hideOnEdit?: boolean;
     columns: { [key: string]: ColumnMappingSettings };
 };
 

@@ -72,21 +72,27 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
             );
     }
 
-    const renderControls = (columns: { [key: string]: ColumnMappingSettings }) =>
-        Object.entries(columns).filter(([_, settings]) => !settings.hideFromEditor).map(([prop, settings]) =>
-            <Form.Group key={prop}>
-                <Form.Label>{settings.label}</Form.Label>
-                {renderControl(prop, settings)}
-            </Form.Group>
-        )
+    const renderControls = (isNew: boolean, columns: { [key: string]: ColumnMappingSettings }) =>
+        Object.entries(columns)
+            .filter(([_, settings]) => !settings.hideFromEditor)
+            .filter(([_, settings]) => (!settings.hideOnAdd && isNew) || (!settings.hideOnEdit && !isNew))
+            .map(([prop, settings]) =>
+                <Form.Group key={prop}>
+                    <Form.Label>{settings.label}</Form.Label>
+                    {renderControl(prop, settings)}
+                </Form.Group>
+            )   
 
-    const renderTabs = (tabs: TabPageSettings[]) =>
+    const renderTabs = (isNew: boolean, tabs: TabPageSettings[]) =>
         <Tabs>
-            {tabs.map((t, i) =>
-                <Tab key={i} eventKey={t.title} title={t.title}>
-                    {renderControls(t.columns)}
-                </Tab>
-            )}
+            {tabs
+                .filter(t => (!t.hideOnAdd && isNew) || (!t.hideOnEdit && !isNew))
+                .map((t, i) =>
+                    <Tab key={i} eventKey={t.title} title={t.title}>
+                        {renderControls(isNew, t.columns)}
+                    </Tab>
+                )
+            }
         </Tabs>
 
     return (
@@ -105,8 +111,8 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
                 </Modal.Header>
                 <Modal.Body>
                     {Array.isArray(columnMapping)
-                        ? renderTabs(columnMapping as TabPageSettings[])
-                        : renderControls(columnMapping as { [key: string]: ColumnMappingSettings })
+                        ? renderTabs((currentItem as any)?.isNew, columnMapping as TabPageSettings[])
+                        : renderControls((currentItem as any)?.isNew, columnMapping as { [key: string]: ColumnMappingSettings })
                     }
                 </Modal.Body>
                 <Modal.Footer>
