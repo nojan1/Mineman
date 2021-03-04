@@ -37,7 +37,7 @@ const EditModal: React.FunctionComponent<EditModalProps> = ({
     onUpdate,
 }) => {
     const [loading, setLoading] = useState<boolean>(false);
-
+    console.log(currentItem);
     const onDoSave = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);

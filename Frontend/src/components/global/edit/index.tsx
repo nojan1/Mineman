@@ -37,6 +37,7 @@ export interface EditProps<T> {
     columnMapping: ColumnMapping
     supportEdit: boolean;
     data?: T[];
+    beforeEditTransform?: (item: T) => any;
     onSave: (item: T, isNew: boolean) => Promise<any>;
     onDelete?: (item: T) => Promise<any>;
     canDelete?: (item: T) => boolean;
@@ -48,7 +49,8 @@ const Edit = <T,>({
     supportEdit,
     onSave,
     onDelete,
-    canDelete
+    canDelete,
+    beforeEditTransform
 }: PropsWithChildren<EditProps<T>>) => {
     const [currentItem, setCurrentItem] = useState<(T | IsNewExtension)>();
 
@@ -81,7 +83,7 @@ const Edit = <T,>({
 
                             <FittingCell>
                                 {supportEdit ?
-                                    <Button size='sm' onClick={() => setCurrentItem({ ...row })}>
+                                    <Button size='sm' onClick={() => setCurrentItem(beforeEditTransform?.(row) ?? { ...row })}>
                                         <AiFillEdit />
                                     </Button>
                                     : null}

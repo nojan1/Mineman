@@ -2,7 +2,7 @@ import { ImageModel } from "../models/image";
 import { Message } from "../models/message";
 import { ModsModel } from "../models/mods";
 import { RemoteImageModel } from "../models/remoteImage";
-import { ServerQueryModel, ServerModel } from "../models/server";
+import { ServerQueryModel, ServerModel, ServerPropertiesModel } from "../models/server";
 import { User } from "../models/user";
 import { WorldModel } from "../models/world";
 import { ApplicationState } from "../state/initial";
@@ -12,6 +12,7 @@ export type Action =
     { type: 'serverAdded', server: ServerModel } |
     { type: 'serverUpdated', server: ServerModel } |
     { type: 'serverQueryLoaded', id: number, query: ServerQueryModel } |
+    { type: 'serverPropertiesLoaded', id: number, properties: ServerPropertiesModel} |
 
     { type: 'imagesLoaded', images: ImageModel[] } |
     { type: 'imageAdded', image: ImageModel } |
@@ -49,6 +50,13 @@ export const mainReducer = (prevState: ApplicationState, action: Action): Applic
                 .map(x => x.id === action.id ? { ...x, query: action.query } : x);
 
             return { ...prevState, servers: newServers };
+        case 'serverPropertiesLoaded':
+            console.log(action.properties);
+            const newServersWithMergedProperties = prevState.servers
+                .map(x => x.id === action.id ? { ...x, properties: action.properties } : x);
+
+            return { ...prevState, servers: newServersWithMergedProperties };
+
         case 'imagesLoaded':
             return { ...prevState, images: action.images };
         case 'imageAdded':
