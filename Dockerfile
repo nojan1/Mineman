@@ -27,6 +27,7 @@ COPY Backend/TinyTokenIssuer/* TinyTokenIssuer/
 
 RUN cd Mineman.Web && dotnet publish -c Release -o ../out
 COPY Extra/appsettings.docker.json /app/out/appsettings.json
+COPY Backend/Mineman.WorldParsing/Resources /app/out/
 
 COPY Frontend ./Frontend
 RUN cd Frontend && npm install && npm run build
