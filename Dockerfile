@@ -30,6 +30,7 @@ COPY Extra/appsettings.docker.json /app/out/appsettings.json
 COPY Backend/Mineman.WorldParsing/Resources /app/out/Resources
 
 COPY Frontend ./Frontend
+COPY Extra/.env.docker /Frontend/.env
 RUN cd Frontend && npm install && npm run build
 RUN cp -r Frontend/build /app/out/wwwroot
 
