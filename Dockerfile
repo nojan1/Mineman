@@ -1,32 +1,38 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 WORKDIR /app
 
 RUN apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt-get install -y nodejs
 
-COPY Mineman.Common/Mineman.Common.csproj Mineman.Common/
-COPY Mineman.Service/Mineman.Service.csproj Mineman.Service/
-COPY Mineman.Service.Tests/Mineman.Service.Tests.csproj Mineman.Service.Tests/
-COPY Mineman.Web/Mineman.Web.csproj Mineman.Web/
-COPY Mineman.WorldParsing/Mineman.WorldParsing.csproj Mineman.WorldParsing/
-COPY Mineman.WorldParsing.Tests/Mineman.WorldParsing.Tests.csproj Mineman.WorldParsing.Tests/
-COPY Mineman.sln ./
-COPY Nuget.config ./
+COPY Backend/Mineman.Common/Mineman.Common.csproj Mineman.Common/
+COPY Backend/Mineman.Service/Mineman.Service.csproj Mineman.Service/
+COPY Backend/Mineman.Service.Tests/Mineman.Service.Tests.csproj Mineman.Service.Tests/
+COPY Backend/Mineman.Web/Mineman.Web.csproj Mineman.Web/
+COPY Backend/Mineman.WorldParsing/Mineman.WorldParsing.csproj Mineman.WorldParsing/
+COPY Backend/Mineman.WorldParsing.Tests/Mineman.WorldParsing.Tests.csproj Mineman.WorldParsing.Tests/
+COPY Backend/TinyTokenIssuer/TinyTokenIssuer.csproj TinyTokenIssuer/
+COPY Backend/Mineman.sln ./
+COPY Backend/Nuget.config ./
 
 RUN dotnet restore Mineman.sln
 
-COPY Mineman.Common/* Mineman.Common/
-COPY Mineman.Service/* Mineman.Service/
-COPY Mineman.Service.Tests/* Mineman.Service.Tests/
-COPY Mineman.Web/* Mineman.Web/
-COPY Mineman.WorldParsing/* Mineman.WorldParsing/
-COPY Mineman.WorldParsing.Tests/* Mineman.WorldParsing.Tests/
+COPY Backend/Mineman.Common/* Mineman.Common/
+COPY Backend/Mineman.Service/* Mineman.Service/
+COPY Backend/Mineman.Service.Tests/* Mineman.Service.Tests/
+COPY Backend/Mineman.Web/* Mineman.Web/
+COPY Backend/Mineman.WorldParsing/* Mineman.WorldParsing/
+COPY Backend/Mineman.WorldParsing.Tests/* Mineman.WorldParsing.Tests/
+COPY Backend/TinyTokenIssuer/* TinyTokenIssuer/
 
 RUN cd Mineman.Web && dotnet publish -c Release -o ../out
 COPY Extra/appsettings.docker.json /app/out/appsettings.json
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
+COPY Frontend ./Frontend
+RUN cd Frontend && npm install && npm run build
+RUN cp -r Frontend/build /app/out/wwwroot
+
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "Mineman.Web.dll"]

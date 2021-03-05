@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <IntermediateOutputPath>obj\Debug\netcoreapp2.1</IntermediateOutputPath>
+    <RunWithWarnings>true</RunWithWarnings>
+    <IntermediateOutputPath>obj\Debug\netcoreapp2.1</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CoreRCON" Version="5.0.2" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.4" />
+    <PackageReference Include="SharpCompress" Version="0.28.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mineman.Common\Mineman.Common.csproj" />
+    <ProjectReference Include="..\Mineman.WorldParsing\Mineman.WorldParsing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
