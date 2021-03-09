@@ -16,7 +16,7 @@ const Menu: React.FunctionComponent = () => {
     };
 
     return (
-        <Nav defaultActiveKey="/home" className="flex-column">
+        <Nav defaultActiveKey="/home" className="main-menu">
             <Nav.Link as={Link} to="/">
                 <MdDashboard /> &nbsp;
                 Dashboard

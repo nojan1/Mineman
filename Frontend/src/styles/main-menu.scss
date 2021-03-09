@@ -1,0 +1,11 @@
+.nav.main-menu {
+    flex-direction: column !important;
+
+    @media (max-width: 600px){
+        flex-direction: row !important;
+
+        .nav-link {
+            width: auto !important;
+        }
+    }
+}

@@ -16,6 +16,11 @@ const DashboardContainer = styled.div`
   * {
     margin-right: 10px;
   }
+
+  @media (max-width: 600px){
+    flex-wrap: nowrap;
+    flex-direction: row;
+  }
 `;
 
 const Dashboard: React.FunctionComponent = () => {

@@ -15,6 +15,10 @@ import MessageContainer from './components/global/messageContainer';
 const AppContainer = styled.div`
     display: flex;
     padding-top:5px;
+
+    @media (max-width: 600px) {
+        flex-direction: column !important;
+    }
 `;
 
 const MainContainer = styled.div`
