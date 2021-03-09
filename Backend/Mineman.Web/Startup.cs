@@ -237,6 +237,8 @@ namespace Mineman.Web
             }
 
             createDirectory(pathOptions.WorldDirectory);
+            createDirectory(pathOptions.WorldDirectory + "/map");
+            createDirectory(pathOptions.WorldDirectory + "/info");
             createDirectory(pathOptions.ServerPropertiesDirectory);
             createDirectory(pathOptions.ModDirectory);
             createDirectory(pathOptions.ImageZipFileDirectory);

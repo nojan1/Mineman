@@ -34,8 +34,7 @@ const serverStartupActions = async (dispatch: React.Dispatch<Action>) => {
                 loggedInAxios.get<ServerInfoModel>(`${process.env.REACT_APP_BACKEND_URL}/api/server/${s.id}`)
                     .then(x => dispatch({ type: 'serverPropertiesLoaded', id: s.id, properties: deserializeProperties(x.data.server.serializedProperties) }))
             )
-        )
-        .catch(handleAxiosError(dispatch));
+        );
     } catch { }
 }
 

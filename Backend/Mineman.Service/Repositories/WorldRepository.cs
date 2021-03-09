@@ -44,8 +44,8 @@ namespace Mineman.Service.Repositories
         {
             var world = await _context.Worlds.FindAsync(worldId);
 
-            var fullSizePath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path, "map.png");
-            var thumbPath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path, "map_thumb.png");
+            var fullSizePath = _environment.BuildPath(_pathOptions.WorldDirectory, "map", world.Path, "map.png");
+            var thumbPath = _environment.BuildPath(_pathOptions.WorldDirectory, "map", world.Path, "map_thumb.png");
 
             return new MapImagePaths
             {
@@ -56,12 +56,12 @@ namespace Mineman.Service.Repositories
 
         public async Task<string> GetWorldInfoPath(int worldId)
         {
-            return await GetPathToWorldFile(worldId, "worldinfo.json");
+            return await GetPathToWorldFile(worldId, "info", "worldinfo.json");
         }
 
         public async Task<string> GetWorldMapInfoPath(int worldId)
         {
-            return await GetPathToWorldFile(worldId, "render-result.json");
+            return await GetPathToWorldFile(worldId, "map", "render-result.json");
         }
 
         public async Task<World> AddEmpty(string displayName)
@@ -75,8 +75,10 @@ namespace Mineman.Service.Repositories
             var worldFolderPath = _environment.BuildPath(_pathOptions.WorldDirectory, folderName);
 
             Directory.CreateDirectory(worldFolderPath);
+            Directory.CreateDirectory(Path.Combine(_pathOptions.WorldDirectory, "map", folderName));
+            Directory.CreateDirectory(Path.Combine(_pathOptions.WorldDirectory, "info", folderName));
 
-            if(zipArchive != null)
+            if (zipArchive != null)
             {
                 zipArchive.ExtractToDirectory(worldFolderPath);
             }
@@ -93,10 +95,10 @@ namespace Mineman.Service.Repositories
             return world;
         }
 
-        private async Task<string> GetPathToWorldFile(int worldId, string filename)
+        private async Task<string> GetPathToWorldFile(int worldId, string prefixFolder, string filename)
         {
             var world = await _context.Worlds.FindAsync(worldId);
-            var worldInfoPath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path, filename);
+            var worldInfoPath = _environment.BuildPath(_pathOptions.WorldDirectory, prefixFolder, world.Path, filename);
 
             return File.Exists(worldInfoPath) ? worldInfoPath : null;
         }
@@ -128,6 +130,14 @@ namespace Mineman.Service.Repositories
             //Remove from filesystem
             var worldFolderPath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path);
             Directory.Delete(worldFolderPath, true);
+
+            var infoFolderPath = _environment.BuildPath(_pathOptions.WorldDirectory, "info", world.Path);
+            if(Directory.Exists(infoFolderPath))
+                Directory.Delete(infoFolderPath, true);
+
+            var mapFolderPath = _environment.BuildPath(_pathOptions.WorldDirectory, "map", world.Path);
+            if(Directory.Exists(mapFolderPath))
+                Directory.Delete(mapFolderPath, true);
 
             await _context.SaveChangesAsync();
         }

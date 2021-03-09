@@ -73,7 +73,7 @@ namespace Mineman.Service
                             worldInfo.SpawnY = parser.Level?.SpawnY ?? 0;
                             worldInfo.SpawnZ = parser.Level?.SpawnZ ?? 0;
 
-                            var worldInfoFilePath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path, "worldinfo.json");
+                            var worldInfoFilePath = _environment.BuildPath(_pathOptions.WorldDirectory, "info", world.Path, "worldinfo.json");
                             File.WriteAllText(worldInfoFilePath, JsonConvert.SerializeObject(worldInfo));
 
                             _logger.LogInformation($"Finished parsing info for world. ID: {world.ID} Path: '{world.Path}'");
