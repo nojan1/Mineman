@@ -67,6 +67,7 @@ namespace Mineman.Service
                             _logger.LogInformation($"Generating map for world. ID: {world.ID} Path: '{world.Path}'");
 
                             var worldPath = _environment.BuildPath(_pathOptions.WorldDirectory, world.Path);
+                            var mapPath = _environment.BuildPath(_pathOptions.WorldDirectory, "map", world.Path);
                             var parser = _worldParserFactory.Create(worldPath);
 
                             if (!parser.GetRegions(TARGET_REGION).Any())
@@ -80,12 +81,12 @@ namespace Mineman.Service
 
                             var renderResult = renderer.GenerateBlockBitmap(TARGET_REGION);
 
-                            renderResult.Bitmap.Save(Path.Combine(worldPath, "map.png"));
+                            renderResult.Bitmap.Save(Path.Combine(mapPath, "map.png"));
 
                             renderResult.Bitmap.Mutate(x => x.Resize(new Size(200, 200)));
-                            renderResult.Bitmap.Save(Path.Combine(worldPath, "map_thumb.png"));
+                            renderResult.Bitmap.Save(Path.Combine(mapPath, "map_thumb.png"));
 
-                            var mapRenderResultDataFilePath = Path.Combine(worldPath, "render-result.json");
+                            var mapRenderResultDataFilePath = Path.Combine(mapPath, "render-result.json");
                             File.WriteAllText(mapRenderResultDataFilePath, JsonConvert.SerializeObject(new
                             {
                                 OffsetX = renderResult.OffsetX,
