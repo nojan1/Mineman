@@ -25,6 +25,7 @@ const serverStartupActions = async (dispatch: React.Dispatch<Action>) => {
                 .then(x => dispatch({ type: 'serverQueryLoaded', id: s.id, query: x.data }))
         )
     )
+    .catch(handleAxiosError(dispatch));
 
     try {
         const loggedInAxios = await getAuthedAxios(true);
@@ -34,6 +35,7 @@ const serverStartupActions = async (dispatch: React.Dispatch<Action>) => {
                     .then(x => dispatch({ type: 'serverPropertiesLoaded', id: s.id, properties: deserializeProperties(x.data.server.serializedProperties) }))
             )
         )
+        .catch(handleAxiosError(dispatch));
     } catch { }
 }
 
