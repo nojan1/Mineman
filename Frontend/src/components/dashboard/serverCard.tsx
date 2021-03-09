@@ -21,7 +21,7 @@ const ServerCard: React.FunctionComponent<ServerCardProps> = ({
     const { state: { user }, dispatch } = getState();
 
     return (
-        <Card style={{ width: '350px' }}>
+        <Card className='server-card'>
             <Card.Img variant="top" src={getImageOrDefault(server)} />
             <Card.Body>
                 <Card.Title>{server.description}</Card.Title>
