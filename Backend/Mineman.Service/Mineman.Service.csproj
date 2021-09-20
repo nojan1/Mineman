@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="CoreRCON" Version="5.0.2" />
     <PackageReference Include="Docker.DotNet" Version="3.125.4" />
-    <PackageReference Include="SharpCompress" Version="0.28.1" />
+    <PackageReference Include="SharpCompress" Version="0.29.0" />
   </ItemGroup>
 
   <ItemGroup>
